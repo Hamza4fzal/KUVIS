@@ -14,8 +14,9 @@ Sentinel-2
 * Planetary Computer's `sentinel-2-l2a` is NOT harmonized: for processing baseline ≥ 04.00
   (from 25 Jan 2022) DN carry a +1000 offset, removed here: ρ = (DN − 1000)/10000.
 * SCL mask keeps: 4 vegetation, 5 bare, 6 water, 7 unclassified; drops 0–3, 8–11.
-* 10 m bands (B03, B04, B08) are aggregated to the 20 m target grid with area-average resampling;
-  B11 and SCL are native 20 m.
+* 10 m bands (B03, B04, B08) are read at 20 m (GDAL uses the COG's internal overview, then average
+  resampling onto the target grid) — chosen to cut download volume 4× on a slow link; for 500 m cell
+  means the difference from full-resolution averaging is negligible. B11 and SCL are native 20 m.
 """
 
 from __future__ import annotations
@@ -72,16 +73,23 @@ def landsat_reader(it, tg: TargetGrid):
         x[~clear | (x <= 0) | (x > 1)] = np.nan
         return x
 
-    red, nir, swir, green = sr("red"), sr("nir08"), sr("swir16"), sr("green")
-    return {"lst": lst, "ndvi": nd(nir, red), "ndbi": nd(swir, nir), "mndwi": nd(green, swir)}
+    red, nir, swir = sr("red"), sr("nir08"), sr("swir16")
+    return {"lst": lst, "ndvi": nd(nir, red), "ndbi": nd(swir, nir)}
 
 
-def run_landsat(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int = 8) -> pd.DataFrame:
+def run_landsat(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int = 5,
+                epochs: list[str] | None = None) -> pd.DataFrame:
+    """Process the given epochs (default: all configured). Results merge with previously processed epochs,
+    so epochs can be added incrementally on a slow connection."""
     c = cfg()["landsat"]
     tg = TargetGrid.around(study, c["resolution_m"], snap=30)
     bbox = stac.study_bbox_ll(study)
-    feats, obs_all, used_items = [], [], {}
+    feats, obs_all = [], []
+    prev = provenance.get("landsat_c2_l2") or {}
+    used_items = dict(prev.get("items") or {})
     for epoch, spec in c["epochs"].items():
+        if epochs and epoch not in epochs:
+            continue
         items = []
         for year in range(spec["years"][0], spec["years"][1] + 1):
             m0, m1 = min(c["season_months"]), max(c["season_months"])
@@ -94,13 +102,13 @@ def run_landsat(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int =
         items = _pick_clearest(items, lambda i: (i.properties.get("landsat:wrs_path"), i.properties.get("landsat:wrs_row")), per_tile)
         log.info("landsat epoch %s: %d scenes selected", epoch, len(items))
         used_items[epoch] = [i.id for i in items]
-        med, obs, labels = composite(items, landsat_reader, tg, grid, ["lst", "ndvi", "ndbi", "mndwi"], f"landsat_{epoch}")
+        med, obs, labels = composite(items, landsat_reader, tg, grid, ["lst", "ndvi", "ndbi"], f"landsat_{epoch}")
         n = len(grid)
         f = {"grid_id": grid["grid_id"].values}
         lst = zonal.stats(labels, med["lst"], n, prefix="lst", which=("mean", "std", "max", "p90"))
         for col in ["lst_mean", "lst_std", "lst_max", "lst_p90", "lst_cov"]:
             f[f"{col}_{epoch}"] = lst[col].values
-        for v in ("ndvi", "ndbi", "mndwi"):
+        for v in ("ndvi", "ndbi"):
             s = zonal.stats(labels, med[v], n, prefix=v, which=("mean",))
             f[f"ls_{v}_{epoch}"] = s[f"{v}_mean"].values
         cnt = zonal.stats(labels, med["_count"], n, prefix="nobs", which=("mean",))
@@ -111,23 +119,33 @@ def run_landsat(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int =
         if len(obs):
             obs["epoch"] = epoch
             obs_all.append(obs)
-    df = pd.concat(feats, axis=1).reset_index()
-    df.to_parquet(path("interim", "features_landsat.parquet"))
+    df = pd.concat(feats, axis=1)
+    fp = path("interim", "features_landsat.parquet")
+    if fp.exists():  # merge with epochs processed in earlier runs
+        old = pd.read_parquet(fp).set_index("grid_id")
+        old = old[[c_ for c_ in old.columns if c_ not in df.columns]]
+        df = old.join(df, how="outer")
+    df = df.reset_index()
+    df.to_parquet(fp)
     obs = pd.concat(obs_all, ignore_index=True)
-    obs.to_parquet(path("processed", "landsat_scene_observations.parquet"))
+    op = path("processed", "landsat_scene_observations.parquet")
+    if op.exists():
+        old = pd.read_parquet(op)
+        obs = pd.concat([old[~old.epoch.isin(obs.epoch.unique())], obs], ignore_index=True)
+    obs.to_parquet(op)
     provenance.record(
         "landsat_c2_l2",
         status="acquired",
         title="Landsat Collection 2 Level-2 Surface Reflectance & Surface Temperature (L5 TM, L8/L9 OLI-TIRS)",
         provider="USGS, via Microsoft Planetary Computer",
         url="https://planetarycomputer.microsoft.com/dataset/landsat-c2-l2",
-        method="STAC search (Apr–Jun, T1, cloud<30%, clearest 8 per WRS tile) + QA-masked median composite on 30 m UTM 42N grid",
+        method=f"STAC search (Apr–Jun, T1, cloud<30%, clearest {per_tile} per WRS tile) + QA-masked median composite on 30 m UTM 42N grid",
         files=sorted(path("interim").glob("landsat_*.tif")),
         license="Public domain (USGS)",
         crs="EPSG:32642",
         spatial_resolution="30 m (TIR resampled to 30 m by USGS; native 100 m TIRS / 120 m TM)",
         temporal_coverage=", ".join(f"{e}: {s['years'][0]}–{s['years'][1]} Apr–Jun" for e, s in c["epochs"].items()),
-        variables=["LST (°C)", "NDVI", "NDBI", "MNDWI"],
+        variables=["LST (°C)", "NDVI", "NDBI"],
         items=used_items,
         limitations="LST ≠ air temperature; thermal native resolution coarser than 30 m; cross-sensor (TM vs OLI) "
                     "index offsets not calibrated; acquisition times ~10:30 local only.",
@@ -158,7 +176,7 @@ def s2_reader(it, tg: TargetGrid):
     return {"ndvi": nd(n, r), "ndwi": nd(g, n), "ndbi": nd(s, n)}
 
 
-def run_sentinel2(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int = 8) -> pd.DataFrame:
+def run_sentinel2(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int = 5) -> pd.DataFrame:
     c = cfg()["sentinel2"]
     tg = TargetGrid.around(study, c["resolution_m"], snap=60)
     bbox = stac.study_bbox_ll(study)

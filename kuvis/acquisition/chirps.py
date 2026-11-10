@@ -9,8 +9,6 @@ not a rain-gauge record.
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
-
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -25,12 +23,28 @@ from . import stac
 log = get_logger("kuvis.chirps")
 
 
-def _read(url: str, bbox):
-    for attempt in range(4):
+def _read(url: str, bbox, cache_dir=None):
+    """Windowed read with on-disk cache (resumable) and exponential backoff — the CHC server
+    answers bursts with HTTP 429, so requests are sequential and spaced."""
+    import time
+    name = url.rsplit("/", 1)[-1]
+    if cache_dir is not None:
+        f = cache_dir / (name + ".npz")
+        if f.exists():
+            z = np.load(f, allow_pickle=False)
+            from affine import Affine
+            return z["a"], Affine(*z["t"]), None, None
+    for attempt in range(8):
         try:
-            return stac.read_window(url, bbox)
-        except Exception as exc:  # network hiccup → retry
-            log.warning("retry %d %s: %s", attempt + 1, url.rsplit("/", 1)[-1], exc)
+            arr, tr, crs, nod = stac.read_window(url, bbox)
+            if cache_dir is not None:
+                np.savez_compressed(cache_dir / (name + ".npz"), a=arr, t=np.array(tr)[:6])
+            time.sleep(0.5)
+            return arr, tr, crs, nod
+        except Exception as exc:  # 429 / network hiccup → back off
+            wait = min(120, 5 * 2 ** attempt)
+            log.warning("retry %d %s in %ds: %s", attempt + 1, name, wait, str(exc)[:120])
+            time.sleep(wait)
     raise RuntimeError(f"CHIRPS read failed: {url}")
 
 
@@ -40,12 +54,19 @@ def run(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame) -> pd.DataFrame:
     months = [(y, m) for y in range(c["start_year"], c["end_year"] + 1) for m in range(1, 13)]
     urls = {ym: f"/vsicurl/{c['base_url']}/chirps-v3.0.{ym[0]}.{ym[1]:02d}.cog" for ym in months}
 
-    arr0, tr, crs, nod = _read(urls[months[0]], bbox)
+    cache = path("raw", "chirps_windows", "x").parent
+    arr0, tr, crs, nod = _read(urls[months[0]], bbox, cache)
     h, w = arr0.shape
     log.info("CHIRPS window %dx%d pixels, transform %s", w, h, tr)
 
-    with ThreadPoolExecutor(max_workers=8) as ex:
-        results = dict(zip(months, ex.map(lambda ym: _read(urls[ym], bbox)[0], months)))
+    results = {}
+    for i, ym in enumerate(months):
+        a, t, _, _ = _read(urls[ym], bbox, cache)
+        if a.shape != (h, w) or not np.allclose(tuple(t)[:6], tuple(tr)[:6]):
+            raise RuntimeError(f"CHIRPS grid mismatch in {ym}")
+        results[ym] = a
+        if i % 60 == 0:
+            log.info("CHIRPS %d/%d months", i + 1, len(months))
 
     # Pixel table (native geometry)
     pix = []

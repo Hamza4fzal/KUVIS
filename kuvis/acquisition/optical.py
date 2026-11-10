@@ -73,12 +73,24 @@ def composite(items: list, reader: SceneReader, tg: TargetGrid, grid: gpd.GeoDat
                                            shape=(len(items), tg.height, tg.width)) for v in variables}
     obs_rows = []
     used = 0
+    cache_dir = path("interim", "scene_cache", "x").parent
     for it in items:
-        try:
-            layers = reader(it, tg)
-        except Exception as exc:  # a broken scene must not kill the composite; it is logged and skipped
-            log.warning("%s: scene %s skipped: %s", tag, it.id, exc)
-            continue
+        cf = cache_dir / f"{it.id}.npz"
+        if cf.exists():
+            z = np.load(cf)
+            layers = {v: z[v].astype("float32") for v in z.files} if z.files else None
+        else:
+            layers = None
+            for attempt in range(3):
+                try:
+                    layers = reader(it, tg)
+                    break
+                except Exception as exc:  # a broken scene must not kill the composite; logged and skipped
+                    log.warning("%s: scene %s attempt %d failed: %s", tag, it.id, attempt + 1, str(exc)[:200])
+            else:
+                continue
+            # Cache derived layers (float16 is ample for indices/°C at this precision) so reruns are offline.
+            np.savez_compressed(cf, **({v: layers[v].astype("float16") for v in variables} if layers else {}))
         if layers is None:
             continue
         for v in variables:
