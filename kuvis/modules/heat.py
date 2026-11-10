@@ -240,9 +240,46 @@ def run() -> pd.DataFrame:
                     limitations=["Absolute LST differs between epochs with weather on acquisition days; compare "
                                  "relative LST.", "Land-cover classes are from 2021 and applied to all epochs."])
 
+    # ---------------------------------------------------------------- B6 association rules (heat)
+    _heat_rules(b, mc)
+
     res.to_parquet(out("heat_cells.parquet"))
     log.info("heat done: K=%d, %d hotspots, %d IF anomalies, Moran I=%.3f", k, len(hs), int(flag.sum()), mor["I"])
     return res
+
+
+def _heat_rules(b: pd.DataFrame, mc: dict) -> None:
+    """Which combinations of land-surface conditions co-occur with high relative LST? Antecedent items exclude
+    every thermal variable, so a rule cannot restate its own consequent."""
+    from ..mining import association
+    T = pd.DataFrame(index=b.index)
+    T["Surface heat"] = association.qbin(b[f"lst_rel_{EPOCH}"])
+    T["Built-up"] = association.qbin(b["built_frac"])
+    T["Vegetation"] = association.qbin(b["s2_ndvi_mean"], labels=("Sparse", "Moderate", "Dense"))
+    T["Bare ground"] = association.qbin(b["bare_frac"])
+    T["Population density"] = association.qbin(b["log_pop_density_2025"])
+    if "dist_coast_m" in b:
+        T["Distance to coast"] = association.qbin(b["dist_coast_m"], labels=("Near", "Mid", "Far"))
+    T["Elevation"] = association.qbin(b["elev_mean"])
+    oh = association.transactions(T)
+    a = mc["apriori"]
+    cons = ["Surface heat=High", "Surface heat=Low"]
+    rules = association.mine(oh, cons, a["min_support"], a["min_confidence"], a["min_lift"])
+    rules.to_parquet(out("heat_association_rules.parquet"))
+    items = pd.DataFrame({"grid_id": b["grid_id"].values,
+                          "items": [sorted(oh.columns[row].tolist()) for row in oh.values]})
+    items.to_parquet(out("heat_association_transactions.parquet"))
+    experiment.save("heat_association", module="heat", algorithm="FP-Growth association rules",
+                    purpose="Discover combinations of land-surface conditions that co-occur with high or low relative LST",
+                    inputs=list(T.columns), n_samples=len(T),
+                    params={**a, "discretisation": "tertiles of land cells (labels Low/Medium/High etc.)",
+                            "consequents": cons, "redundancy_pruning": "drop rule if a more general rule has ≥ 98 % of its lift"},
+                    metrics={"n_rules": int(len(rules)), "n_transactions": int(len(oh)), "n_items": int(oh.shape[1]),
+                             "base_rate_high_heat": float(oh.get("Surface heat=High", pd.Series(False)).mean())},
+                    results={"top_rules": rules.head(25).to_dict("records")},
+                    interpretation_notes=["Lift > 1 means the conditions make high (or low) heat more frequent than its "
+                                          "base rate of one third; a frequent rule is not necessarily an interesting one."],
+                    limitations=["Association ≠ causation.", "Tertile cut-points are data-driven, not physical thresholds."])
 
 
 def experiment_items(epoch: str) -> list:
