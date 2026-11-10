@@ -1,0 +1,38 @@
+# Sources investigated in Phase 1 (2026-11-10) that are NOT acquired by the pipeline, with the verified reason.
+# Loaded into kuvis.data_sources so the Data Sources page shows the full picture, not only successes.
+- key: gee
+  title: Google Earth Engine (Landsat/Sentinel/CHIRPS catalog)
+  provider: Google
+  url: https://earthengine.google.com/
+  status: requires_authentication
+  limitations: Requires a Google account and Cloud project; not configured. Identical products read from Planetary Computer instead.
+- key: pmd_cdpc
+  title: Pakistan Meteorological Department — Karachi station records
+  provider: PMD Climate Data Processing Centre
+  url: https://www.weather.gov.pk/cdpc
+  status: requires_manual_request
+  limitations: Station series are provided on formal request; not bypassed. Gridded CHIRPS used, labelled as satellite–gauge estimate.
+- key: tomtom_traffic
+  title: TomTom Traffic Flow API
+  provider: TomTom
+  url: https://docs.tomtom.com/traffic-api/documentation/tomtom-maps/v1/traffic-flow/flow-segment-data
+  status: requires_payment
+  limitations: API key and commercial terms required; historical flow not available on free tier. No congestion values are produced by KUVIS.
+- key: sentinel1_grd
+  title: Sentinel-1 GRD / RTC (SAR)
+  provider: ESA Copernicus via Planetary Computer
+  url: https://planetarycomputer.microsoft.com/dataset/sentinel-1-grd
+  status: alternative_selected
+  limitations: Verified available; flood-extent extension not yet executed (urban SAR flood mapping is unreliable in dense built-up areas).
+- key: gpm_imerg
+  title: NASA GPM IMERG half-hourly
+  provider: NASA via Planetary Computer
+  url: https://planetarycomputer.microsoft.com/dataset/gpm-imerg-hhr
+  status: alternative_selected
+  limitations: Verified available; sub-daily extension not yet executed. CHIRPS monthly used for climatology.
+- key: ghsl
+  title: GHSL BUILT-S / POP / SMOD (R2023A)
+  provider: European Commission JRC
+  url: https://human-settlement.emergency.copernicus.eu/download.php
+  status: alternative_selected
+  limitations: FTP verified reachable; built-up history extension not yet executed.

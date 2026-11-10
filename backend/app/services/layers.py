@@ -65,6 +65,17 @@ CATALOG: list[dict] = [
 ]
 
 
+for _e in ("2005", "2010", "2015", "2020", "2024"):
+    CATALOG.append({"id": f"hist_lst_rel_{_e}", "prop": f"lst_rel_{_e}", "group": "History",
+                    "title": f"Relative surface heat {_e}", "unit": "°C vs city median", "scale": "diverging",
+                    "palette": "diverging", "kind": "derived", "source": "Landsat C2 L2 ST", "period": f"Apr–Jun epoch {_e}",
+                    "description": "LST minus the median of Karachi land cells in the same epoch."})
+    CATALOG.append({"id": f"hist_ls_ndvi_{_e}", "prop": f"ls_ndvi_{_e}", "group": "History",
+                    "title": f"Landsat NDVI {_e}", "unit": "index", "scale": "sequential", "palette": "green",
+                    "kind": "derived", "source": "Landsat C2 L2 SR", "period": f"Apr–Jun epoch {_e}",
+                    "description": "Pre-monsoon median NDVI."})
+
+
 def available_columns() -> set[str]:
     rows = fetch_all("SELECT column_name FROM information_schema.columns WHERE table_schema='kuvis' AND table_name='map_cells'")
     return {r["column_name"] for r in rows}
