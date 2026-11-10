@@ -1,0 +1,15 @@
+# Optional containerised database for machines with a working Docker engine.
+# The default development setup uses portable PostgreSQL + PostGIS binaries (see README).
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: ${KUVIS_DB_NAME:-kuvis}
+      POSTGRES_USER: ${KUVIS_DB_USER:-kuvis}
+      POSTGRES_PASSWORD: ${KUVIS_DB_PASSWORD:?set KUVIS_DB_PASSWORD in .env}
+    ports:
+      - "${KUVIS_DB_PORT:-5433}:5432"
+    volumes:
+      - kuvis_pg:/var/lib/postgresql/data
+volumes:
+  kuvis_pg:
