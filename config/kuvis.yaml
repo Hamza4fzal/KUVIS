@@ -1,0 +1,99 @@
+# KUVIS pipeline configuration.
+# Every analytical parameter that affects a result lives here so that runs are reproducible.
+
+project:
+  name: KUVIS
+  version: 0.1.0
+
+crs:
+  geographic: "EPSG:4326"     # interchange / web
+  projected: "EPSG:32642"     # WGS 84 / UTM zone 42N — metric work (Karachi ≈ 67°E, inside 66–72°E)
+
+study_area:
+  # Karachi Division as published by geoBoundaries gbOpen PAK ADM2 (shapeName == "Karachi").
+  source: geoboundaries
+  release_commit: "9469f09"
+  adm_level: ADM2
+  shape_name: Karachi
+  subdivision_level: ADM3      # census-2017 subdivisions used for administrative attribution
+
+grid:
+  cell_size_m: 500
+  id_prefix: "KHI_"
+  id_width: 6
+  # A cell is kept if any part intersects the boundary; the inside fraction is stored so
+  # coastal / edge cells can be filtered or down-weighted explicitly.
+  min_fraction_inside: 0.0
+
+paths:
+  raw: datasets/raw
+  interim: datasets/interim
+  processed: datasets/processed
+  metadata: datasets/metadata
+
+stac:
+  endpoint: "https://planetarycomputer.microsoft.com/api/stac/v1"
+
+landsat:
+  collection: landsat-c2-l2
+  # Pre-monsoon hot season: high sun, low cloud, and the season in which surface heat matters most.
+  season_months: [4, 5, 6]
+  max_scene_cloud: 30
+  # Epoch → (start_year, end_year) pooled for a robust median. Sensors chosen to avoid L7 SLC-off
+  # gaps where an alternative exists (L5 for the 2000s, L8/9 for 2014+).
+  epochs:
+    "2005": {years: [2004, 2006], platforms: ["landsat-5"]}
+    "2010": {years: [2009, 2011], platforms: ["landsat-5"]}
+    "2015": {years: [2014, 2016], platforms: ["landsat-8"]}
+    "2020": {years: [2019, 2021], platforms: ["landsat-8"]}
+    "2024": {years: [2023, 2025], platforms: ["landsat-8", "landsat-9"]}
+  resolution_m: 30
+
+sentinel2:
+  collection: sentinel-2-l2a
+  # Dry winter season: lowest cloud cover; spectral indices describe surface state, not heat.
+  start: "2023-11-01"
+  end: "2024-02-29"
+  max_scene_cloud: 20
+  resolution_m: 20
+
+dem:
+  collection: nasadem          # NASADEM = reprocessed SRTM (SRTM v3 successor), 1 arc-second
+  resolution_m: 30
+
+worldcover:
+  collection: esa-worldcover
+  years: [2020, 2021]
+
+chirps:
+  base_url: "https://data.chc.ucsb.edu/products/CHIRPS/v3.0/monthly/global/cogs"
+  start_year: 1981
+  end_year: 2025
+
+worldpop:
+  product: G2_CN_POP_R25A_100m
+  years: [2015, 2020, 2025]
+
+osm:
+  overpass_url: "https://overpass-api.de/api/interpreter"
+  timeout_s: 600
+
+mining:
+  random_state: 42
+  kmeans:
+    k_range: [2, 10]
+  dbscan:
+    min_samples_grid: [5, 10, 20]
+  isolation_forest:
+    contamination: 0.02
+    n_estimators: 300
+  apriori:
+    min_support: 0.05
+    min_confidence: 0.6
+    min_lift: 1.2
+
+vulnerability:
+  # Equal weights are the transparent baseline; sensitivity analysis perturbs them.
+  weights: {flood: 0.25, heat: 0.25, urbanization: 0.25, environmental: 0.25}
+  sensitivity_draws: 1000
+  min_indicator_coverage: 0.75

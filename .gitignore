@@ -1,0 +1,27 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Data — never commit raw or derived data; only metadata/registry
+datasets/raw/
+datasets/interim/
+datasets/processed/
+datasets/metadata/logs/
+*.tif
+*.zip
+*.parquet
+*.gpkg
+!tests/data/fixtures/*.parquet
+
+# Secrets
+.env
+
+# Node
+node_modules/
+frontend/dist/
+
+# Local database cluster
+infrastructure/database/pgdata/
+*.log
