@@ -150,6 +150,11 @@ export default function MapView({ layerIds, interactive = true, onMapReady, clas
   useEffect(() => {
     const m = mapRef.current;
     if (!ready || !m || !layers) return;
+    // Request only the properties of the layers on screen — keeps tiles small.
+    const props = Array.from(new Set(activeRef.current.map((l) => l.prop))).sort().join(",");
+    (m.getSource("cells") as maplibregl.VectorTileSource).setTiles([
+      `${window.location.origin}/api/v1/tiles/cells/{z}/{x}/{y}.pbf${props ? `?props=${props}` : ""}`,
+    ]);
     const style = m.getStyle();
     for (const l of style.layers ?? []) if (l.id.startsWith("data-")) m.removeLayer(l.id);
     activeRef.current.forEach((lyr) => {

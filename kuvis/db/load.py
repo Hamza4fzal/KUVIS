@@ -62,7 +62,7 @@ ANOMALIES = [  # (experiment_id, parquet, prefix map)
      {"score": "chg_if_score", "flag": "chg_if_flag", "lof": "chg_lof_flag", "dir": "chg_direction", "persist": None,
       "ctx": ["chg_ndvi", "chg_ndbi", "chg_lst_rel"]}),
 ]
-HOTSPOTS = [("heat_gi_star", "heat_cells.parquet", "lst_rel_2024", "gi_"),
+HOTSPOTS = [("heat_gi_star", "heat_cells.parquet", "lst_mean_2024", "gi_"),
             ("vulnerability_gi_star", "vulnerability_cells.parquet", "uvi", "uvi_gi_")]
 MAP_EXTRA = [  # (parquet, column, map column)
     ("heat_cells.parquet", "heat_kmeans", "heat_kmeans"),

@@ -148,15 +148,29 @@ def map_metadata():
             "cell_size_m": 500, "crs_analysis": "EPSG:32642", "tiles": "/api/v1/tiles/cells/{z}/{x}/{y}.pbf"}
 
 
+_MAP_COLS: set[str] | None = None
+
+
+def _map_cols() -> set[str]:
+    global _MAP_COLS
+    if _MAP_COLS is None:
+        _MAP_COLS = layers.available_columns() - {"grid_id"}
+    return _MAP_COLS
+
+
 @router.get("/tiles/cells/{z}/{x}/{y}.pbf")
-def tiles(z: int, x: int, y: int):
+def tiles(z: int, x: int, y: int, props: str = ""):
+    """Vector tile of grid cells. `props` = comma-separated map_cells columns to include (only those of the
+    layers on screen); unknown names are ignored, so the column list is never built from raw user input."""
     if not (0 <= z <= 18 and 0 <= x < 2 ** z and 0 <= y < 2 ** z):
         raise HTTPException(422, "bad tile")
+    wanted = [p for p in props.split(",") if p in _map_cols()]
+    cols = "".join(f", m.{p}" for p in sorted(set(wanted)))
     with pool.connection() as c:
-        row = c.execute("""
+        row = c.execute(f"""
             WITH b AS (SELECT ST_TileEnvelope(%s, %s, %s) AS g),
             t AS (
-              SELECT ST_AsMVTGeom(s.geom_3857, b.g, 4096, 16, true) AS geom, m.*
+              SELECT ST_AsMVTGeom(s.geom_3857, b.g, 4096, 16, true) AS geom, s.grid_id{cols}
               FROM kuvis.spatial_cells s JOIN kuvis.map_cells m USING (grid_id), b
               WHERE s.geom_3857 && b.g)
             SELECT ST_AsMVT(t, 'cells', 4096, 'geom') AS mvt FROM t""", (z, x, y)).fetchone()
