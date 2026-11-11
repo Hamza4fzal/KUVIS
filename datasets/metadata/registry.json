@@ -241,5 +241,123 @@
       "S2A_MSIL2A_20240215T060941_R134_T41RRH_20240215T100842"
     ],
     "limitations": "NDBI is a spectral proxy for built-up/bare surfaces; it confuses bare soil with built-up in arid Karachi."
+  },
+  "landsat_c2_l2": {
+    "key": "landsat_c2_l2",
+    "title": "Landsat Collection 2 Level-2 Surface Reflectance & Surface Temperature (L5 TM, L8/L9 OLI-TIRS)",
+    "provider": "USGS, via Microsoft Planetary Computer",
+    "url": "https://planetarycomputer.microsoft.com/dataset/landsat-c2-l2",
+    "method": "STAC search (Apr–Jun, T1, cloud<30%, clearest 3 per WRS tile) + QA-masked median composite on 60 m UTM 42N grid",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T16:58:53+00:00",
+    "files": [
+      {
+        "path": "datasets/interim/landsat_lst_2005.tif",
+        "bytes": 64149,
+        "sha256": "cdc5901c36923c3f4dece7ad3cbfa823e143ed518d1b17f8074cf7bc7967ca13"
+      },
+      {
+        "path": "datasets/interim/landsat_lst_2024.tif",
+        "bytes": 5376415,
+        "sha256": "3268afd7aef813713500b2a0b197736c33c3cfa25a6c3abd5e5465edaf51f8e9"
+      },
+      {
+        "path": "datasets/interim/landsat_ndvi_2005.tif",
+        "bytes": 64149,
+        "sha256": "cdc5901c36923c3f4dece7ad3cbfa823e143ed518d1b17f8074cf7bc7967ca13"
+      },
+      {
+        "path": "datasets/interim/landsat_ndvi_2024.tif",
+        "bytes": 8315165,
+        "sha256": "84c38948c19f8fe769bd55b7deee2207b4c2b3befe633ffef33dacf641a1e11f"
+      }
+    ],
+    "license": "Public domain (USGS)",
+    "crs": "EPSG:32642",
+    "spatial_resolution": "60 m processing grid (COG overview 0); thermal native 100 m TIRS / 120 m TM",
+    "temporal_coverage": "2005: 2004–2006 Apr–Jun, 2010: 2009–2011 Apr–Jun, 2015: 2014–2016 Apr–Jun, 2020: 2019–2021 Apr–Jun, 2024: 2023–2025 Apr–Jun",
+    "variables": [
+      "LST (°C)",
+      "NDVI",
+      "NDBI"
+    ],
+    "items": {
+      "2005": [],
+      "2024": [
+        "LC08_L2SP_153043_20230408_02_T1",
+        "LC09_L2SP_152042_20230511_02_T1",
+        "LC09_L2SP_152043_20230511_02_T1",
+        "LC09_L2SP_152042_20230612_02_T1",
+        "LC09_L2SP_152042_20240529_02_T1",
+        "LC09_L2SP_153042_20250405_02_T1",
+        "LC09_L2SP_153043_20250405_02_T1",
+        "LC08_L2SP_152043_20250406_02_T1",
+        "LC09_L2SP_153043_20250421_02_T1",
+        "LC08_L2SP_152043_20250422_02_T1",
+        "LC08_L2SP_153042_20250429_02_T1",
+        "LC08_L2SP_153042_20250531_02_T1"
+      ]
+    },
+    "limitations": "LST ≠ air temperature; thermal native resolution coarser than 30 m; cross-sensor (TM vs OLI) index offsets not calibrated; acquisition times ~10:30 local only."
+  },
+  "worldpop_r2025a": {
+    "key": "worldpop_r2025a",
+    "title": "WorldPop Global2 R2025A constrained population counts, Pakistan, 100 m",
+    "provider": "WorldPop, University of Southampton",
+    "url": "https://hub.worldpop.org/project/categories?id=3",
+    "method": "HTTP range read of Karachi window (fallback: full download)",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T17:39:40+00:00",
+    "files": [
+      {
+        "path": "datasets/interim/worldpop_2015.tif",
+        "bytes": 1076243,
+        "sha256": "f959a8e57b3c624626f2ad7cb2ce17658b9ab076fd14229a2e2432e96a37ec1a"
+      },
+      {
+        "path": "datasets/interim/worldpop_2020.tif",
+        "bytes": 1096263,
+        "sha256": "7c11bdd517f39fc57774844d577a34754a6591cd213c8ec01d34f782d3da2d1e"
+      },
+      {
+        "path": "datasets/interim/worldpop_2025.tif",
+        "bytes": 1105462,
+        "sha256": "38ecd47d40f74d4064cc8f339648208e4bfb1d6921af2826b44dceab8385f4f6"
+      }
+    ],
+    "license": "CC BY 4.0",
+    "crs": "EPSG:4326",
+    "spatial_resolution": "3 arc-seconds (~100 m)",
+    "temporal_coverage": "2015, 2020, 2025",
+    "variables": [
+      "population count",
+      "population density (per km²)"
+    ],
+    "limitations": "Modelled estimate; constrained to WSF-detected settlement; cells with no detected building have 0 by construction (the product's own definition), which KUVIS reports as 'no modelled population'."
+  },
+  "jrc_gsw": {
+    "key": "jrc_gsw",
+    "title": "JRC Global Surface Water v1.4 (occurrence, seasonality)",
+    "provider": "European Commission Joint Research Centre, via Microsoft Planetary Computer",
+    "url": "https://global-surface-water.appspot.com/",
+    "method": "STAC search + windowed COG read at native 30 m (EPSG:4326)",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T17:40:05+00:00",
+    "files": [
+      {
+        "path": "datasets/interim/jrc_occurrence.tif",
+        "bytes": 756715,
+        "sha256": "d5d5bee3be7cd0bb5585f574da8380c855987976f5b68cc38290d1bcd3ce88de"
+      }
+    ],
+    "license": "Free use with attribution (Pekel et al., 2016, Nature)",
+    "crs": "EPSG:4326",
+    "spatial_resolution": "1 arc-second (~30 m)",
+    "temporal_coverage": "1984-03 to 2021-12",
+    "variables": [
+      "occurrence (%)",
+      "seasonality (months)"
+    ],
+    "limitations": "Permanent water occurrence is not urban flooding."
   }
 }
