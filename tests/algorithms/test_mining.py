@@ -82,7 +82,7 @@ def test_gi_star_detects_hot_block():
     v[:5, :5] = 10
     v += rng.normal(0, 0.1, v.shape)
     g = spatial.gi_star(v.ravel(), xs.ravel(), ys.ravel(), threshold=1000, permutations=99)
-    assert (g.gi_class.values.reshape(20, 20)[1:4, 1:4] == "hot").all()
+    assert (g.gi_class.to_numpy().reshape(20, 20)[1:4, 1:4] == "hot").all()
 
 
 def test_landsat_st_scaling_matches_usgs():

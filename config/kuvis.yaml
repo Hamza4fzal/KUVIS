@@ -47,7 +47,7 @@ landsat:
     "2015": {years: [2014, 2016], platforms: ["landsat-8"]}
     "2020": {years: [2019, 2021], platforms: ["landsat-8"]}
     "2024": {years: [2023, 2025], platforms: ["landsat-8", "landsat-9"]}
-  resolution_m: 30
+  resolution_m: 60   # COG overview level 0; thermal band is natively 100 m
 
 sentinel2:
   collection: sentinel-2-l2a

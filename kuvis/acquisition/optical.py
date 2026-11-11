@@ -49,9 +49,14 @@ class TargetGrid:
         return cls(Affine(res, 0, minx, 0, -res, maxy), w, h, projected_crs())
 
 
-def read_asset(href: str, tg: TargetGrid, resampling=Resampling.nearest, dtype="float32") -> np.ndarray:
-    """Read a COG asset warped onto the target grid; pixels outside the scene come back as NaN."""
-    with rasterio.open(href) as src:
+def read_asset(href: str, tg: TargetGrid, resampling=Resampling.nearest, dtype="float32",
+               overview_level: int | None = None) -> np.ndarray:
+    """Read a COG asset warped onto the target grid; pixels outside the scene come back as NaN.
+
+    `overview_level=0` opens the COG's first internal overview (2× coarser) so only those bytes are
+    downloaded — WarpedVRT would otherwise fetch full-resolution tiles even when the target is coarser."""
+    kw = {"overview_level": overview_level} if overview_level is not None else {}
+    with rasterio.open(href, **kw) as src:
         nod = src.nodata
         with WarpedVRT(src, crs=tg.crs, transform=tg.transform, width=tg.width, height=tg.height,
                        resampling=resampling, src_nodata=nod, nodata=nod) as vrt:

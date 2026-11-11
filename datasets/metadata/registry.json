@@ -1,0 +1,145 @@
+{
+  "geoboundaries_pak_adm2": {
+    "key": "geoboundaries_pak_adm2",
+    "title": "geoBoundaries Pakistan ADM2",
+    "provider": "William & Mary geoLab — geoBoundaries (gbOpen)",
+    "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/PAK/ADM2/geoBoundaries-PAK-ADM2.geojson",
+    "method": "HTTP download of pinned release commit",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T14:17:43+00:00",
+    "files": [
+      {
+        "path": "datasets/raw/boundaries/geoBoundaries-PAK-ADM2.geojson",
+        "bytes": 1082661,
+        "sha256": "108eeaa75a6de678f022e0b6d8fd8ab4c93e4b4d1a9c6a28995afe7c0731182c"
+      }
+    ],
+    "license": "ADM2: public domain (source: Wikipedia); ADM3: ODbL 1.0 (source: PBS census 2017 via Pathways Data)",
+    "crs": "EPSG:4326",
+    "spatial_resolution": "vector",
+    "temporal_coverage": "ADM2: 2019; ADM3: 2017"
+  },
+  "geoboundaries_pak_adm3": {
+    "key": "geoboundaries_pak_adm3",
+    "title": "geoBoundaries Pakistan ADM3",
+    "provider": "William & Mary geoLab — geoBoundaries (gbOpen)",
+    "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/PAK/ADM3/geoBoundaries-PAK-ADM3.geojson",
+    "method": "HTTP download of pinned release commit",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T14:18:04+00:00",
+    "files": [
+      {
+        "path": "datasets/raw/boundaries/geoBoundaries-PAK-ADM3.geojson",
+        "bytes": 9172490,
+        "sha256": "cc18531b0b955d11bfe5875f6cf680a57c86bfde7d96be1ebba716906a529388"
+      }
+    ],
+    "license": "ADM2: public domain (source: Wikipedia); ADM3: ODbL 1.0 (source: PBS census 2017 via Pathways Data)",
+    "crs": "EPSG:4326",
+    "spatial_resolution": "vector",
+    "temporal_coverage": "ADM2: 2019; ADM3: 2017"
+  },
+  "nasadem": {
+    "key": "nasadem",
+    "title": "NASADEM Merged DEM Global 1 arc second (SRTM reprocessed)",
+    "provider": "NASA JPL / LP DAAC, via Microsoft Planetary Computer",
+    "url": "https://planetarycomputer.microsoft.com/dataset/nasadem",
+    "method": "STAC search + windowed COG read; bilinear reprojection to 30 m UTM 42N",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T14:20:13+00:00",
+    "files": [
+      {
+        "path": "datasets/interim/dem_utm30.tif",
+        "bytes": 34255566,
+        "sha256": "79a2eb3ab5dd4118528e4ebf69c24bc4dfac1aa16d785432e685e88b3fc764c0"
+      }
+    ],
+    "license": "Public domain (NASA)",
+    "crs": "native EPSG:4326 → EPSG:32642",
+    "spatial_resolution": "1 arc-second (~30 m)",
+    "temporal_coverage": "Feb 2000 (SRTM mission)",
+    "variables": [
+      "elevation"
+    ],
+    "items": [
+      "NASADEM_HGT_n25e067",
+      "NASADEM_HGT_n25e066",
+      "NASADEM_HGT_n24e067",
+      "NASADEM_HGT_n24e066"
+    ]
+  },
+  "esa_worldcover_2020": {
+    "key": "esa_worldcover_2020",
+    "title": "ESA WorldCover 2020 (v100)",
+    "provider": "European Space Agency, via Microsoft Planetary Computer",
+    "url": "https://esa-worldcover.org/en/data-access",
+    "method": "STAC search + windowed COG read at native 10 m (EPSG:4326)",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T14:21:09+00:00",
+    "files": [
+      {
+        "path": "datasets/interim/worldcover_2020.tif",
+        "bytes": 8629347,
+        "sha256": "14c4a8a5f5c66f218e61c650e6604bf73169a8d615af84843d6f53d7d2128718"
+      }
+    ],
+    "license": "CC BY 4.0",
+    "crs": "EPSG:4326",
+    "spatial_resolution": "10 m",
+    "temporal_coverage": "2020",
+    "variables": [
+      "tree",
+      "shrub",
+      "grass",
+      "crop",
+      "built",
+      "bare",
+      "snow",
+      "water",
+      "wetland",
+      "mangrove",
+      "moss"
+    ],
+    "items": [
+      "ESA_WorldCover_10m_2020_v100_N24E066"
+    ],
+    "limitations": "2020 (v100) and 2021 (v200) use different algorithms; differences are not change."
+  },
+  "esa_worldcover_2021": {
+    "key": "esa_worldcover_2021",
+    "title": "ESA WorldCover 2021 (v200)",
+    "provider": "European Space Agency, via Microsoft Planetary Computer",
+    "url": "https://esa-worldcover.org/en/data-access",
+    "method": "STAC search + windowed COG read at native 10 m (EPSG:4326)",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T14:21:48+00:00",
+    "files": [
+      {
+        "path": "datasets/interim/worldcover_2021.tif",
+        "bytes": 9636634,
+        "sha256": "66b233a33317c79d6014116aa938b0987643460b9232269318e811cf47bc6a5f"
+      }
+    ],
+    "license": "CC BY 4.0",
+    "crs": "EPSG:4326",
+    "spatial_resolution": "10 m",
+    "temporal_coverage": "2021",
+    "variables": [
+      "tree",
+      "shrub",
+      "grass",
+      "crop",
+      "built",
+      "bare",
+      "snow",
+      "water",
+      "wetland",
+      "mangrove",
+      "moss"
+    ],
+    "items": [
+      "ESA_WorldCover_10m_2021_v200_N24E066"
+    ],
+    "limitations": "2020 (v100) and 2021 (v200) use different algorithms; differences are not change."
+  }
+}

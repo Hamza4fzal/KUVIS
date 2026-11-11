@@ -24,7 +24,8 @@ def moran(values: np.ndarray, w, permutations: int = 999, seed: int = 42) -> dic
 def gi_star(values: np.ndarray, x: np.ndarray, y: np.ndarray, threshold: float, permutations: int = 999,
             seed: int = 42, alpha: float = 0.05) -> pd.DataFrame:
     w = DistanceBand(np.c_[x, y], threshold=threshold, binary=True, silence_warnings=True)
-    g = G_Local(values, w, star=True, permutations=permutations, seed=seed, transform="B")
+    g = G_Local(values, w, star=True, permutations=permutations, seed=seed, transform="B",
+                alternative="two-sided", keep_simulations=False, n_jobs=1)
     cls = np.where(g.p_sim < alpha, np.where(g.Zs > 0, "hot", "cold"), "not significant")
     # Bonferroni-free but report FDR-adjusted significance too (Benjamini–Hochberg on pseudo p-values)
     p = g.p_sim

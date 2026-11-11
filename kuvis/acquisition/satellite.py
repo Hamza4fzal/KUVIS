@@ -37,6 +37,9 @@ from .optical import TargetGrid, composite, nd, read_asset, write_tif
 log = get_logger("kuvis.satellite")
 
 ST_SCALE, ST_OFF = 0.00341802, 149.0
+# Landsat assets are read from COG overview level 0 (60 m): TIRS thermal is natively 100 m, and 500 m cell
+# means of reflectance indices are insensitive to 30 vs 60 m; this quarters download volume on a slow link.
+LS_OVR = 0
 SR_SCALE, SR_OFF = 0.0000275, -0.2
 
 
@@ -54,22 +57,22 @@ def _pick_clearest(items: list, key_fn, per_group: int) -> list:
 # ----------------------------------------------------------------------------------------------- Landsat
 def landsat_reader(it, tg: TargetGrid):
     a = it.assets
-    qa = read_asset(a["qa_pixel"].href, tg, dtype="uint16").astype(np.uint32)
+    qa = read_asset(a["qa_pixel"].href, tg, dtype="uint16", overview_level=LS_OVR).astype(np.uint32)
     oli = "lwir11" in a
     bad = (1 << 0) | (1 << 1) | (1 << 3) | (1 << 4) | ((1 << 2) if oli else 0)
     clear = ((qa & bad) == 0) & (qa != 0)
     if clear.mean() < 0.05:
         log.info("landsat %s: <5%% clear pixels on target grid, skipped", it.id)
         return None
-    st = read_asset(a["lwir11" if oli else "lwir"].href, tg)
+    st = read_asset(a["lwir11" if oli else "lwir"].href, tg, overview_level=LS_OVR)
     lst = st * ST_SCALE + ST_OFF - 273.15
     if "qa" in a:
-        unc = read_asset(a["qa"].href, tg) * 0.01
+        unc = read_asset(a["qa"].href, tg, overview_level=LS_OVR) * 0.01
         clear &= ~(unc > 4.0)
     lst[~clear | (lst < -5) | (lst > 75)] = np.nan
 
     def sr(k):
-        x = read_asset(a[k].href, tg) * SR_SCALE + SR_OFF
+        x = read_asset(a[k].href, tg, overview_level=LS_OVR) * SR_SCALE + SR_OFF
         x[~clear | (x <= 0) | (x > 1)] = np.nan
         return x
 
@@ -77,7 +80,7 @@ def landsat_reader(it, tg: TargetGrid):
     return {"lst": lst, "ndvi": nd(nir, red), "ndbi": nd(swir, nir)}
 
 
-def run_landsat(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int = 5,
+def run_landsat(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int = 3,
                 epochs: list[str] | None = None) -> pd.DataFrame:
     """Process the given epochs (default: all configured). Results merge with previously processed epochs,
     so epochs can be added incrementally on a slow connection."""
@@ -139,11 +142,11 @@ def run_landsat(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int =
         title="Landsat Collection 2 Level-2 Surface Reflectance & Surface Temperature (L5 TM, L8/L9 OLI-TIRS)",
         provider="USGS, via Microsoft Planetary Computer",
         url="https://planetarycomputer.microsoft.com/dataset/landsat-c2-l2",
-        method=f"STAC search (Apr–Jun, T1, cloud<30%, clearest {per_tile} per WRS tile) + QA-masked median composite on 30 m UTM 42N grid",
+        method=f"STAC search (Apr–Jun, T1, cloud<30%, clearest {per_tile} per WRS tile) + QA-masked median composite on 60 m UTM 42N grid",
         files=sorted(path("interim").glob("landsat_*.tif")),
         license="Public domain (USGS)",
         crs="EPSG:32642",
-        spatial_resolution="30 m (TIR resampled to 30 m by USGS; native 100 m TIRS / 120 m TM)",
+        spatial_resolution="60 m processing grid (COG overview 0); thermal native 100 m TIRS / 120 m TM",
         temporal_coverage=", ".join(f"{e}: {s['years'][0]}–{s['years'][1]} Apr–Jun" for e, s in c["epochs"].items()),
         variables=["LST (°C)", "NDVI", "NDBI"],
         items=used_items,
@@ -166,17 +169,17 @@ def s2_reader(it, tg: TargetGrid):
     baseline = float(it.properties.get("s2:processing_baseline", "0") or 0)
     off = 1000.0 if baseline >= 4.0 else 0.0
 
-    def band(k, rs):
-        x = (read_asset(a[k].href, tg, resampling=rs) - off) / 10000.0
+    def band(k, rs, ovr=None):
+        x = (read_asset(a[k].href, tg, resampling=rs, overview_level=ovr) - off) / 10000.0
         x[~clear | (x <= 0) | (x > 1)] = np.nan
         return x
 
-    g, r, n = (band(k, Resampling.average) for k in ("B03", "B04", "B08"))
+    g, r, n = (band(k, Resampling.nearest, ovr=0) for k in ("B03", "B04", "B08"))  # 20 m overview, aligned
     s = band("B11", Resampling.nearest)
     return {"ndvi": nd(n, r), "ndwi": nd(g, n), "ndbi": nd(s, n)}
 
 
-def run_sentinel2(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int = 5) -> pd.DataFrame:
+def run_sentinel2(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int = 3) -> pd.DataFrame:
     c = cfg()["sentinel2"]
     tg = TargetGrid.around(study, c["resolution_m"], snap=60)
     bbox = stac.study_bbox_ll(study)
@@ -209,7 +212,7 @@ def run_sentinel2(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame, per_tile: int
         files=[path("interim", f"s2_{v}.tif") for v in ("ndvi", "ndwi", "ndbi")],
         license="Copernicus open licence (free, attribution)",
         crs="EPSG:32642",
-        spatial_resolution="20 m (10 m bands area-averaged)",
+        spatial_resolution="20 m (10 m bands from 20 m COG overview)",
         temporal_coverage=f"{c['start']} to {c['end']} (dry season)",
         variables=["NDVI", "NDWI (McFeeters)", "NDBI", "vegetation fraction (NDVI>0.3)"],
         items=[i.id for i in items],
