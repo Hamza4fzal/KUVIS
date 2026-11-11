@@ -41,10 +41,21 @@ Every satellite-derived feature carries a valid-pixel coverage; heat analysis re
 ## 4. Feature engineering
 
 All features are defined in `kuvis/features/dictionary.py` (label, unit, source, period, kind, definition) and
-published as the `feature_dictionary` table. Key derived features: relative LST per epoch (cell − land-cell median of
-that epoch, making epochs comparable despite weather), NDVI/NDBI/relative-LST change 2005→2024, topographic position
-(cell elevation − mean within 2 km), log distances to drains/waterways/coast, rainfall climatology (1991–2020 WMO
-normal), monsoon variability and 2022 anomaly.
+published as the `feature_dictionary` table. Key derived features: relative LST, relative NDVI and relative NDBI per
+epoch (cell − land-cell median of that epoch), their 2001→2024 changes, topographic position (cell elevation − mean
+within 2 km), log distances to drains/waterways/coast, rainfall climatology (1991–2020 WMO normal), monsoon
+variability and 2022 anomaly.
+
+### 4.1 Evidence-driven methodological decisions (made after inspecting the data)
+
+| Observation in the data | Decision |
+|---|---|
+| The USGS/MPC archive holds **no Landsat-5 scenes over Karachi for 2003–2008**; only SLC-off Landsat-7 exists then. | Baseline epoch moved from 2005 to **2001 (Landsat-5 TM, Apr–Jun 2000–02)** — same sensor as the 2010 epoch, no striping. EO4SD land use keeps its own 2005/2017 years. |
+| Median NDVI rises monotonically 0.065 → 0.155 (2001 → 2024) in every cell type, including desert; 59 % of cells show a "significant" increase and 0 % a decrease. A shift that uniform is dominated by epoch-wide effects (TM→OLI calibration, antecedent rainfall, acquisition dates). | Change detection, change anomalies, trajectory clustering and the environmental dimension use **relative** NDVI (cell − city median per epoch). Relative trends: 2.2 % of cells significantly greener, 3.8 % significantly browner. The absolute trend is still reported, with this caveat. |
+| Sentinel-2 NDBI correlates with WorldCover **bare** share (Spearman ρ = 0.72) and *negatively* with built-up share (ρ = −0.46). In arid Karachi NDBI measures exposed soil, not buildings. | Built-up surface comes from WorldCover / EO4SD; NDBI is excluded from the urbanization dimension and reported only as a spectral index. |
+| Getis–Ord G* computed on zero-centred relative LST inverted hot/cold spots (G* requires non-negative values). | G* runs on absolute LST (relative LST is a constant shift, so the same places); `gi_star` refuses negative input; regression test added. |
+| Heat and flood-susceptibility dimensions are strongly anti-correlated (ρ = −0.61): the hottest surfaces are high, bare inland desert; flood-prone cells are low, built-up, coastal. | The composite score is reported with its weight sensitivity; discoveries of overlapping stress require ≥ 50 % of cells to stay in the top quintile in 95 % of weight draws; combined K-means regimes are presented alongside the score. |
+| A sign-only anomaly-persistence test scored ~1.0 for almost every cell (LST patterns are spatially very stable, Moran's I = 0.92). | Persistence counts a date only when the cell's neighbour residual exceeds 1 SD of that date's residuals in the anomaly's direction (flagged median 1.0 vs unflagged 0.0). |
 
 ## 5. Data-mining methods
 
@@ -70,7 +81,10 @@ and its predictors exclude all water-derived variables. Permanent water is exclu
 ## 7. Composite vulnerability (UVI)
 
 Four dimensions (heat, flood susceptibility, urbanization pressure, environmental deficit) are each the mean of
-percentile-ranked inputs (signs documented in `kuvis/modules/vulnerability.py`). Traffic stress is excluded because
+percentile-ranked inputs (signs documented in `kuvis/modules/vulnerability.py`): heat = relative LST 2024 and its
+2015–2024 persistence; flood = low elevation, local depression, built-up share, monsoon rainfall normal, JRC water
+occurrence; urbanization = population growth 2015→25 and EO4SD built-up change 2005→17; environmental = low NDVI,
+relative NDVI decline 2001→24, low vegetation share. Traffic stress is excluded because
 no traffic observations exist. UVI = Σ wᵢDᵢ / Σ wᵢ over available dimensions, equal weights, computed only when ≥ 75 %
 of the weight is available; evidence quality is reported separately from the score. Population is exposure, not
 vulnerability, and is summarised separately.
