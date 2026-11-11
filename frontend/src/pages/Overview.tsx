@@ -38,7 +38,7 @@ export default function Overview() {
             <div className="absolute top-3 left-3 panel px-3 py-2 text-xs">
               <div className="panel-h">{o.vulnerability?.n_scored ? "Composite vulnerability" : "Land surface temperature 2024"}</div>
             </div>
-            <button className="btn-primary absolute bottom-3 left-3" onClick={() => { setLayers([o.vulnerability?.n_scored ? "uvi" : "lst_2024"]); nav("/explore"); }}>Open interactive map →</button>
+            <button className="btn-primary absolute top-3 right-3" onClick={() => { setLayers([o.vulnerability?.n_scored ? "uvi" : "lst_2024"]); nav("/explore"); }}>Open interactive map →</button>
           </section>
           <div className="space-y-4">
             <Section title="Recently discovered patterns" right={<Link className="link text-xs" to="/discoveries">all →</Link>}>

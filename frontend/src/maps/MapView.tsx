@@ -8,17 +8,21 @@ import { colorExpression, fmt } from "./palettes";
 
 const KARACHI: [number, number] = [67.08, 24.95];
 
-const BASEMAPS: Record<Basemap, { tiles: string[]; attribution: string }> = {
+// Keyless Esri basemaps (CARTO raster tiles now require an API key). Canvas maps have a separate label layer.
+const ESRI = (svc: string) => `https://server.arcgisonline.com/ArcGIS/rest/services/${svc}/MapServer/tile/{z}/{y}/{x}`;
+const BASEMAPS: Record<Basemap, { tiles: string[]; labels?: string[]; attribution: string }> = {
   dark: {
-    tiles: ["a", "b", "c", "d"].map((s) => `https://${s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png`),
-    attribution: "© OpenStreetMap contributors © CARTO",
+    tiles: [ESRI("Canvas/World_Dark_Gray_Base")],
+    labels: [ESRI("Canvas/World_Dark_Gray_Reference")],
+    attribution: "Basemap © Esri, HERE, Garmin, © OpenStreetMap contributors",
   },
   light: {
-    tiles: ["a", "b", "c", "d"].map((s) => `https://${s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png`),
-    attribution: "© OpenStreetMap contributors © CARTO",
+    tiles: [ESRI("Canvas/World_Light_Gray_Base")],
+    labels: [ESRI("Canvas/World_Light_Gray_Reference")],
+    attribution: "Basemap © Esri, HERE, Garmin, © OpenStreetMap contributors",
   },
   satellite: {
-    tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+    tiles: [ESRI("World_Imagery")],
     attribution: "Imagery © Esri, Maxar, Earthstar Geographics",
   },
 };
@@ -61,7 +65,10 @@ export default function MapView({ layerIds, interactive = true, onMapReady, clas
         version: 8,
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
         sources: Object.fromEntries(
-          Object.entries(BASEMAPS).map(([k, v]) => [`bm-${k}`, { type: "raster", tiles: v.tiles, tileSize: 256, attribution: v.attribution }]),
+          Object.entries(BASEMAPS).flatMap(([k, v]) => [
+            [`bm-${k}`, { type: "raster", tiles: v.tiles, tileSize: 256, attribution: v.attribution, maxzoom: 16 }],
+            ...(v.labels ? [[`bm-${k}-labels`, { type: "raster", tiles: v.labels, tileSize: 256, maxzoom: 16 }]] : []),
+          ]),
         ),
         layers: [
           { id: "bg", type: "background", paint: { "background-color": "#0a0e14" } },
@@ -77,31 +84,20 @@ export default function MapView({ layerIds, interactive = true, onMapReady, clas
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     m.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
     m.on("load", () => {
-      m.addSource("cells", {
-        type: "vector",
-        tiles: [`${window.location.origin}/api/v1/tiles/cells/{z}/{x}/{y}.pbf`],
-        minzoom: 8,
-        maxzoom: 14,
-      });
-      m.addLayer({ id: "cells-hit", type: "fill", source: "cells", "source-layer": "cells", paint: { "fill-color": "#000", "fill-opacity": 0 } });
-      m.addLayer({
-        id: "cells-grid", type: "line", source: "cells", "source-layer": "cells", minzoom: 12,
-        paint: { "line-color": "#ffffff", "line-opacity": 0.06, "line-width": 0.5 },
-      });
-      m.addLayer({
-        id: "cells-compare", type: "line", source: "cells", "source-layer": "cells",
-        filter: ["in", ["get", "grid_id"], ["literal", []]],
-        paint: { "line-color": "#d9b44a", "line-width": 2 },
-      });
-      m.addLayer({
-        id: "cells-selected", type: "line", source: "cells", "source-layer": "cells",
-        filter: ["==", ["get", "grid_id"], ""],
-        paint: { "line-color": "#ffffff", "line-width": 2.2 },
+      // Basemap place-name labels go above the data layers so they stay readable.
+      (Object.keys(BASEMAPS) as Basemap[]).forEach((k) => {
+        if (BASEMAPS[k].labels) {
+          m.addLayer({
+            id: `bm-${k}-labels`, type: "raster", source: `bm-${k}-labels`,
+            layout: { visibility: k === "dark" ? "visible" : "none" }, paint: { "raster-opacity": 0.9 },
+          });
+        }
       });
       setReady(true);
       onMapReady?.(m);
     });
     mapRef.current = m;
+    if (import.meta.env.DEV) ((window as unknown as { __kuvisMaps: MLMap[] }).__kuvisMaps ??= []).push(m);
     return () => m.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -142,21 +138,46 @@ export default function MapView({ layerIds, interactive = true, onMapReady, clas
   useEffect(() => {
     const m = mapRef.current;
     if (!ready || !m) return;
-    (Object.keys(BASEMAPS) as Basemap[]).forEach((k) => m.setLayoutProperty(`bm-${k}`, "visibility", k === store.basemap ? "visible" : "none"));
+    (Object.keys(BASEMAPS) as Basemap[]).forEach((k) => {
+      const v = k === store.basemap ? "visible" : "none";
+      m.setLayoutProperty(`bm-${k}`, "visibility", v);
+      if (m.getLayer(`bm-${k}-labels`)) m.setLayoutProperty(`bm-${k}-labels`, "visibility", v);
+    });
   }, [ready, store.basemap]);
 
   // --- data layers
+  // Tiles carry only the properties of the layers on screen. When that set changes, the "cells" source and every
+  // layer on it are rebuilt with the new URL — source.setTiles() does not reliably reload already-loaded tiles.
+  const cellsProps = useRef<string | null>(null);
+  const [cellsVersion, setCellsVersion] = useState(0);
   const activeKey = active.join("|") + "|" + (layers ? layers.length : 0) + JSON.stringify(store.opacity);
   useEffect(() => {
     const m = mapRef.current;
     if (!ready || !m || !layers) return;
-    // Request only the properties of the layers on screen — keeps tiles small.
     const props = Array.from(new Set(activeRef.current.map((l) => l.prop))).sort().join(",");
-    (m.getSource("cells") as maplibregl.VectorTileSource).setTiles([
-      `${window.location.origin}/api/v1/tiles/cells/{z}/{x}/{y}.pbf${props ? `?props=${props}` : ""}`,
-    ]);
-    const style = m.getStyle();
-    for (const l of style.layers ?? []) if (l.id.startsWith("data-")) m.removeLayer(l.id);
+    const before = m.getLayer(`bm-dark-labels`) ? "bm-dark-labels" : undefined; // keep labels on top
+    if (cellsProps.current !== props || !m.getSource("cells")) {
+      for (const l of m.getStyle().layers ?? []) if ((l as { source?: string }).source === "cells") m.removeLayer(l.id);
+      if (m.getSource("cells")) m.removeSource("cells");
+      m.addSource("cells", {
+        type: "vector",
+        tiles: [`${window.location.origin}/api/v1/tiles/cells/{z}/{x}/{y}.pbf${props ? `?props=${props}` : ""}`],
+        minzoom: 8,
+        maxzoom: 14,
+      });
+      m.addLayer({ id: "cells-hit", type: "fill", source: "cells", "source-layer": "cells", paint: { "fill-color": "#000", "fill-opacity": 0 } }, before);
+      m.addLayer({ id: "cells-grid", type: "line", source: "cells", "source-layer": "cells", minzoom: 12,
+        paint: { "line-color": "#ffffff", "line-opacity": 0.06, "line-width": 0.5 } }, before);
+      m.addLayer({ id: "cells-compare", type: "line", source: "cells", "source-layer": "cells",
+        filter: ["in", ["get", "grid_id"], ["literal", useMapStore.getState().compareSet]],
+        paint: { "line-color": "#d9b44a", "line-width": 2 } }, before);
+      m.addLayer({ id: "cells-selected", type: "line", source: "cells", "source-layer": "cells",
+        filter: ["==", ["get", "grid_id"], useMapStore.getState().selected ?? ""],
+        paint: { "line-color": "#ffffff", "line-width": 2.2 } }, before);
+      cellsProps.current = props;
+      setCellsVersion((v) => v + 1);
+    }
+    for (const l of m.getStyle().layers ?? []) if (l.id.startsWith("data-")) m.removeLayer(l.id);
     activeRef.current.forEach((lyr) => {
       const isCode = lyr.prop.endsWith("_code");
       m.addLayer(
@@ -169,15 +190,16 @@ export default function MapView({ layerIds, interactive = true, onMapReady, clas
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, activeKey]);
 
   // --- selection + compare outlines
   useEffect(() => {
     const m = mapRef.current;
-    if (!ready || !m) return;
+    if (!ready || !m || !m.getLayer("cells-selected")) return;
     m.setFilter("cells-selected", ["==", ["get", "grid_id"], store.selected ?? ""]);
     m.setFilter("cells-compare", ["in", ["get", "grid_id"], ["literal", store.compareSet]]);
-  }, [ready, store.selected, store.compareSet]);
+  }, [ready, store.selected, store.compareSet, cellsVersion]);
 
   // --- fly to
   useEffect(() => {
@@ -206,7 +228,7 @@ export default function MapView({ layerIds, interactive = true, onMapReady, clas
   // --- interaction
   useEffect(() => {
     const m = mapRef.current;
-    if (!ready || !m || !interactive) return;
+    if (!ready || !m || !interactive || !cellsVersion) return;
     const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 8, maxWidth: "280px" });
     const onMove = (e: maplibregl.MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
       const f = e.features?.[0];
@@ -246,7 +268,7 @@ export default function MapView({ layerIds, interactive = true, onMapReady, clas
       popup.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, interactive, showHover]);
+  }, [ready, interactive, showHover, cellsVersion > 0]);
 
   return <div ref={ref} className={className ?? "absolute inset-0"} />;
 }

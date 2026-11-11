@@ -99,4 +99,15 @@ def catalog() -> list[dict]:
             legend["categories"] = [{"value": c["v"], "n": c["n"],
                                      "label": lyr.get("categories", {}).get(str(int(c["v"])), None)} for c in cats]
         out.append({**lyr, "legend": legend, "coverage": st["n"] / st["total"]})
+    # Epoch layers of the same variable share one legend, so side-by-side historical maps are comparable.
+    groups: dict[str, list[dict]] = {}
+    for lyr in out:
+        if lyr["group"] == "History":
+            groups.setdefault(lyr["id"].rsplit("_", 1)[0], []).append(lyr)
+    for same in groups.values():
+        qs = [lyr["legend"]["quantiles"] for lyr in same]
+        common = [min(q[0] for q in qs)] + [sum(q[i] for q in qs) / len(qs) for i in range(1, len(qs[0]) - 1)] \
+            + [max(q[-1] for q in qs)]
+        for lyr in same:
+            lyr["legend"] = {**lyr["legend"], "quantiles": common, "shared_across_epochs": True}
     return out

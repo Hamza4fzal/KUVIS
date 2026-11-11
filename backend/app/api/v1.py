@@ -151,9 +151,11 @@ def map_metadata():
 _MAP_COLS: set[str] | None = None
 
 
-def _map_cols() -> set[str]:
+def _map_cols(refresh: bool = False) -> set[str]:
+    """Whitelist of map_cells columns (cached; refreshed after a DB reload or when an unknown name is requested,
+    since the pipeline can add columns while the API is running)."""
     global _MAP_COLS
-    if _MAP_COLS is None:
+    if _MAP_COLS is None or refresh:
         _MAP_COLS = layers.available_columns() - {"grid_id"}
     return _MAP_COLS
 
@@ -164,7 +166,10 @@ def tiles(z: int, x: int, y: int, props: str = ""):
     layers on screen); unknown names are ignored, so the column list is never built from raw user input."""
     if not (0 <= z <= 18 and 0 <= x < 2 ** z and 0 <= y < 2 ** z):
         raise HTTPException(422, "bad tile")
-    wanted = [p for p in props.split(",") if p in _map_cols()]
+    requested = [p for p in props.split(",") if p]
+    if any(p not in _map_cols() for p in requested):
+        _map_cols(refresh=True)
+    wanted = [p for p in requested if p in _map_cols()]
     cols = "".join(f", m.{p}" for p in sorted(set(wanted)))
     with pool.connection() as c:
         row = c.execute(f"""
@@ -282,4 +287,5 @@ def data_status():
 @router.post("/admin/reload-cache", include_in_schema=False)
 def reload_cache():
     store.reload()
+    _map_cols(refresh=True)
     return {"ok": True}

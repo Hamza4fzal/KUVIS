@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { Map as MLMap } from "maplibre-gl";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Bar as RBar, BarChart } from "recharts";
 import MapView from "@/maps/MapView";
@@ -22,13 +22,13 @@ export default function History() {
   const [variable, setVariable] = useState(VARIABLES[0]);
   const available = (layers ?? []).filter((l) => l.group === "History");
   const epochList = Array.from(new Set(available.map((l) => l.id.split("_").pop()!))).sort();
-  const [a, setA] = useState<string>("");
-  const [b, setB] = useState<string>("");
+  const [aSel, setA] = useState<string>("");
+  const [bSel, setB] = useState<string>("");
+  // Defaults derived during render (no empty first render → no duplicate keys): earliest vs latest epoch.
+  const a = aSel || epochList[0] || "";
+  const b = bSel || epochList[epochList.length - 1] || "";
   const [mode, setMode] = useState<"side" | "swipe">("side");
   const [swipe, setSwipe] = useState(50);
-  useEffect(() => {
-    if (epochList.length >= 2 && !a) { setA(epochList[0]); setB(epochList[epochList.length - 1]); }
-  }, [epochList, a]);
   const maps = useRef<MLMap[]>([]);
   const syncing = useRef(false);
   const register = (m: MLMap) => {
@@ -62,8 +62,8 @@ export default function History() {
           }>
             {mode === "side" ? (
               <div className="grid grid-cols-2 gap-2 h-[520px]" key={`side-${variable.key}-${a}-${b}`}>
-                {[[a, layerA], [b, layerB]].map(([ep, l]) => (
-                  <div key={ep as string} className="relative rounded-md overflow-hidden border border-ink-700">
+                {[[a, layerA], [b, layerB]].map(([ep, l], i) => (
+                  <div key={`${i}-${ep}`} className="relative rounded-md overflow-hidden border border-ink-700">
                     {l ? <MapView layerIds={[(l as any).id]} onMapReady={register} showHover /> : <Empty>No {variable.label} layer for {ep as string}</Empty>}
                     <div className="absolute top-2 left-2 panel px-2.5 py-1.5 w-56">
                       <div className="text-sm font-medium">{variable.label} · {ep as string}</div>
