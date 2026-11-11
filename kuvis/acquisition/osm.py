@@ -39,7 +39,7 @@ DRAIN_TYPES = {"drain", "ditch", "canal"}
 MAJOR = {"motorway", "trunk", "primary", "secondary", "motorway_link", "trunk_link", "primary_link", "secondary_link"}
 
 
-def _overpass(q: str, name: str) -> dict:
+def _overpass(q: str, name: str, attempts: int = 6) -> dict:
     raw = path("raw", "osm", f"{name}.json")
     if raw.exists() and raw.stat().st_size > 100:
         return json.loads(raw.read_text(encoding="utf-8"))
@@ -47,7 +47,7 @@ def _overpass(q: str, name: str) -> dict:
     mirrors = [cfg()["osm"]["overpass_url"], "https://overpass.kumi.systems/api/interpreter",
                "https://overpass.private.coffee/api/interpreter"]
     body = f"[out:json][timeout:{to}];{q}"
-    for attempt in range(6):
+    for attempt in range(attempts):
         url = mirrors[attempt % len(mirrors)]
         try:
             r = requests.post(url, data={"data": body}, headers={"User-Agent": UA}, timeout=to + 60)
@@ -69,17 +69,32 @@ def _overpass_tiled(q: str, name: str, bbox, n: int) -> dict:
     merged = path("raw", "osm", f"{name}.json")
     if merged.exists() and merged.stat().st_size > 100:
         return json.loads(merged.read_text(encoding="utf-8"))
+    seen, elements = set(), []
+
+    def fetch(box, tag, depth):
+        """Fetch one tile; if every server fails, split it 2×2 (up to depth 2) — dense tiles exceed server limits."""
+        w0, s0, e0, n0 = box
+        bb = f"{s0:.5f},{w0:.5f},{n0:.5f},{e0:.5f}"
+        try:
+            part = _overpass(q.format(bb=bb), tag, attempts=3 if depth < 2 else 6)
+        except RuntimeError:
+            if depth >= 2:
+                raise
+            log.info("overpass %s: splitting into 2x2 sub-tiles", tag)
+            xm, ym = (w0 + e0) / 2, (s0 + n0) / 2
+            for k, sub in enumerate([(w0, s0, xm, ym), (xm, s0, e0, ym), (w0, ym, xm, n0), (xm, ym, e0, n0)]):
+                fetch(sub, f"{tag}{k}", depth + 1)
+            return
+        for el in part.get("elements", []):
+            if el["id"] not in seen:
+                seen.add(el["id"])
+                elements.append(el)
+
     w, s, e, nn = bbox
     xs, ys = np.linspace(w, e, n + 1), np.linspace(s, nn, n + 1)
-    seen, elements = set(), []
     for i in range(n):
         for j in range(n):
-            bb = f"{ys[j]:.5f},{xs[i]:.5f},{ys[j + 1]:.5f},{xs[i + 1]:.5f}"
-            part = _overpass(q.format(bb=bb), f"{name}_t{i}{j}")
-            for el in part.get("elements", []):
-                if el["id"] not in seen:
-                    seen.add(el["id"])
-                    elements.append(el)
+            fetch((xs[i], ys[j], xs[i + 1], ys[j + 1]), f"{name}_t{i}{j}", 0)
     data = {"elements": elements, "tiles": n}
     merged.write_text(json.dumps(data), encoding="utf-8")
     return data
