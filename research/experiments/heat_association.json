@@ -1,0 +1,164 @@
+{
+  "experiment_id": "heat_association",
+  "module": "heat",
+  "algorithm": "FP-Growth association rules",
+  "purpose": "Discover combinations of land-surface conditions that co-occur with high or low relative LST",
+  "input_features": [
+    "Surface heat",
+    "Built-up",
+    "Vegetation",
+    "Bare ground",
+    "Population density",
+    "Elevation"
+  ],
+  "n_samples": 11889,
+  "parameters": {
+    "min_support": 0.05,
+    "min_confidence": 0.6,
+    "min_lift": 1.2,
+    "discretisation": "tertiles of land cells (labels Low/Medium/High etc.)",
+    "consequents": [
+      "Surface heat=High",
+      "Surface heat=Low"
+    ],
+    "redundancy_pruning": "drop rule if a more general rule has ≥ 98 % of its lift"
+  },
+  "metrics": {
+    "n_rules": 8,
+    "n_transactions": 11889,
+    "n_items": 12,
+    "base_rate_high_heat": 0.333333
+  },
+  "results": {
+    "top_rules": [
+      {
+        "antecedents": [
+          "Bare ground=Low",
+          "Elevation=Low",
+          "Vegetation=Sparse"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.072083,
+        "confidence": 0.934569,
+        "lift": 2.803708,
+        "leverage": 0.046373,
+        "conviction": 10.188889,
+        "antecedent_support": 0.07713,
+        "consequent_support": 0.333333,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Bare ground=Low",
+          "Vegetation=Sparse"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.09227,
+        "confidence": 0.914929,
+        "lift": 2.744787,
+        "leverage": 0.058654,
+        "conviction": 7.836601,
+        "antecedent_support": 0.10085,
+        "consequent_support": 0.333333,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Elevation=Low",
+          "Vegetation=Sparse"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.11027,
+        "confidence": 0.839846,
+        "lift": 2.519539,
+        "leverage": 0.066504,
+        "conviction": 4.162667,
+        "antecedent_support": 0.131298,
+        "consequent_support": 0.333333,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Bare ground=Low",
+          "Elevation=Low"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.164101,
+        "confidence": 0.769625,
+        "lift": 2.308876,
+        "leverage": 0.093027,
+        "conviction": 2.893836,
+        "antecedent_support": 0.213222,
+        "consequent_support": 0.333333,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Elevation=Low"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.234166,
+        "confidence": 0.702498,
+        "lift": 2.107494,
+        "leverage": 0.123055,
+        "conviction": 2.240882,
+        "antecedent_support": 0.333333,
+        "consequent_support": 0.333333,
+        "n_items": 1
+      },
+      {
+        "antecedents": [
+          "Elevation=High",
+          "Vegetation=Sparse"
+        ],
+        "consequent": "Surface heat=High",
+        "support": 0.059551,
+        "confidence": 0.67109,
+        "lift": 2.01327,
+        "leverage": 0.029972,
+        "conviction": 2.026897,
+        "antecedent_support": 0.088737,
+        "consequent_support": 0.333333,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Bare ground=Medium",
+          "Elevation=High"
+        ],
+        "consequent": "Surface heat=High",
+        "support": 0.055513,
+        "confidence": 0.656064,
+        "lift": 1.968191,
+        "leverage": 0.027308,
+        "conviction": 1.938343,
+        "antecedent_support": 0.084616,
+        "consequent_support": 0.333333,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Bare ground=Low"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.201699,
+        "confidence": 0.605097,
+        "lift": 1.815291,
+        "leverage": 0.090588,
+        "conviction": 1.688179,
+        "antecedent_support": 0.333333,
+        "consequent_support": 0.333333,
+        "n_items": 1
+      }
+    ]
+  },
+  "interpretation_notes": [
+    "Lift > 1 means the conditions make high (or low) heat more frequent than its base rate of one third; a frequent rule is not necessarily an interesting one."
+  ],
+  "limitations": [
+    "Association ≠ causation.",
+    "Tertile cut-points are data-driven, not physical thresholds."
+  ],
+  "run_utc": "2026-11-11T18:07:00+00:00",
+  "code_version": "0202263"
+}

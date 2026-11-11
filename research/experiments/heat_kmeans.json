@@ -1,0 +1,175 @@
+{
+  "experiment_id": "heat_kmeans",
+  "module": "heat",
+  "algorithm": "K-means",
+  "purpose": "Identify thermal–environmental profiles of land cells",
+  "input_features": [
+    "lst_mean_2024",
+    "s2_ndvi_mean",
+    "s2_ndbi_mean",
+    "built_frac",
+    "log_pop_density_2025"
+  ],
+  "n_samples": 11889,
+  "parameters": {
+    "k": 3,
+    "selection": "K=3: highest silhouette (0.531) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=4",
+    "n_init": 50,
+    "scaling": "z-score"
+  },
+  "metrics": {
+    "sweep": [
+      {
+        "k": 2,
+        "inertia": 36550.475224,
+        "silhouette": 0.500119,
+        "davies_bouldin": 1.065525,
+        "calinski_harabasz": 7445.794348,
+        "min_cluster_share": 0.290268,
+        "elbow_distance": 0.0
+      },
+      {
+        "k": 3,
+        "inertia": 20424.905323,
+        "silhouette": 0.530938,
+        "davies_bouldin": 0.656959,
+        "calinski_harabasz": 11353.610653,
+        "min_cluster_share": 0.034738,
+        "elbow_distance": 0.302778
+      },
+      {
+        "k": 4,
+        "inertia": 14697.949002,
+        "silhouette": 0.415297,
+        "davies_bouldin": 0.877973,
+        "calinski_harabasz": 12061.06754,
+        "min_cluster_share": 0.030869,
+        "elbow_distance": 0.353311
+      },
+      {
+        "k": 5,
+        "inertia": 11920.083677,
+        "silhouette": 0.398627,
+        "davies_bouldin": 0.890076,
+        "calinski_harabasz": 11845.292454,
+        "min_cluster_share": 0.027084,
+        "elbow_distance": 0.332307
+      },
+      {
+        "k": 6,
+        "inertia": 10492.314521,
+        "silhouette": 0.36016,
+        "davies_bouldin": 0.967346,
+        "calinski_harabasz": 11088.22914,
+        "min_cluster_share": 0.027,
+        "elbow_distance": 0.278553
+      },
+      {
+        "k": 7,
+        "inertia": 9300.303614,
+        "silhouette": 0.321135,
+        "davies_bouldin": 0.97185,
+        "calinski_harabasz": 10677.433424,
+        "min_cluster_share": 0.027,
+        "elbow_distance": 0.21908
+      },
+      {
+        "k": 8,
+        "inertia": 8566.287734,
+        "silhouette": 0.32221,
+        "davies_bouldin": 0.970553,
+        "calinski_harabasz": 10080.932794,
+        "min_cluster_share": 0.01085,
+        "elbow_distance": 0.148497
+      },
+      {
+        "k": 9,
+        "inertia": 7936.791203,
+        "silhouette": 0.313968,
+        "davies_bouldin": 1.026772,
+        "calinski_harabasz": 9637.459045,
+        "min_cluster_share": 0.010262,
+        "elbow_distance": 0.075378
+      },
+      {
+        "k": 10,
+        "inertia": 7400.458932,
+        "silhouette": 0.302389,
+        "davies_bouldin": 1.046045,
+        "calinski_harabasz": 9282.285653,
+        "min_cluster_share": 0.009925,
+        "elbow_distance": 0.0
+      }
+    ],
+    "chosen": {
+      "k": 3.0,
+      "inertia": 20424.905323,
+      "silhouette": 0.530938,
+      "davies_bouldin": 0.656959,
+      "calinski_harabasz": 11353.610653,
+      "min_cluster_share": 0.034738,
+      "elbow_distance": 0.302778
+    }
+  },
+  "results": {
+    "profiles": [
+      {
+        "cluster": 0,
+        "n_cells": 413,
+        "share": 0.034738,
+        "name": "low NDBI · high NDVI · low LST",
+        "mean_lst_mean_2024": 37.271607,
+        "mean_s2_ndvi_mean": 0.593639,
+        "mean_s2_ndbi_mean": -0.345018,
+        "mean_built_frac": 0.010366,
+        "mean_log_pop_density_2025": 1.536494,
+        "z_lst_mean_2024": -2.997857,
+        "z_s2_ndvi_mean": 3.783319,
+        "z_s2_ndbi_mean": -4.255245,
+        "z_built_frac": -0.519674,
+        "z_log_pop_density_2025": -0.691811
+      },
+      {
+        "cluster": 1,
+        "n_cells": 2746,
+        "share": 0.23097,
+        "name": "high built-up · high population density · low LST",
+        "mean_lst_mean_2024": 46.273462,
+        "mean_s2_ndvi_mean": 0.155076,
+        "mean_s2_ndbi_mean": 0.071385,
+        "mean_built_frac": 0.651627,
+        "mean_log_pop_density_2025": 9.640701,
+        "z_lst_mean_2024": -0.870063,
+        "z_s2_ndvi_mean": -0.39317,
+        "z_s2_ndbi_mean": -0.384031,
+        "z_built_frac": 1.631137,
+        "z_log_pop_density_2025": 1.403993
+      },
+      {
+        "cluster": 2,
+        "n_cells": 8730,
+        "share": 0.734292,
+        "name": "near city-wide average",
+        "mean_lst_mean_2024": 51.712169,
+        "mean_s2_ndvi_mean": 0.190554,
+        "mean_s2_ndbi_mean": 0.14734,
+        "mean_built_frac": 0.019665,
+        "mean_log_pop_density_2025": 2.630496,
+        "z_lst_mean_2024": 0.415499,
+        "z_s2_ndvi_mean": -0.055311,
+        "z_s2_ndbi_mean": 0.322104,
+        "z_built_frac": -0.488485,
+        "z_log_pop_density_2025": -0.408894
+      }
+    ]
+  },
+  "interpretation_notes": [
+    "Cluster names are generated from centroid z-scores (|z| ≥ 0.5), ordered so cluster 0 has the lowest mean LST."
+  ],
+  "limitations": [
+    "K-means assumes roughly spherical clusters in standardized space.",
+    "LST composite is daytime (~10:30 local) Apr–Jun."
+  ],
+  "run_utc": "2026-11-11T18:06:36+00:00",
+  "code_version": "0202263"
+}

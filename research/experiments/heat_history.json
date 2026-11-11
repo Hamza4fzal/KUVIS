@@ -1,0 +1,81 @@
+{
+  "experiment_id": "heat_history",
+  "module": "heat",
+  "algorithm": "Epoch comparison of LST composites",
+  "purpose": "Historical thermal comparison of Karachi land cells",
+  "input_features": [
+    "lst_mean_<epoch>"
+  ],
+  "n_samples": 14701,
+  "parameters": {
+    "season": "Apr–Jun",
+    "land_cover_reference": "WorldCover 2021"
+  },
+  "metrics": {
+    "epochs": [
+      {
+        "epoch": 2001,
+        "n_cells": 12777,
+        "lst_median": 44.263054,
+        "lst_p10": 40.039271,
+        "lst_p90": 46.617136,
+        "rel_built_dominant": -3.608418,
+        "rel_bare_dominant": 0.008584,
+        "rel_veg_dominant": 0.756201,
+        "n_scenes": 12
+      },
+      {
+        "epoch": 2010,
+        "n_cells": 13131,
+        "lst_median": 50.269706,
+        "lst_p10": 44.538234,
+        "lst_p90": 52.993111,
+        "rel_built_dominant": -4.429572,
+        "rel_bare_dominant": 0.395003,
+        "rel_veg_dominant": 0.660729,
+        "n_scenes": 12
+      },
+      {
+        "epoch": 2015,
+        "n_cells": 13161,
+        "lst_median": 48.433713,
+        "lst_p10": 42.889545,
+        "lst_p90": 51.399224,
+        "rel_built_dominant": -4.572441,
+        "rel_bare_dominant": 0.571874,
+        "rel_veg_dominant": 0.758991,
+        "n_scenes": 12
+      },
+      {
+        "epoch": 2020,
+        "n_cells": 13167,
+        "lst_median": 47.834611,
+        "lst_p10": 42.114193,
+        "lst_p90": 51.186834,
+        "rel_built_dominant": -4.535093,
+        "rel_bare_dominant": 0.886529,
+        "rel_veg_dominant": 0.20214,
+        "n_scenes": 12
+      },
+      {
+        "epoch": 2024,
+        "n_cells": 13162,
+        "lst_median": 50.735446,
+        "lst_p10": 44.742018,
+        "lst_p90": 54.177335,
+        "rel_built_dominant": -4.985914,
+        "rel_bare_dominant": 1.104828,
+        "rel_veg_dominant": 0.427582,
+        "n_scenes": 12
+      }
+    ]
+  },
+  "results": {},
+  "interpretation_notes": [],
+  "limitations": [
+    "Absolute LST differs between epochs with weather on acquisition days; compare relative LST.",
+    "Land-cover classes are from 2021 and applied to all epochs."
+  ],
+  "run_utc": "2026-11-11T18:07:00+00:00",
+  "code_version": "0202263"
+}

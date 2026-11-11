@@ -1,0 +1,114 @@
+{
+  "experiment_id": "heat_correlation",
+  "module": "heat",
+  "algorithm": "Spearman correlation + standardized OLS (HC3)",
+  "purpose": "Quantify associations of LST with vegetation, built-up, population, coast and terrain",
+  "input_features": [
+    "s2_ndvi_mean",
+    "s2_ndbi_mean",
+    "built_frac",
+    "veg_frac_wc",
+    "bare_frac",
+    "log_pop_density_2025",
+    "dist_coast_m",
+    "elev_mean"
+  ],
+  "n_samples": 11889,
+  "parameters": {
+    "target": "lst_mean_2024"
+  },
+  "metrics": {
+    "spearman": [
+      {
+        "feature": "s2_ndvi_mean",
+        "spearman_rho": -0.013008,
+        "p_naive": 0.156106,
+        "n": 11889
+      },
+      {
+        "feature": "s2_ndbi_mean",
+        "spearman_rho": 0.545286,
+        "p_naive": 0.0,
+        "n": 11889
+      },
+      {
+        "feature": "built_frac",
+        "spearman_rho": -0.559673,
+        "p_naive": 0.0,
+        "n": 11889
+      },
+      {
+        "feature": "veg_frac_wc",
+        "spearman_rho": 0.213714,
+        "p_naive": 0.0,
+        "n": 11889
+      },
+      {
+        "feature": "bare_frac",
+        "spearman_rho": 0.447061,
+        "p_naive": 0.0,
+        "n": 11889
+      },
+      {
+        "feature": "log_pop_density_2025",
+        "spearman_rho": -0.492852,
+        "p_naive": 0.0,
+        "n": 11889
+      },
+      {
+        "feature": "elev_mean",
+        "spearman_rho": 0.637518,
+        "p_naive": 0.0,
+        "n": 11889
+      }
+    ],
+    "ols_r2": 0.553898,
+    "ols_std_coefficients": [
+      {
+        "feature": "s2_ndvi_mean",
+        "std_beta": -0.606786,
+        "ci_low": -0.63184,
+        "ci_high": -0.581733
+      },
+      {
+        "feature": "built_frac",
+        "std_beta": -0.758501,
+        "ci_low": -0.78046,
+        "ci_high": -0.736541
+      },
+      {
+        "feature": "bare_frac",
+        "std_beta": -0.287637,
+        "ci_low": -0.310092,
+        "ci_high": -0.265182
+      },
+      {
+        "feature": "log_pop_density_2025",
+        "std_beta": 0.16285,
+        "ci_low": 0.134997,
+        "ci_high": 0.190702
+      },
+      {
+        "feature": "elev_mean",
+        "std_beta": 0.333478,
+        "ci_low": 0.312956,
+        "ci_high": 0.354
+      }
+    ],
+    "residual_moran_I": {
+      "I": 0.722646,
+      "expected_I": -8.4e-05,
+      "z_norm": 187.048883,
+      "p_norm": 0.0,
+      "p_sim": 0.005
+    }
+  },
+  "results": {},
+  "interpretation_notes": [],
+  "limitations": [
+    "Neighbouring cells are not independent (residual Moran's I reported); naive p-values are overstated.",
+    "Correlation does not establish causation."
+  ],
+  "run_utc": "2026-11-11T18:07:00+00:00",
+  "code_version": "0202263"
+}

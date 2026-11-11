@@ -23,6 +23,8 @@ def moran(values: np.ndarray, w, permutations: int = 999, seed: int = 42) -> dic
 
 def gi_star(values: np.ndarray, x: np.ndarray, y: np.ndarray, threshold: float, permutations: int = 999,
             seed: int = 42, alpha: float = 0.05) -> pd.DataFrame:
+    if np.nanmin(values) < 0:
+        raise ValueError("Getis–Ord G* requires non-negative values (shift or use the absolute variable)")
     w = DistanceBand(np.c_[x, y], threshold=threshold, binary=True, silence_warnings=True)
     g = G_Local(values, w, star=True, permutations=permutations, seed=seed, transform="B",
                 alternative="two-sided", keep_simulations=False, n_jobs=1)

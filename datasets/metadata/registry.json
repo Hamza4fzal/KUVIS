@@ -249,12 +249,32 @@
     "url": "https://planetarycomputer.microsoft.com/dataset/landsat-c2-l2",
     "method": "STAC search (Apr–Jun, T1, cloud<30%, clearest 3 per WRS tile) + QA-masked median composite on 60 m UTM 42N grid",
     "status": "acquired",
-    "accessed_utc": "2026-11-11T16:58:53+00:00",
+    "accessed_utc": "2026-11-11T18:02:36+00:00",
     "files": [
+      {
+        "path": "datasets/interim/landsat_lst_2001.tif",
+        "bytes": 5234128,
+        "sha256": "1e6dd395142e517fa2be102758fd00af6c005213b2adc2cc374b5f6a62e697d5"
+      },
       {
         "path": "datasets/interim/landsat_lst_2005.tif",
         "bytes": 64149,
         "sha256": "cdc5901c36923c3f4dece7ad3cbfa823e143ed518d1b17f8074cf7bc7967ca13"
+      },
+      {
+        "path": "datasets/interim/landsat_lst_2010.tif",
+        "bytes": 5438319,
+        "sha256": "a8d1a558de028c34c97d3527e6810764a63dbc18235cde60325be05d927006ee"
+      },
+      {
+        "path": "datasets/interim/landsat_lst_2015.tif",
+        "bytes": 5280546,
+        "sha256": "7d5c3c48e049b2513e425751b32a7da5d677a7905a0ae2a4c23acb135d017b76"
+      },
+      {
+        "path": "datasets/interim/landsat_lst_2020.tif",
+        "bytes": 5329397,
+        "sha256": "04b9e4ceea54ecc27173832b71c0fb623f4cc26dfeb701bab3823c417ec852dd"
       },
       {
         "path": "datasets/interim/landsat_lst_2024.tif",
@@ -262,9 +282,29 @@
         "sha256": "3268afd7aef813713500b2a0b197736c33c3cfa25a6c3abd5e5465edaf51f8e9"
       },
       {
+        "path": "datasets/interim/landsat_ndvi_2001.tif",
+        "bytes": 7795159,
+        "sha256": "50682b985d996535309a65b9554807a95647b6727fa3c6dcb914957e5ae11b1f"
+      },
+      {
         "path": "datasets/interim/landsat_ndvi_2005.tif",
         "bytes": 64149,
         "sha256": "cdc5901c36923c3f4dece7ad3cbfa823e143ed518d1b17f8074cf7bc7967ca13"
+      },
+      {
+        "path": "datasets/interim/landsat_ndvi_2010.tif",
+        "bytes": 8140207,
+        "sha256": "bc33c63ed15af38cc6d5df17f20299c0584e8126cc59d656c982bd727f1b44da"
+      },
+      {
+        "path": "datasets/interim/landsat_ndvi_2015.tif",
+        "bytes": 8207493,
+        "sha256": "d0a31dd006cb62d7cc99b6823d3ca915bce7f85be86cf1949a50204dfed6840e"
+      },
+      {
+        "path": "datasets/interim/landsat_ndvi_2020.tif",
+        "bytes": 8328921,
+        "sha256": "ed2deb9066ecb14592755277f084d26eeb1cbf011314cbc468225643189dff7d"
       },
       {
         "path": "datasets/interim/landsat_ndvi_2024.tif",
@@ -275,7 +315,7 @@
     "license": "Public domain (USGS)",
     "crs": "EPSG:32642",
     "spatial_resolution": "60 m processing grid (COG overview 0); thermal native 100 m TIRS / 120 m TM",
-    "temporal_coverage": "2005: 2004–2006 Apr–Jun, 2010: 2009–2011 Apr–Jun, 2015: 2014–2016 Apr–Jun, 2020: 2019–2021 Apr–Jun, 2024: 2023–2025 Apr–Jun",
+    "temporal_coverage": "2001: 2000–2002 Apr–Jun, 2010: 2009–2011 Apr–Jun, 2015: 2014–2016 Apr–Jun, 2020: 2019–2021 Apr–Jun, 2024: 2023–2025 Apr–Jun",
     "variables": [
       "LST (°C)",
       "NDVI",
@@ -296,6 +336,62 @@
         "LC08_L2SP_152043_20250422_02_T1",
         "LC08_L2SP_153042_20250429_02_T1",
         "LC08_L2SP_153042_20250531_02_T1"
+      ],
+      "2001": [
+        "LT05_L2SP_152042_20000417_02_T1",
+        "LT05_L2SP_152043_20000417_02_T1",
+        "LT05_L2SP_153043_20000424_02_T1",
+        "LT05_L2SP_152042_20000604_02_T1",
+        "LT05_L2SP_153042_20000611_02_T1",
+        "LT05_L2SP_152042_20000620_02_T1",
+        "LT05_L2SP_152043_20010404_02_T1",
+        "LT05_L2SP_152043_20010420_02_T1",
+        "LT05_L2SP_153042_20010427_02_T1",
+        "LT05_L2SP_153043_20010427_02_T1",
+        "LT05_L2SP_153042_20010529_02_T1",
+        "LT05_L2SP_153043_20010529_02_T1"
+      ],
+      "2010": [
+        "LT05_L2SP_152043_20090410_02_T1",
+        "LT05_L2SP_153042_20090417_02_T1",
+        "LT05_L2SP_153043_20090417_02_T1",
+        "LT05_L2SP_152043_20090426_02_T1",
+        "LT05_L2SP_153043_20090503_02_T1",
+        "LT05_L2SP_152042_20090512_02_T1",
+        "LT05_L2SP_153042_20090519_02_T1",
+        "LT05_L2SP_152042_20090528_02_T1",
+        "LT05_L2SP_153042_20090604_02_T1",
+        "LT05_L2SP_152042_20090613_02_T1",
+        "LT05_L2SP_153043_20100420_02_T1",
+        "LT05_L2SP_152043_20100429_02_T1"
+      ],
+      "2015": [
+        "LC08_L2SP_152043_20140408_02_T1",
+        "LC08_L2SP_152042_20140526_02_T1",
+        "LC08_L2SP_152042_20140611_02_T1",
+        "LC08_L2SP_153043_20150402_02_T1",
+        "LC08_L2SP_153043_20150418_02_T1",
+        "LC08_L2SP_153042_20160404_02_T1",
+        "LC08_L2SP_153043_20160404_02_T1",
+        "LC08_L2SP_152043_20160413_02_T1",
+        "LC08_L2SP_153042_20160420_02_T1",
+        "LC08_L2SP_152042_20160429_02_T1",
+        "LC08_L2SP_152043_20160429_02_T1",
+        "LC08_L2SP_153042_20160506_02_T1"
+      ],
+      "2020": [
+        "LC08_L2SP_152042_20190422_02_T1",
+        "LC08_L2SP_153042_20190429_02_T1",
+        "LC08_L2SP_153043_20190429_02_T1",
+        "LC08_L2SP_153043_20190531_02_T1",
+        "LC08_L2SP_152042_20190609_02_T1",
+        "LC08_L2SP_152042_20200526_02_T1",
+        "LC08_L2SP_153042_20200618_02_T1",
+        "LC08_L2SP_153042_20210402_02_T1",
+        "LC08_L2SP_153043_20210402_02_T1",
+        "LC08_L2SP_152043_20210411_02_T1",
+        "LC08_L2SP_152043_20210427_02_T1",
+        "LC08_L2SP_152043_20210513_02_T1"
       ]
     },
     "limitations": "LST ≠ air temperature; thermal native resolution coarser than 30 m; cross-sensor (TM vs OLI) index offsets not calibrated; acquisition times ~10:30 local only."
@@ -359,5 +455,35 @@
       "seasonality (months)"
     ],
     "limitations": "Permanent water occurrence is not urban flooding."
+  },
+  "chirps_v3_monthly": {
+    "key": "chirps_v3_monthly",
+    "title": "CHIRPS v3.0 monthly precipitation (global COGs)",
+    "provider": "UC Santa Barbara Climate Hazards Center",
+    "url": "https://www.chc.ucsb.edu/data/chirps3",
+    "method": "Windowed HTTP range reads of monthly COGs (no full-file download)",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T17:44:46+00:00",
+    "files": [
+      {
+        "path": "datasets/processed/chirps_monthly.parquet",
+        "bytes": 616312,
+        "sha256": "67f80ee9cb917fad6c9918d8e51b0b3c5b604d7082bfeac0d2ce657242cdebbd"
+      },
+      {
+        "path": "datasets/processed/chirps_pixels.parquet",
+        "bytes": 16138,
+        "sha256": "ac492832db875f8cfda03554cd12151bc978b134eb157f0b193536c93f50d923"
+      }
+    ],
+    "license": "CC BY 4.0",
+    "crs": "EPSG:4326",
+    "spatial_resolution": "0.05° (≈5.5 km); stored at native pixels",
+    "temporal_coverage": "1981-01 to 2025-12 (monthly)",
+    "variables": [
+      "precip_mm (monthly total)"
+    ],
+    "n_pixels": 171,
+    "limitations": "Satellite–gauge blend; one pixel spans ~100 grid cells; not neighbourhood ground truth; monthly totals cannot resolve sub-daily cloudburst intensity."
   }
 }

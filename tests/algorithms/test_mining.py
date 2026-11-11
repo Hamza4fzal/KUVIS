@@ -80,9 +80,18 @@ def test_gi_star_detects_hot_block():
     xs, ys = np.meshgrid(np.arange(20) * 500.0, np.arange(20) * 500.0)
     v = np.zeros_like(xs)
     v[:5, :5] = 10
-    v += rng.normal(0, 0.1, v.shape)
+    v += 20 + rng.normal(0, 0.1, v.shape)  # G* needs non-negative values
     g = spatial.gi_star(v.ravel(), xs.ravel(), ys.ravel(), threshold=1000, permutations=99)
     assert (g.gi_class.to_numpy().reshape(20, 20)[1:4, 1:4] == "hot").all()
+
+
+def test_gi_star_rejects_negative_values():
+    # regression: G* on a zero-centred variable silently flips hot/cold spots
+    import pytest
+    xs, ys = np.meshgrid(np.arange(10) * 500.0, np.arange(10) * 500.0)
+    v = rng.normal(0, 1, xs.shape)
+    with pytest.raises(ValueError):
+        spatial.gi_star(v.ravel(), xs.ravel(), ys.ravel(), threshold=1000, permutations=9)
 
 
 def test_landsat_st_scaling_matches_usgs():

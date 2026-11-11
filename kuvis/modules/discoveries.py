@@ -85,7 +85,7 @@ def run() -> list[dict]:
         for r in hs.itertuples():
             if r.n_cells >= 10 and r.share_gi_hot >= 0.5:
                 ids = hc.grid_id[hc.heat_hotspot == r.hotspot].tolist()
-                subs = ", ".join(list(r.subdivisions.keys())[:2]) if isinstance(r.subdivisions, dict) else _subs(df, ids)
+                subs = ", ".join(list(json.loads(r.subdivisions_json))[:2]) or _subs(df, ids)
                 add(category="Spatial heat concentration",
                     title=f"{r.area_km2:.1f} km² heat concentration around {subs}",
                     description=(f"DBSCAN groups {r.n_cells} of Karachi's hottest-decile cells into one contiguous concentration. "

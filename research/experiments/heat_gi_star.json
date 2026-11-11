@@ -1,0 +1,39 @@
+{
+  "experiment_id": "heat_gi_star",
+  "module": "heat",
+  "algorithm": "Getis–Ord Gi* + Global Moran's I",
+  "purpose": "Statistically significant spatial clustering of surface temperature",
+  "input_features": [
+    "lst_mean_2024 (Gi*)",
+    "lst_rel_2024 (Moran's I)"
+  ],
+  "n_samples": 11889,
+  "parameters": {
+    "weights": "binary distance band 1000 m",
+    "permutations": 499,
+    "alpha": 0.05,
+    "alternative": "two-sided",
+    "note": "G* is defined for non-negative values, so it is computed on absolute LST (°C)"
+  },
+  "metrics": {
+    "moran": {
+      "I": 0.921909,
+      "expected_I": -8.4e-05,
+      "z_norm": 238.62009,
+      "p_norm": 0.0,
+      "p_sim": 0.002
+    },
+    "n_hot": 3604,
+    "n_cold": 2430,
+    "n_hot_fdr": 3210,
+    "n_cold_fdr": 2121
+  },
+  "results": {},
+  "interpretation_notes": [],
+  "limitations": [
+    "Hot spots are statistical clustering, not causal evidence.",
+    "Pseudo p-values from 499 permutations; FDR-adjusted classes also reported."
+  ],
+  "run_utc": "2026-11-11T18:06:56+00:00",
+  "code_version": "0202263"
+}

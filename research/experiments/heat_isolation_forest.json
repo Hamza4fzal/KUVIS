@@ -1,0 +1,44 @@
+{
+  "experiment_id": "heat_isolation_forest",
+  "module": "heat",
+  "algorithm": "Isolation Forest (+ LOF comparison)",
+  "purpose": "Find cells whose LST is unusual relative to land-cover peers, neighbours and own history",
+  "input_features": [
+    "z_cover",
+    "nb_resid",
+    "hist_resid"
+  ],
+  "n_samples": 11887,
+  "parameters": {
+    "contamination": 0.02,
+    "n_estimators": 300,
+    "context_features": {
+      "z_cover": "robust z of relative LST within the cell's dominant WorldCover class",
+      "nb_resid": "relative LST − mean of land cells within 1.5 km",
+      "hist_resid": "relative LST 2024 − mean relative LST of earlier epochs (≥2 required)"
+    },
+    "lof_n_neighbors": 35
+  },
+  "metrics": {
+    "n_flagged": 238,
+    "n_warmer": 74,
+    "n_cooler": 164,
+    "if_vs_lof": {
+      "n_a": 238,
+      "n_b": 238,
+      "n_both": 95,
+      "jaccard": 0.249344
+    },
+    "median_persistence_flagged": 1.0,
+    "median_persistence_unflagged": 0.0
+  },
+  "results": {},
+  "interpretation_notes": [
+    "Persistence = share of individual Landsat dates (2023–2025) on which the cell's scene-level LST deviates from its neighbours in the same direction as the anomaly; high persistence means the anomaly is not a compositing artefact."
+  ],
+  "limitations": [
+    "Contamination (2 %) sets how many cells are flagged; anomalies are statistical, not hazards."
+  ],
+  "run_utc": "2026-11-11T18:06:59+00:00",
+  "code_version": "0202263"
+}

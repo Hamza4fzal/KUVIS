@@ -324,6 +324,5 @@ def run() -> None:
 
 
 def _hotspot_name(r: dict) -> str:
-    subs = r.get("subdivisions") or {}
-    top = next(iter(subs), None) if isinstance(subs, dict) else None
+    top = r.get("top_subdivision")
     return f"Concentration #{int(r.get('hotspot', 0))}" + (f" — {top}" if top else "")

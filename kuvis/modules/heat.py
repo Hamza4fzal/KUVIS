@@ -39,6 +39,14 @@ def _base(df: pd.DataFrame) -> pd.DataFrame:
     return df[m].copy()
 
 
+def _subdiv(df) -> dict:
+    """Top subdivisions of a cell group as JSON text + the leading name (Parquet would unify dict keys across rows)."""
+    import json as _json
+    vc = df.subdivision.dropna().astype(object).value_counts().head(3)
+    return {"subdivisions_json": _json.dumps({str(k): int(v) for k, v in vc.items()}),
+            "top_subdivision": str(vc.index[0]) if len(vc) else None}
+
+
 def run() -> pd.DataFrame:
     mc = cfg()["mining"]
     rs = mc["random_state"]
@@ -94,7 +102,9 @@ def run() -> pd.DataFrame:
     lst_rel = b[f"lst_rel_{EPOCH}"].values
     w = spatial.weights(xy[:, 0], xy[:, 1], threshold=1000)
     mor = spatial.moran(lst_rel, w, permutations=499)
-    gi = spatial.gi_star(lst_rel, xy[:, 0], xy[:, 1], threshold=1000, permutations=499)
+    # Getis–Ord G* requires non-negative values; relative LST is centred on 0, so G* is run on absolute LST (°C).
+    # Relative LST is a constant shift of it, so hot/cold spots are the same places by construction.
+    gi = spatial.gi_star(b[f"lst_mean_{EPOCH}"].values, xy[:, 0], xy[:, 1], threshold=1000, permutations=499)
     for c in gi.columns:
         res[c] = gi[c].values
 
@@ -111,7 +121,7 @@ def run() -> pd.DataFrame:
     remap = {old: new for new, old in enumerate(sizes.loc[big].sort_values(ascending=False).index)}
     lab_g = np.array([remap.get(v, -1 if v >= -1 else v) for v in lab_g])
     res["heat_hotspot"] = lab_g
-    hot_gi = (gi["gi_class"].values == "hot")
+    hot_gi = gi["gi_class"].to_numpy(dtype=object) == "hot"
     overlap = anomaly.agreement(lab_g >= 0, hot_gi)
     hs = []
     for hid in sorted(set(lab_g[lab_g >= 0])):
@@ -121,7 +131,7 @@ def run() -> pd.DataFrame:
                    "mean_lst": float(sub.lst_mean_2024.mean()), "mean_lst_rel": float(sub[f"lst_rel_{EPOCH}"].mean()),
                    "mean_ndvi": float(sub.s2_ndvi_mean.mean()), "mean_built": float(sub.built_frac.mean()),
                    "dominant_cover": sub.dominant_cover.mode().iat[0] if sub.dominant_cover.notna().any() else None,
-                   "subdivisions": sub.subdivision.value_counts().head(3).to_dict(),
+                   **_subdiv(sub),
                    "pop_2025": float(sub.pop_2025.sum()), "lat": float(sub.lat.mean()), "lon": float(sub.lon.mean()),
                    "share_gi_hot": float(hot_gi[m].mean())})
     hs = pd.DataFrame(hs)
@@ -138,9 +148,11 @@ def run() -> pd.DataFrame:
                     results={"hotspots": hs.to_dict("records")},
                     limitations=["Hot threshold is relative to Karachi land cells; bare desert can be hottest."])
     experiment.save("heat_gi_star", module="heat", algorithm="Getis–Ord Gi* + Global Moran's I",
-                    purpose="Statistically significant spatial clustering of relative LST",
-                    inputs=[f"lst_rel_{EPOCH}"], n_samples=len(b),
-                    params={"weights": "binary distance band 1000 m", "permutations": 499, "alpha": 0.05},
+                    purpose="Statistically significant spatial clustering of surface temperature",
+                    inputs=[f"lst_mean_{EPOCH} (Gi*)", f"lst_rel_{EPOCH} (Moran's I)"], n_samples=len(b),
+                    params={"weights": "binary distance band 1000 m", "permutations": 499, "alpha": 0.05,
+                            "alternative": "two-sided",
+                            "note": "G* is defined for non-negative values, so it is computed on absolute LST (°C)"},
                     metrics={"moran": mor, "n_hot": int((gi.gi_class == "hot").sum()),
                              "n_cold": int((gi.gi_class == "cold").sum()),
                              "n_hot_fdr": int((gi.gi_class_fdr == "hot").sum()),
@@ -154,7 +166,9 @@ def run() -> pd.DataFrame:
     ctx["nb_resid"] = anomaly.neighbour_residual(xy[:, 0], xy[:, 1], lst_rel, radius=1500)
     hist_cols = [f"lst_rel_{e}" for e in cfg()["landsat"]["epochs"] if e != EPOCH and f"lst_rel_{e}" in b]
     hist = b[hist_cols]
-    ctx["hist_resid"] = np.where(hist.notna().sum(axis=1) >= 2, b[f"lst_rel_{EPOCH}"] - hist.mean(axis=1), np.nan)
+    need = min(2, len(hist_cols))  # use every earlier epoch available; require ≥2 when ≥2 exist
+    ctx["hist_resid"] = np.where((hist.notna().sum(axis=1) >= need) & (need > 0),
+                                 b[f"lst_rel_{EPOCH}"] - hist.mean(axis=1), np.nan)
     ok = ctx.notna().all(axis=1)
     Xa = StandardScaler().fit_transform(ctx[ok].values)
     ic = mc["isolation_forest"]
@@ -289,23 +303,27 @@ def experiment_items(epoch: str) -> list:
 
 
 def _persistence(b: pd.DataFrame, res: pd.DataFrame) -> np.ndarray:
-    """Share of single scenes (current epoch) where the cell's LST − scene median of its 1.5 km neighbours has
-    the same sign as the anomaly direction (computed for all cells, to compare flagged vs unflagged)."""
+    """Share of single scenes (current epoch) on which the cell is *unusually* far from its 1.5 km neighbours in
+    the anomaly's direction: (cell LST − neighbour mean) / SD of that quantity across all cells on the same date
+    > 1. Computed for every cell so flagged and unflagged cells can be compared. A sign-only test is not used:
+    LST patterns are so spatially stable that nearly every cell keeps its sign on every date."""
     p = path("processed", "landsat_scene_observations.parquet")
     if not p.exists():
         return np.full(len(b), np.nan)
     obs = pd.read_parquet(p)
-    obs = obs[(obs.variable == "lst") & (obs.epoch == EPOCH) & obs.grid_id.isin(b.grid_id)]
+    obs = obs[(obs.variable == "lst") & (obs.epoch.astype(str) == EPOCH) & obs.grid_id.isin(b.grid_id)]
     xy = b.set_index("grid_id")[["x_utm", "y_utm"]]
-    signs = []
+    zs = []
     for sid, g in obs.groupby("scene_id"):
         g = g.set_index("grid_id").join(xy)
         rr = anomaly.neighbour_residual(g.x_utm.values, g.y_utm.values, g.value.values, 1500)
-        signs.append(pd.Series(np.sign(rr), index=g.index, name=sid))
-    if not signs:
+        sd = np.nanstd(rr)
+        if np.isfinite(sd) and sd > 0:
+            zs.append(pd.Series(rr / sd, index=g.index, name=sid))
+    if not zs:
         return np.full(len(b), np.nan)
-    S = pd.concat(signs, axis=1).reindex(b.grid_id)
-    want = np.where(res["anom_direction"].values == "cooler than context", -1, 1)
-    agree = (S.values == want[:, None]).sum(axis=1)
-    n = np.isfinite(S.values).sum(axis=1)
-    return np.where(n >= 3, agree / np.maximum(n, 1), np.nan)
+    Z = pd.concat(zs, axis=1).reindex(b.grid_id).values
+    sign = np.where(res["anom_direction"].to_numpy(dtype=object) == "cooler than context", -1.0, 1.0)
+    hit = (Z * sign[:, None]) > 1.0
+    n = np.isfinite(Z).sum(axis=1)
+    return np.where(n >= 3, hit.sum(axis=1) / np.maximum(n, 1), np.nan)

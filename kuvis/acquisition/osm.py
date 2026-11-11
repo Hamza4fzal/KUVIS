@@ -51,7 +51,10 @@ def _overpass(q: str, name: str, attempts: int = 6) -> dict:
         url = mirrors[attempt % len(mirrors)]
         try:
             r = requests.post(url, data={"data": body}, headers={"User-Agent": UA}, timeout=to + 60)
-            if r.status_code == 200 and r.text.lstrip().startswith("{"):
+            # Overpass can answer HTTP 200 with an empty result and a "runtime error" remark on timeout —
+            # accepting that would silently drop data, so it counts as a failure.
+            if r.status_code == 200 and r.text.lstrip().startswith("{") and \
+                    "error" not in (r.json().get("remark") or "").lower():
                 raw.write_text(r.text, encoding="utf-8")
                 log.info("overpass %s: %.1f MB from %s", name, len(r.content) / 1e6, url)
                 return r.json()

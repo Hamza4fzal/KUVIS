@@ -1,0 +1,169 @@
+{
+  "experiment_id": "heat_dbscan_feature",
+  "module": "heat",
+  "algorithm": "DBSCAN (feature space)",
+  "purpose": "Density-based thermal profiles without fixing K; compare with K-means",
+  "input_features": [
+    "lst_mean_2024",
+    "s2_ndvi_mean",
+    "s2_ndbi_mean",
+    "built_frac",
+    "log_pop_density_2025"
+  ],
+  "n_samples": 11889,
+  "parameters": {
+    "eps": 0.481331,
+    "min_samples": 10,
+    "metric": "euclidean on z-scores",
+    "eps_rule": "knee of sorted 10-NN distance curve"
+  },
+  "metrics": {
+    "n_clusters": 3,
+    "noise_share": 0.042308,
+    "ari_vs_kmeans_non_noise": 0.133957,
+    "parameter_grid": [
+      {
+        "eps": 0.289,
+        "min_samples": 5,
+        "n_clusters": 21,
+        "noise_share": 0.115821,
+        "largest_cluster_share": 0.859282,
+        "median_cluster_size": 5.0,
+        "silhouette_non_noise": -0.292492
+      },
+      {
+        "eps": 0.289,
+        "min_samples": 10,
+        "n_clusters": 9,
+        "noise_share": 0.179578,
+        "largest_cluster_share": 0.8036,
+        "median_cluster_size": 15.0,
+        "silhouette_non_noise": -0.206845
+      },
+      {
+        "eps": 0.289,
+        "min_samples": 20,
+        "n_clusters": 6,
+        "noise_share": 0.270502,
+        "largest_cluster_share": 0.604677,
+        "median_cluster_size": 38.5,
+        "silhouette_non_noise": 0.424637
+      },
+      {
+        "eps": 0.385,
+        "min_samples": 5,
+        "n_clusters": 13,
+        "noise_share": 0.050803,
+        "largest_cluster_share": 0.924889,
+        "median_cluster_size": 5.0,
+        "silhouette_non_noise": -0.25181
+      },
+      {
+        "eps": 0.385,
+        "min_samples": 10,
+        "n_clusters": 3,
+        "noise_share": 0.07856,
+        "largest_cluster_share": 0.904786,
+        "median_cluster_size": 187.0,
+        "silhouette_non_noise": 0.675585
+      },
+      {
+        "eps": 0.385,
+        "min_samples": 20,
+        "n_clusters": 3,
+        "noise_share": 0.115821,
+        "largest_cluster_share": 0.871646,
+        "median_cluster_size": 109.0,
+        "silhouette_non_noise": 0.715918
+      },
+      {
+        "eps": 0.481,
+        "min_samples": 5,
+        "n_clusters": 5,
+        "noise_share": 0.028934,
+        "largest_cluster_share": 0.948103,
+        "median_cluster_size": 7.0,
+        "silhouette_non_noise": 0.220323
+      },
+      {
+        "eps": 0.481,
+        "min_samples": 10,
+        "n_clusters": 3,
+        "noise_share": 0.042308,
+        "largest_cluster_share": 0.93658,
+        "median_cluster_size": 241.0,
+        "silhouette_non_noise": 0.561816
+      },
+      {
+        "eps": 0.481,
+        "min_samples": 20,
+        "n_clusters": 2,
+        "noise_share": 0.060644,
+        "largest_cluster_share": 0.922702,
+        "median_cluster_size": 5584.0,
+        "silhouette_non_noise": 0.74218
+      },
+      {
+        "eps": 0.602,
+        "min_samples": 5,
+        "n_clusters": 8,
+        "noise_share": 0.015561,
+        "largest_cluster_share": 0.95744,
+        "median_cluster_size": 6.5,
+        "silhouette_non_noise": 0.253182
+      },
+      {
+        "eps": 0.602,
+        "min_samples": 10,
+        "n_clusters": 2,
+        "noise_share": 0.024308,
+        "largest_cluster_share": 0.953402,
+        "median_cluster_size": 5800.0,
+        "silhouette_non_noise": 0.720198
+      },
+      {
+        "eps": 0.602,
+        "min_samples": 20,
+        "n_clusters": 2,
+        "noise_share": 0.036084,
+        "largest_cluster_share": 0.943393,
+        "median_cluster_size": 5730.0,
+        "silhouette_non_noise": 0.728474
+      },
+      {
+        "eps": 0.722,
+        "min_samples": 5,
+        "n_clusters": 6,
+        "noise_share": 0.008159,
+        "largest_cluster_share": 0.963075,
+        "median_cluster_size": 8.0,
+        "silhouette_non_noise": 0.366863
+      },
+      {
+        "eps": 0.722,
+        "min_samples": 10,
+        "n_clusters": 2,
+        "noise_share": 0.016402,
+        "largest_cluster_share": 0.959795,
+        "median_cluster_size": 5847.0,
+        "silhouette_non_noise": 0.714891
+      },
+      {
+        "eps": 0.722,
+        "min_samples": 20,
+        "n_clusters": 2,
+        "noise_share": 0.021953,
+        "largest_cluster_share": 0.955421,
+        "median_cluster_size": 5814.0,
+        "silhouette_non_noise": 0.716623
+      }
+    ]
+  },
+  "results": {},
+  "interpretation_notes": [],
+  "limitations": [
+    "A single global eps cannot adapt to varying density; most cells may form one large dense cluster with the unusual cells as noise."
+  ],
+  "run_utc": "2026-11-11T18:06:51+00:00",
+  "code_version": "0202263"
+}
