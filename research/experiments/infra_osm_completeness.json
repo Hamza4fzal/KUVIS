@@ -1,0 +1,41 @@
+{
+  "experiment_id": "infra_osm_completeness",
+  "module": "infra",
+  "algorithm": "Spearman correlation (completeness check)",
+  "purpose": "Assess how completely OSM maps buildings where other sources show dense settlement",
+  "input_features": [
+    "osm_building_density_km2",
+    "pop_density_2025",
+    "built_frac"
+  ],
+  "n_samples": 13187,
+  "parameters": {
+    "dense_definition": "WorldCover built-up share ≥ 0.5"
+  },
+  "metrics": {
+    "spearman": [
+      {
+        "feature": "pop_density_2025",
+        "spearman_rho": 0.522456,
+        "p_naive": 0.0,
+        "n": 13187
+      },
+      {
+        "feature": "built_frac",
+        "spearman_rho": 0.555968,
+        "p_naive": 0.0,
+        "n": 13187
+      }
+    ],
+    "dense_cells": 1907,
+    "dense_cells_with_lt_50_mapped_buildings_km2": 1264,
+    "share_dense_poorly_mapped": 0.662821
+  },
+  "results": {},
+  "interpretation_notes": [],
+  "limitations": [
+    "A low count may also reflect very large buildings; this is a screening indicator."
+  ],
+  "run_utc": "2026-11-11T19:42:04+00:00",
+  "code_version": "ab1adb5"
+}

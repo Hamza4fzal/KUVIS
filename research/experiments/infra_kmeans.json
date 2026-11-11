@@ -1,0 +1,254 @@
+{
+  "experiment_id": "infra_kmeans",
+  "module": "infra",
+  "algorithm": "K-means",
+  "purpose": "Profile mapped road-network supply relative to population",
+  "input_features": [
+    "road_density_km_km2",
+    "major_road_density_km_km2",
+    "intersection_density_km2",
+    "osm_building_density_km2",
+    "log_pop_density_2025"
+  ],
+  "n_samples": 13187,
+  "parameters": {
+    "k": 8,
+    "selection": "K=8: highest silhouette (0.585) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=5",
+    "transform": "log1p then z-score"
+  },
+  "metrics": {
+    "sweep": [
+      {
+        "k": 2,
+        "inertia": 31206.955446,
+        "silhouette": 0.537512,
+        "davies_bouldin": 0.87608,
+        "calinski_harabasz": 14672.691643,
+        "min_cluster_share": 0.371578,
+        "elbow_distance": 0.0
+      },
+      {
+        "k": 3,
+        "inertia": 20855.772097,
+        "silhouette": 0.531815,
+        "davies_bouldin": 0.938529,
+        "calinski_harabasz": 14248.452544,
+        "min_cluster_share": 0.141048,
+        "elbow_distance": 0.195692
+      },
+      {
+        "k": 4,
+        "inertia": 15554.65905,
+        "silhouette": 0.549526,
+        "davies_bouldin": 0.830299,
+        "calinski_harabasz": 14232.921404,
+        "min_cluster_share": 0.072496,
+        "elbow_distance": 0.252789
+      },
+      {
+        "k": 5,
+        "inertia": 11051.1929,
+        "silhouette": 0.571299,
+        "davies_bouldin": 0.774389,
+        "calinski_harabasz": 16366.521509,
+        "min_cluster_share": 0.072192,
+        "elbow_distance": 0.287995
+      },
+      {
+        "k": 6,
+        "inertia": 8940.952027,
+        "silhouette": 0.583194,
+        "davies_bouldin": 0.735703,
+        "calinski_harabasz": 16804.450359,
+        "min_cluster_share": 0.049063,
+        "elbow_distance": 0.25752
+      },
+      {
+        "k": 7,
+        "inertia": 7526.130626,
+        "silhouette": 0.580318,
+        "davies_bouldin": 0.747456,
+        "calinski_harabasz": 17047.938554,
+        "min_cluster_share": 0.045044,
+        "elbow_distance": 0.207961
+      },
+      {
+        "k": 8,
+        "inertia": 6617.015372,
+        "silhouette": 0.584834,
+        "davies_bouldin": 0.806627,
+        "calinski_harabasz": 16877.572189,
+        "min_cluster_share": 0.03693,
+        "elbow_distance": 0.144522
+      },
+      {
+        "k": 9,
+        "inertia": 5997.828733,
+        "silhouette": 0.584235,
+        "davies_bouldin": 0.806375,
+        "calinski_harabasz": 16461.207841,
+        "min_cluster_share": 0.032835,
+        "elbow_distance": 0.073127
+      },
+      {
+        "k": 10,
+        "inertia": 5441.743301,
+        "silhouette": 0.587692,
+        "davies_bouldin": 0.810783,
+        "calinski_harabasz": 16275.822726,
+        "min_cluster_share": 0.015621,
+        "elbow_distance": 0.0
+      }
+    ],
+    "chosen": {
+      "k": 8.0,
+      "inertia": 6617.015372,
+      "silhouette": 0.584834,
+      "davies_bouldin": 0.806627,
+      "calinski_harabasz": 16877.572189,
+      "min_cluster_share": 0.03693,
+      "elbow_distance": 0.144522
+    }
+  },
+  "results": {
+    "profiles": [
+      {
+        "cluster": 0,
+        "n_cells": 4633,
+        "share": 0.351331,
+        "name": "low log pop density 2025 · low road density",
+        "mean_road_density_km_km2": 0.190658,
+        "mean_major_road_density_km_km2": 0.004697,
+        "mean_intersection_density_km2": 0.080294,
+        "mean_osm_building_density_km2": 0.000863,
+        "mean_log_pop_density_2025": 0.030483,
+        "z_road_density_km_km2": -0.627014,
+        "z_major_road_density_km_km2": -0.371812,
+        "z_intersection_density_km2": -0.460982,
+        "z_osm_building_density_km2": -0.154863,
+        "z_log_pop_density_2025": -1.074968
+      },
+      {
+        "cluster": 1,
+        "n_cells": 2820,
+        "share": 0.213847,
+        "name": "low road density",
+        "mean_road_density_km_km2": 0.707518,
+        "mean_major_road_density_km_km2": 0.013374,
+        "mean_intersection_density_km2": 0.079433,
+        "mean_osm_building_density_km2": 0.270922,
+        "mean_log_pop_density_2025": 3.694841,
+        "z_road_density_km_km2": -0.578151,
+        "z_major_road_density_km_km2": -0.367127,
+        "z_intersection_density_km2": -0.46099,
+        "z_osm_building_density_km2": -0.153629,
+        "z_log_pop_density_2025": -0.109072
+      },
+      {
+        "cluster": 2,
+        "n_cells": 1855,
+        "share": 0.140669,
+        "name": "near city-wide average",
+        "mean_road_density_km_km2": 5.401518,
+        "mean_major_road_density_km_km2": 0.020182,
+        "mean_intersection_density_km2": 17.418868,
+        "mean_osm_building_density_km2": 0.284636,
+        "mean_log_pop_density_2025": 5.683066,
+        "z_road_density_km_km2": -0.13438,
+        "z_major_road_density_km_km2": -0.363451,
+        "z_intersection_density_km2": -0.306162,
+        "z_osm_building_density_km2": -0.153567,
+        "z_log_pop_density_2025": 0.415008
+      },
+      {
+        "cluster": 3,
+        "n_cells": 487,
+        "share": 0.03693,
+        "name": "high major road density",
+        "mean_road_density_km_km2": 5.765336,
+        "mean_major_road_density_km_km2": 2.958991,
+        "mean_intersection_density_km2": 13.577002,
+        "mean_osm_building_density_km2": 0.681725,
+        "mean_log_pop_density_2025": 5.256089,
+        "z_road_density_km_km2": -0.099984,
+        "z_major_road_density_km_km2": 1.223309,
+        "z_intersection_density_km2": -0.340466,
+        "z_osm_building_density_km2": -0.151753,
+        "z_log_pop_density_2025": 0.30246
+      },
+      {
+        "cluster": 4,
+        "n_cells": 592,
+        "share": 0.044893,
+        "name": "high log pop density 2025 · high osm building density · high road density",
+        "mean_road_density_km_km2": 15.679708,
+        "mean_major_road_density_km_km2": 0.143888,
+        "mean_intersection_density_km2": 122.77027,
+        "mean_osm_building_density_km2": 250.385135,
+        "mean_log_pop_density_2025": 8.933912,
+        "z_road_density_km_km2": 0.837321,
+        "z_major_road_density_km_km2": -0.296658,
+        "z_intersection_density_km2": 0.634547,
+        "z_osm_building_density_km2": 0.988999,
+        "z_log_pop_density_2025": 1.271905
+      },
+      {
+        "cluster": 5,
+        "n_cells": 1266,
+        "share": 0.096004,
+        "name": "high road density · high intersection density · high log pop density 2025",
+        "mean_road_density_km_km2": 21.763418,
+        "mean_major_road_density_km_km2": 0.067217,
+        "mean_intersection_density_km2": 194.631912,
+        "mean_osm_building_density_km2": 0.647709,
+        "mean_log_pop_density_2025": 8.419271,
+        "z_road_density_km_km2": 1.412475,
+        "z_major_road_density_km_km2": -0.338055,
+        "z_intersection_density_km2": 1.276217,
+        "z_osm_building_density_km2": -0.151908,
+        "z_log_pop_density_2025": 1.13625
+      },
+      {
+        "cluster": 6,
+        "n_cells": 657,
+        "share": 0.049822,
+        "name": "high major road density · high osm building density · high road density",
+        "mean_road_density_km_km2": 24.148253,
+        "mean_major_road_density_km_km2": 5.363876,
+        "mean_intersection_density_km2": 202.721461,
+        "mean_osm_building_density_km2": 447.841705,
+        "mean_log_pop_density_2025": 10.136101,
+        "z_road_density_km_km2": 1.637937,
+        "z_major_road_density_km_km2": 2.521785,
+        "z_intersection_density_km2": 1.348451,
+        "z_osm_building_density_km2": 1.891064,
+        "z_log_pop_density_2025": 1.588792
+      },
+      {
+        "cluster": 7,
+        "n_cells": 877,
+        "share": 0.066505,
+        "name": "high major road density · high road density · high intersection density",
+        "mean_road_density_km_km2": 24.592416,
+        "mean_major_road_density_km_km2": 4.459024,
+        "mean_intersection_density_km2": 216.716078,
+        "mean_osm_building_density_km2": 2.421893,
+        "mean_log_pop_density_2025": 9.020485,
+        "z_road_density_km_km2": 1.679928,
+        "z_major_road_density_km_km2": 2.033226,
+        "z_intersection_density_km2": 1.473412,
+        "z_osm_building_density_km2": -0.143803,
+        "z_log_pop_density_2025": 1.294725
+      }
+    ]
+  },
+  "interpretation_notes": [
+    "Cluster 0 = lowest mean road density."
+  ],
+  "limitations": [
+    "Describes mapped infrastructure supply, not traffic or congestion.",
+    "OSM completeness varies spatially (see completeness experiment)."
+  ],
+  "run_utc": "2026-11-11T19:42:04+00:00",
+  "code_version": "ab1adb5"
+}

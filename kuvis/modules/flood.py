@@ -97,22 +97,30 @@ def run() -> pd.DataFrame:
                              "parameter_grid": grid_f.to_dict("records")})
 
     # ------------------------------------------------ A3 association rules
+    # Physically interpretable bins (documented) rather than tertiles: the lowest elevation tertile spans tens of
+    # metres and hides the near-sea-level band where water actually occurs.
+    def cut(s, edges, labels):
+        return pd.cut(s, edges, labels=labels, include_lowest=True).astype(object).where(s.notna(), None)
+
     T = pd.DataFrame(index=b.index)
-    T["Elevation"] = association.qbin(b["elev_mean"])
+    T["Elevation"] = cut(b["elev_mean"], [-1e9, 10, 30, 100, 1e9], ["≤10 m", "10–30 m", "30–100 m", ">100 m"])
     T["Terrain position"] = association.qbin(b["tpi_2km_m"], labels=("Depression", "Neutral", "Raised"))
-    T["Slope"] = association.qbin(b["slope_mean"], labels=("Flat", "Moderate", "Steep"))
-    T["Built-up"] = association.qbin(b["built_frac"])
+    T["Slope"] = cut(b["slope_mean"], [-1, 2, 5, 90], ["Flat (<2°)", "Gentle (2–5°)", "Steep (>5°)"])
+    T["Built-up"] = cut(b["built_frac"], [-1, 0.2, 0.6, 1.01], ["<20 %", "20–60 %", ">60 %"])
     T["Vegetation"] = association.qbin(b["s2_ndvi_mean"], labels=("Sparse", "Moderate", "Dense"))
-    T["Drain distance"] = association.qbin(b["dist_drain_m"], labels=("Near", "Mid", "Far"))
+    T["Waterway distance"] = cut(b["dist_waterway_m"], [-1, 250, 1000, 1e9], ["<250 m", "250–1000 m", "≥1 km"])
+    T["Drain distance"] = cut(b["dist_drain_m"], [-1, 250, 1000, 1e9], ["<250 m", "250–1000 m", "≥1 km"])
     T["Monsoon rainfall"] = association.qbin(b["rain_jjas_normal_mm"])
     T["Intermittent water"] = np.where(b["intermittent_water"].isna(), None,
                                        np.where(b["intermittent_water"] == 1, "Observed", "Not observed"))
     oh = association.transactions(T)
     a = mc["apriori"]
     base_rate = float(oh.get("Intermittent water=Observed", pd.Series(False)).mean())
-    # the consequent is rare, so support is set relative to its base rate (documented)
+    # The consequent is rare, so thresholds are relative to its base rate (documented): support ≥ ¼ base rate (min 1 %),
+    # confidence ≥ 2 × base rate, lift ≥ 2.
     min_sup = min(a["min_support"], max(0.01, base_rate * 0.25))
-    rules = association.mine(oh, ["Intermittent water=Observed"], min_sup, min(0.3, a["min_confidence"]), 1.5)
+    min_conf = max(0.1, 2 * base_rate)
+    rules = association.mine(oh, ["Intermittent water=Observed"], min_sup, min_conf, 2.0)
     rules.to_parquet(out("flood_association_rules.parquet"))
     pd.DataFrame({"grid_id": b["grid_id"].values, "items": [sorted(oh.columns[r].tolist()) for r in oh.values]}).to_parquet(
         out("flood_association_transactions.parquet"))
@@ -120,8 +128,11 @@ def run() -> pd.DataFrame:
                     purpose="Find combinations of terrain/surface/drainage/rainfall conditions that co-occur with observed "
                             "intermittent surface water",
                     inputs=list(T.columns), n_samples=len(T),
-                    params={"min_support": min_sup, "min_confidence": min(0.3, a["min_confidence"]), "min_lift": 1.5,
+                    params={"min_support": min_sup, "min_confidence": min_conf, "min_lift": 2.0,
                             "support_rule": "min(config support, max(1 %, ¼ × base rate of consequent))",
+                            "confidence_rule": "max(10 %, 2 × base rate of consequent)",
+                            "discretisation": "physical bins for elevation, slope, built-up, waterway/drain distance; "
+                                              "tertiles for terrain position, NDVI, rainfall",
                             "consequent": "Intermittent water=Observed", "label_threshold": LABEL_T},
                     metrics={"n_rules": int(len(rules)), "base_rate": base_rate, "n_transactions": int(len(oh))},
                     results={"top_rules": rules.head(25).to_dict("records")},

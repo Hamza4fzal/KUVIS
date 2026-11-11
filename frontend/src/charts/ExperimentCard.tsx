@@ -172,7 +172,7 @@ export default function ExperimentCard({ e }: { e: Experiment }) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="h-48">
+        {ols.length > 0 && <div className="h-48">
           <div className="text-2xs text-fg-dim mb-1">Standardized OLS β (95 % CI, HC3) · R² = {fmt(m.ols_r2, 3)}</div>
           <ResponsiveContainer>
             <BarChart data={ols.map((o) => ({ ...o, err: [o.std_beta - o.ci_low, o.ci_high - o.std_beta] }))} layout="vertical" margin={{ left: 40 }}>
@@ -185,8 +185,9 @@ export default function ExperimentCard({ e }: { e: Experiment }) {
               </RBar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-        <div className="col-span-2 text-2xs text-fg-dim">Residual Moran's I = {fmt(m.residual_moran_I?.I, 3)} — neighbouring cells are not independent, so naive p-values overstate certainty.</div>
+        </div>}
+        {m.residual_moran_I && <div className="col-span-2 text-2xs text-fg-dim">Residual Moran's I = {fmt(m.residual_moran_I?.I, 3)} — neighbouring cells are not independent, so naive p-values overstate certainty.</div>}
+        {m.share_dense_poorly_mapped !== undefined && <div className="col-span-2 text-xs text-fg-muted">{fmt(m.share_dense_poorly_mapped * 100, 0)} % of {m.dense_cells} dense built-up cells have fewer than 50 mapped OSM buildings per km² — building counts are too incomplete to use as a measure.</div>}
       </div>
     );
   } else if (alg.includes("fp-growth") || alg.includes("apriori") || alg.includes("association")) {

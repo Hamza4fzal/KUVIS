@@ -1,0 +1,436 @@
+{
+  "experiment_id": "flood_association",
+  "module": "flood",
+  "algorithm": "FP-Growth association rules",
+  "purpose": "Find combinations of terrain/surface/drainage/rainfall conditions that co-occur with observed intermittent surface water",
+  "input_features": [
+    "Elevation",
+    "Terrain position",
+    "Slope",
+    "Built-up",
+    "Vegetation",
+    "Waterway distance",
+    "Drain distance",
+    "Monsoon rainfall",
+    "Intermittent water"
+  ],
+  "n_samples": 13184,
+  "parameters": {
+    "min_support": 0.017142,
+    "min_confidence": 0.137136,
+    "min_lift": 2.0,
+    "support_rule": "min(config support, max(1 %, ¼ × base rate of consequent))",
+    "confidence_rule": "max(10 %, 2 × base rate of consequent)",
+    "discretisation": "physical bins for elevation, slope, built-up, waterway/drain distance; tertiles for terrain position, NDVI, rainfall",
+    "consequent": "Intermittent water=Observed",
+    "label_threshold": 0.02
+  },
+  "metrics": {
+    "n_rules": 28,
+    "base_rate": 0.068568,
+    "n_transactions": 13184
+  },
+  "results": {
+    "top_rules": [
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Elevation=≤10 m",
+          "Waterway distance=≥1 km"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.029885,
+        "confidence": 0.643791,
+        "lift": 9.389091,
+        "leverage": 0.026702,
+        "conviction": 2.614846,
+        "antecedent_support": 0.04642,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Monsoon rainfall=Low",
+          "Waterway distance=≥1 km"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.017749,
+        "confidence": 0.639344,
+        "lift": 9.324242,
+        "leverage": 0.015845,
+        "conviction": 2.582607,
+        "antecedent_support": 0.027761,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.038152,
+        "confidence": 0.635101,
+        "lift": 9.262358,
+        "leverage": 0.034033,
+        "conviction": 2.552575,
+        "antecedent_support": 0.060073,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.02814,
+        "confidence": 0.629881,
+        "lift": 9.186231,
+        "leverage": 0.025077,
+        "conviction": 2.516576,
+        "antecedent_support": 0.044675,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Monsoon rainfall=Low"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.025865,
+        "confidence": 0.622263,
+        "lift": 9.075124,
+        "leverage": 0.023015,
+        "conviction": 2.46582,
+        "antecedent_support": 0.041566,
+        "consequent_support": 0.068568,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)",
+          "Waterway distance=≥1 km"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.022527,
+        "confidence": 0.621339,
+        "lift": 9.061651,
+        "leverage": 0.020041,
+        "conviction": 2.459804,
+        "antecedent_support": 0.036256,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)",
+          "Terrain position=Neutral"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.018962,
+        "confidence": 0.618812,
+        "lift": 9.024796,
+        "leverage": 0.016861,
+        "conviction": 2.443497,
+        "antecedent_support": 0.030643,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Elevation=≤10 m",
+          "Terrain position=Neutral"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.024954,
+        "confidence": 0.616105,
+        "lift": 8.985317,
+        "leverage": 0.022177,
+        "conviction": 2.426267,
+        "antecedent_support": 0.040504,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.027761,
+        "confidence": 0.614094,
+        "lift": 8.95599,
+        "leverage": 0.024661,
+        "conviction": 2.413624,
+        "antecedent_support": 0.045206,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Elevation=≤10 m"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.043613,
+        "confidence": 0.597713,
+        "lift": 8.71709,
+        "leverage": 0.03861,
+        "conviction": 2.315343,
+        "antecedent_support": 0.072967,
+        "consequent_support": 0.068568,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.030036,
+        "confidence": 0.578947,
+        "lift": 8.443409,
+        "leverage": 0.026479,
+        "conviction": 2.212151,
+        "antecedent_support": 0.051881,
+        "consequent_support": 0.068568,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Terrain position=Neutral",
+          "Waterway distance=≥1 km"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.018507,
+        "confidence": 0.578199,
+        "lift": 8.432496,
+        "leverage": 0.016313,
+        "conviction": 2.208227,
+        "antecedent_support": 0.032008,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Vegetation=Dense",
+          "Waterway distance=≥1 km"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.01737,
+        "confidence": 0.576826,
+        "lift": 8.412474,
+        "leverage": 0.015305,
+        "conviction": 2.201063,
+        "antecedent_support": 0.030112,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m",
+          "Vegetation=Dense"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.019645,
+        "confidence": 0.569231,
+        "lift": 8.301702,
+        "leverage": 0.017279,
+        "conviction": 2.162253,
+        "antecedent_support": 0.034512,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m",
+          "Terrain position=Neutral"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.024196,
+        "confidence": 0.555749,
+        "lift": 8.105085,
+        "leverage": 0.021211,
+        "conviction": 2.096635,
+        "antecedent_support": 0.043538,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Vegetation=Dense"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.022527,
+        "confidence": 0.54,
+        "lift": 7.875398,
+        "leverage": 0.019667,
+        "conviction": 2.024852,
+        "antecedent_support": 0.041717,
+        "consequent_support": 0.068568,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Waterway distance=≥1 km"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.033222,
+        "confidence": 0.536108,
+        "lift": 7.818633,
+        "leverage": 0.028973,
+        "conviction": 2.007863,
+        "antecedent_support": 0.061969,
+        "consequent_support": 0.068568,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.043538,
+        "confidence": 0.532468,
+        "lift": 7.765544,
+        "leverage": 0.037931,
+        "conviction": 1.99223,
+        "antecedent_support": 0.081766,
+        "consequent_support": 0.068568,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.051578,
+        "confidence": 0.480565,
+        "lift": 7.008599,
+        "leverage": 0.044218,
+        "conviction": 1.793165,
+        "antecedent_support": 0.107327,
+        "consequent_support": 0.068568,
+        "n_items": 1
+      },
+      {
+        "antecedents": [
+          "Monsoon rainfall=Low",
+          "Terrain position=Neutral"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.017521,
+        "confidence": 0.217514,
+        "lift": 3.172241,
+        "leverage": 0.011998,
+        "conviction": 1.19035,
+        "antecedent_support": 0.080552,
+        "consequent_support": 0.068568,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Monsoon rainfall=Low",
+          "Slope=Flat (<2°)"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.021086,
+        "confidence": 0.200144,
+        "lift": 2.918914,
+        "leverage": 0.013862,
+        "conviction": 1.1645,
+        "antecedent_support": 0.105355,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Monsoon rainfall=Low",
+          "Slope=Flat (<2°)"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.021996,
+        "confidence": 0.181363,
+        "lift": 2.645016,
+        "leverage": 0.01368,
+        "conviction": 1.137784,
+        "antecedent_support": 0.121283,
+        "consequent_support": 0.068568,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Slope=Flat (<2°)",
+          "Waterway distance=≥1 km"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.022451,
+        "confidence": 0.168182,
+        "lift": 2.452776,
+        "leverage": 0.013298,
+        "conviction": 1.119754,
+        "antecedent_support": 0.133495,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Slope=Flat (<2°)",
+          "Terrain position=Neutral"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.0201,
+        "confidence": 0.154159,
+        "lift": 2.248272,
+        "leverage": 0.01116,
+        "conviction": 1.101191,
+        "antecedent_support": 0.130385,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Slope=Flat (<2°)",
+          "Vegetation=Dense"
+        ],
+        "consequent": "Intermittent water=Observed",
+        "support": 0.017749,
+        "confidence": 0.145976,
+        "lift": 2.128929,
+        "leverage": 0.009412,
+        "conviction": 1.09064,
+        "antecedent_support": 0.121587,
+        "consequent_support": 0.068568,
+        "n_items": 3
+      }
+    ]
+  },
+  "interpretation_notes": [
+    "Because only a minority of cells show intermittent water, confidence values are modest; lift measures how much the conditions raise the rate above its base rate."
+  ],
+  "limitations": [
+    "Intermittent water ≠ urban flooding; short urban floods under cloud are rarely captured by Landsat.",
+    "Association ≠ causation."
+  ],
+  "run_utc": "2026-11-11T19:43:27+00:00",
+  "code_version": "ab1adb5"
+}

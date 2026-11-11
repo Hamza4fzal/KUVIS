@@ -1,0 +1,159 @@
+{
+  "experiment_id": "flood_tree",
+  "module": "flood",
+  "algorithm": "Decision Tree (spatially blocked CV)",
+  "purpose": "Which terrain/surface characteristics distinguish cells with observed intermittent surface water?",
+  "input_features": [
+    "elev_mean",
+    "elev_std",
+    "slope_mean",
+    "tpi_2km_m",
+    "built_frac",
+    "bare_frac",
+    "s2_ndvi_mean",
+    "log_dist_drain",
+    "log_dist_waterway",
+    "log_dist_coast",
+    "rain_jjas_normal_mm"
+  ],
+  "n_samples": 11913,
+  "parameters": {
+    "target": "JRC GSW seasonal-water share ≥ 0.02",
+    "class_weight": "balanced",
+    "cv": "GroupKFold(5) on 5 km × 5 km blocks",
+    "min_samples_leaf": "1 % of cells"
+  },
+  "metrics": {
+    "best_depth": 3,
+    "accuracy": 0.842189,
+    "balanced_accuracy": 0.851514,
+    "precision": 0.264073,
+    "recall": 0.862162,
+    "f1": 0.404309,
+    "roc_auc": 0.896324,
+    "confusion_matrix": {
+      "tn": 9395,
+      "fp": 1778,
+      "fn": 102,
+      "tp": 638
+    },
+    "positive_rate": 0.062117,
+    "n_blocks": 162,
+    "cv": "GroupKFold(5) on spatial blocks",
+    "depth_search": {
+      "2": {
+        "balanced_accuracy": 0.839714,
+        "roc_auc": 0.882764
+      },
+      "3": {
+        "balanced_accuracy": 0.851514,
+        "roc_auc": 0.896324
+      },
+      "4": {
+        "balanced_accuracy": 0.840405,
+        "roc_auc": 0.908919
+      },
+      "5": {
+        "balanced_accuracy": 0.849108,
+        "roc_auc": 0.904602
+      },
+      "6": {
+        "balanced_accuracy": 0.844965,
+        "roc_auc": 0.90474
+      },
+      "8": {
+        "balanced_accuracy": 0.850182,
+        "roc_auc": 0.911675
+      }
+    },
+    "label_threshold_sensitivity": {
+      "0.01": {
+        "balanced_accuracy": 0.833258,
+        "roc_auc": 0.868119,
+        "positive_rate": 0.074792,
+        "best_depth": 3
+      },
+      "0.02": {
+        "balanced_accuracy": 0.851514,
+        "roc_auc": 0.896324,
+        "positive_rate": 0.062117,
+        "best_depth": 3
+      },
+      "0.05": {
+        "balanced_accuracy": 0.852554,
+        "roc_auc": 0.909942,
+        "positive_rate": 0.044573,
+        "best_depth": 6
+      }
+    }
+  },
+  "results": {
+    "importance": [
+      {
+        "feature": "elev_mean",
+        "gini_importance": 0.800996,
+        "permutation_importance": 0.103049
+      },
+      {
+        "feature": "log_dist_waterway",
+        "gini_importance": 0.121538,
+        "permutation_importance": 0.052395
+      },
+      {
+        "feature": "built_frac",
+        "gini_importance": 0.042664,
+        "permutation_importance": 0.0505
+      },
+      {
+        "feature": "log_dist_coast",
+        "gini_importance": 0.034802,
+        "permutation_importance": 0.033743
+      },
+      {
+        "feature": "elev_std",
+        "gini_importance": 0.0,
+        "permutation_importance": 0.0
+      },
+      {
+        "feature": "slope_mean",
+        "gini_importance": 0.0,
+        "permutation_importance": 0.0
+      },
+      {
+        "feature": "tpi_2km_m",
+        "gini_importance": 0.0,
+        "permutation_importance": 0.0
+      },
+      {
+        "feature": "s2_ndvi_mean",
+        "gini_importance": 0.0,
+        "permutation_importance": 0.0
+      },
+      {
+        "feature": "bare_frac",
+        "gini_importance": 0.0,
+        "permutation_importance": 0.0
+      },
+      {
+        "feature": "log_dist_drain",
+        "gini_importance": 0.0,
+        "permutation_importance": 0.0
+      },
+      {
+        "feature": "rain_jjas_normal_mm",
+        "gini_importance": 0.0,
+        "permutation_importance": 0.0
+      }
+    ],
+    "rules_text": "|--- elev_mean <= 8.13\n|   |--- built_frac <= 0.78\n|   |   |--- elev_mean <= 3.81\n|   |   |   |--- class: 1\n|   |   |--- elev_mean >  3.81\n|   |   |   |--- class: 1\n|   |--- built_frac >  0.78\n|   |   |--- class: 0\n|--- elev_mean >  8.13\n|   |--- log_dist_waterway <= 2.56\n|   |   |--- built_frac <= 0.26\n|   |   |   |--- class: 1\n|   |   |--- built_frac >  0.26\n|   |   |   |--- class: 0\n|   |--- log_dist_waterway >  2.56\n|   |   |--- log_dist_coast <= 3.18\n|   |   |   |--- class: 1\n|   |   |--- log_dist_coast >  3.18\n|   |   |   |--- class: 0\n"
+  },
+  "interpretation_notes": [
+    "Probabilities are out-of-fold: each cell is scored by a tree that never saw its 5 km block. Decision paths are from the final tree fitted on all cells."
+  ],
+  "limitations": [
+    "The target is intermittent surface water, not validated flood occurrence; the model explains this proxy and has no demonstrated predictive validity for urban flood events.",
+    "Spatial blocks reduce but do not eliminate spatial leakage."
+  ],
+  "run_utc": "2026-11-11T19:43:32+00:00",
+  "code_version": "ab1adb5"
+}

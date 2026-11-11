@@ -1,6 +1,6 @@
 # KUVIS — Results
 
-_Generated 2026-11-11 18:40 UTC by `scripts/generate_results.py` from `research/experiments/*.json`. Do not edit by hand._
+_Generated 2026-11-11 19:44 UTC by `scripts/generate_results.py` from `research/experiments/*.json`. Do not edit by hand._
 
 ## Module: heat
 
@@ -126,6 +126,83 @@ _Limitations:_ Contamination (2 %) sets how many cells are flagged; anomalies ar
 
 _Limitations:_ K-means assumes roughly spherical clusters in standardized space. LST composite is daytime (~10:30 local) Apr–Jun.
 
+## Module: flood
+
+### FP-Growth association rules — `flood_association`
+
+*Find combinations of terrain/surface/drainage/rainfall conditions that co-occur with observed intermittent surface water* · n = 13,184 · run 2026-11-11T19:43:27+00:00 · code ab1adb5
+- n rules: **28**
+- base rate: **0.069**
+
+| rule | support | confidence | lift |
+|---|---|---|---|
+| Built-up=<20 % ∧ Elevation=≤10 m ∧ Waterway distance=≥1 km ⇒ Intermittent water=Observed | 0.030 | 0.644 | 9.39 |
+| Elevation=≤10 m ∧ Monsoon rainfall=Low ∧ Waterway distance=≥1 km ⇒ Intermittent water=Observed | 0.018 | 0.639 | 9.32 |
+| Built-up=<20 % ∧ Drain distance=≥1 km ∧ Elevation=≤10 m ⇒ Intermittent water=Observed | 0.038 | 0.635 | 9.26 |
+| Built-up=<20 % ∧ Elevation=≤10 m ∧ Slope=Flat (<2°) ⇒ Intermittent water=Observed | 0.028 | 0.630 | 9.19 |
+| Elevation=≤10 m ∧ Monsoon rainfall=Low ⇒ Intermittent water=Observed | 0.026 | 0.622 | 9.08 |
+| Elevation=≤10 m ∧ Slope=Flat (<2°) ∧ Waterway distance=≥1 km ⇒ Intermittent water=Observed | 0.023 | 0.621 | 9.06 |
+| Elevation=≤10 m ∧ Slope=Flat (<2°) ∧ Terrain position=Neutral ⇒ Intermittent water=Observed | 0.019 | 0.619 | 9.02 |
+| Built-up=<20 % ∧ Elevation=≤10 m ∧ Terrain position=Neutral ⇒ Intermittent water=Observed | 0.025 | 0.616 | 8.99 |
+
+_Limitations:_ Intermittent water ≠ urban flooding; short urban floods under cloud are rarely captured by Landsat. Association ≠ causation.
+
+### DBSCAN (feature space) — `flood_dbscan_feature`
+
+*Density-based flood-related profiles; compare with K-means* · n = 11,913 · run 2026-11-11T19:43:25+00:00 · code ab1adb5
+- n clusters: **4**
+- noise share: **0.021**
+- ari vs kmeans non noise: **0.003**
+
+### K-means — `flood_kmeans`
+
+*Group land cells by flood-related terrain, surface and rainfall characteristics* · n = 11,913 · run 2026-11-11T19:42:59+00:00 · code ab1adb5
+
+- Selected: K=7: highest silhouette (0.342) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=5
+- Silhouette 0.342, Davies–Bouldin 1.078, Calinski–Harabasz 4091
+
+| K | inertia | silhouette | Davies–Bouldin |
+|---|---|---|---|
+| 2 | 60812 | 0.316 | 1.354 |
+| 3 | 49998 | 0.296 | 1.290 |
+| 4 | 40917 | 0.309 | 1.147 |
+| 5 | 34357 | 0.332 | 1.062 |
+| 6 | 29875 | 0.338 | 1.040 |
+| 7 | 27238 | 0.342 | 1.078 |
+| 8 | 25338 | 0.339 | 1.091 |
+| 9 | 23625 | 0.287 | 1.189 |
+| 10 | 22181 | 0.289 | 1.163 |
+
+| cluster | cells | generated name |
+|---|---|---|
+| 0 | 527 | high local depression (TPI) · high elevation · high distance to mapped drain |
+| 1 | 424 | high slope · high local depression (TPI) · high elevation |
+| 2 | 2654 | high distance to mapped drain · high elevation · low monsoon rainfall |
+| 3 | 4668 | near city-wide average |
+| 4 | 1202 | high monsoon rainfall · low elevation · low distance to mapped drain |
+| 5 | 1846 | high built-up · low elevation · low distance to mapped drain |
+| 6 | 592 | high NDVI · low elevation · low slope |
+
+_Limitations:_ Rainfall is assigned from ≈5.5 km CHIRPS pixels and varies little inside the city. 30 m DEM cannot represent drains or micro-topography.
+
+### Decision Tree (spatially blocked CV) — `flood_tree`
+
+*Which terrain/surface characteristics distinguish cells with observed intermittent surface water?* · n = 11,913 · run 2026-11-11T19:43:32+00:00 · code ab1adb5
+- balanced accuracy: **0.852**
+- roc auc: **0.896**
+- precision: **0.264**
+- recall: **0.862**
+- f1: **0.404**
+- best depth: **3**
+
+| label threshold | balanced acc. | ROC-AUC | positive rate |
+|---|---|---|---|
+| 0.01 | 0.833 | 0.868 | 0.075 |
+| 0.02 | 0.852 | 0.896 | 0.062 |
+| 0.05 | 0.853 | 0.910 | 0.045 |
+
+_Limitations:_ The target is intermittent surface water, not validated flood occurrence; the model explains this proxy and has no demonstrated predictive validity for urban flood events. Spatial blocks reduce but do not eliminate spatial leakage.
+
 ## Module: urban
 
 ### Isolation Forest (+ LOF comparison) — `urban_isolation_forest`
@@ -175,11 +252,56 @@ _Limitations:_ Polygon boundaries of the two years were mapped independently; sl
 
 _Limitations:_ With ≤ 5 epochs, Kendall's τ has little power: p < 0.05 needs a near-monotonic series. Epoch composites differ in scene count and weather.
 
+## Module: infra
+
+### K-means — `infra_kmeans`
+
+*Profile mapped road-network supply relative to population* · n = 13,187 · run 2026-11-11T19:42:04+00:00 · code ab1adb5
+
+- Selected: K=8: highest silhouette (0.585) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=5
+- Silhouette 0.585, Davies–Bouldin 0.807, Calinski–Harabasz 16878
+
+| K | inertia | silhouette | Davies–Bouldin |
+|---|---|---|---|
+| 2 | 31207 | 0.538 | 0.876 |
+| 3 | 20856 | 0.532 | 0.939 |
+| 4 | 15555 | 0.550 | 0.830 |
+| 5 | 11051 | 0.571 | 0.774 |
+| 6 | 8941 | 0.583 | 0.736 |
+| 7 | 7526 | 0.580 | 0.747 |
+| 8 | 6617 | 0.585 | 0.807 |
+| 9 | 5998 | 0.584 | 0.806 |
+| 10 | 5442 | 0.588 | 0.811 |
+
+| cluster | cells | generated name |
+|---|---|---|
+| 0 | 4633 | low log pop density 2025 · low road density |
+| 1 | 2820 | low road density |
+| 2 | 1855 | near city-wide average |
+| 3 | 487 | high major road density |
+| 4 | 592 | high log pop density 2025 · high osm building density · high road density |
+| 5 | 1266 | high road density · high intersection density · high log pop density 2025 |
+| 6 | 657 | high major road density · high osm building density · high road density |
+| 7 | 877 | high major road density · high road density · high intersection density |
+
+_Limitations:_ Describes mapped infrastructure supply, not traffic or congestion. OSM completeness varies spatially (see completeness experiment).
+
+### Spearman correlation (completeness check) — `infra_osm_completeness`
+
+*Assess how completely OSM maps buildings where other sources show dense settlement* · n = 13,187 · run 2026-11-11T19:42:04+00:00 · code ab1adb5
+
+| feature | Spearman ρ | n |
+|---|---|---|
+| pop_density_2025 | 0.522 | 13187 |
+| built_frac | 0.556 | 13187 |
+
+_Limitations:_ A low count may also reflect very large buildings; this is a screening indicator.
+
 ## Module: vulnerability
 
 ### FP-Growth association rules — `vulnerability_association`
 
-*Which stress dimensions tend to co-occur in the same cells?* · n = 13,187 · run 2026-11-11T18:39:13+00:00 · code aea7c6e
+*Which stress dimensions tend to co-occur in the same cells?* · n = 13,187 · run 2026-11-11T19:44:19+00:00 · code ab1adb5
 - n rules: **11**
 
 | rule | support | confidence | lift |
@@ -197,12 +319,12 @@ _Limitations:_ Co-occurrence only. Dimensions share some inputs indirectly (e.g.
 
 ### DBSCAN (geographic, top-decile UVI) — `vulnerability_dbscan_geographic`
 
-*Locate spatial concentrations of the most stressed cells* · n = 1,319 · run 2026-11-11T18:39:12+00:00 · code aea7c6e
+*Locate spatial concentrations of the most stressed cells* · n = 1,319 · run 2026-11-11T19:44:17+00:00 · code ab1adb5
 - n hotspots: **37**
 
 ### Getis–Ord Gi* + Global Moran's I — `vulnerability_gi_star`
 
-*Statistically significant clustering of the composite index* · n = 13,187 · run 2026-11-11T18:39:12+00:00 · code aea7c6e
+*Statistically significant clustering of the composite index* · n = 13,187 · run 2026-11-11T19:44:18+00:00 · code ab1adb5
 - n hot: **3130**
 - n cold: **2615**
 - n hot fdr: **2630**
@@ -210,7 +332,7 @@ _Limitations:_ Co-occurrence only. Dimensions share some inputs indirectly (e.g.
 
 ### Composite index (UVI) + weight sensitivity — `vulnerability_index`
 
-*Combine normalized dimension indicators into an explainable composite index* · n = 13,187 · run 2026-11-11T18:39:12+00:00 · code aea7c6e
+*Combine normalized dimension indicators into an explainable composite index* · n = 13,187 · run 2026-11-11T19:44:18+00:00 · code ab1adb5
 - n scored: **13187**
 - top quintile stable share: **0.218**
 - median rank range width: **55.440**
@@ -219,7 +341,7 @@ _Limitations:_ Not an official disaster-risk assessment. Percentile normalisatio
 
 ### K-means — `vulnerability_kmeans`
 
-*Identify combinations of overlapping stress across the four dimensions* · n = 13,135 · run 2026-11-11T18:39:08+00:00 · code aea7c6e
+*Identify combinations of overlapping stress across the four dimensions* · n = 13,135 · run 2026-11-11T19:44:14+00:00 · code ab1adb5
 
 - Selected: K=3: highest silhouette (0.334) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=4
 - Silhouette 0.334, Davies–Bouldin 1.168, Calinski–Harabasz 7211
@@ -242,10 +364,19 @@ _Limitations:_ Not an official disaster-risk assessment. Percentile normalisatio
 | 1 | 5691 | low flood · high heat · low urbanization |
 | 2 | 3284 | high environmental · low heat · high flood |
 
-## Discovered patterns (49)
+## Discovered patterns (53)
 
 **The coolest thermal profile: low NDBI · high NDVI · low LST** — _Thermal profile, K-means, 2023–2025_  
 K-means (K=3, silhouette 0.53) isolates 413 cells (3 % of analysed land) with mean LST 37.3 °C, NDVI 0.59, NDBI -0.35, built-up 1 %.
+
+**Built-up=<20 % + Elevation=≤10 m + Waterway distance=≥1 km ⇒ Intermittent water=Observed** — _Environmental association, FP-Growth, current period_  
+In 3.0 % of analysed cells these conditions occur together with Intermittent water=Observed. When the conditions hold, Intermittent water=Observed follows 64 % of the time — 9.39× its base rate of 7 %. Co-occurrence, not causation.
+
+**Elevation=≤10 m + Monsoon rainfall=Low + Waterway distance=≥1 km ⇒ Intermittent water=Observed** — _Environmental association, FP-Growth, current period_  
+In 1.8 % of analysed cells these conditions occur together with Intermittent water=Observed. When the conditions hold, Intermittent water=Observed follows 64 % of the time — 9.32× its base rate of 7 %. Co-occurrence, not causation.
+
+**Built-up=<20 % + Drain distance=≥1 km + Elevation=≤10 m ⇒ Intermittent water=Observed** — _Environmental association, FP-Growth, current period_  
+In 3.8 % of analysed cells these conditions occur together with Intermittent water=Observed. When the conditions hold, Intermittent water=Observed follows 64 % of the time — 9.26× its base rate of 7 %. Co-occurrence, not causation.
 
 **Persistently cool anomaly in GADAP TOWN (4 cells)** — _Unusual heat observation, Isolation Forest, Apr–Jun 2023–2025_  
 Isolation Forest flags these cells as cooler than context: their relative LST is -2.5 robust-SD from cells with the same land cover and -4.5 °C from neighbours within 1.5 km; the deviation recurs on 100 % of individual satellite dates. Dominant cover: crop. Statistically unusual, not necessarily hazardous.
@@ -333,6 +464,9 @@ DBSCAN groups 15 of Karachi's hottest-decile cells into one contiguous concentra
 
 **Elevation=Low + Vegetation=Sparse ⇒ Surface heat=Low** — _Environmental association, FP-Growth, current period_  
 In 11.0 % of analysed cells these conditions occur together with Surface heat=Low. When the conditions hold, Surface heat=Low follows 84 % of the time — 2.52× its base rate of 33 %. Co-occurrence, not causation.
+
+**Profile “high NDVI · low elevation · low slope”: intermittent surface water in 34 % of cells** — _Flood-related profile, K-means + independent JRC label, 1984–2021 water history; current terrain/land cover_  
+K-means (K=7) groups 592 cells with mean elevation 31.7 m, slope 1.6°, NDVI 0.55 and built-up share 3 %. JRC Global Surface Water (1984–2021) observed intermittent water in 34 % of them — 5.0× the 6.9 % rate across analysed cells. The water label was not a clustering input. Intermittent water is not the same as urban flooding: Landsat rarely captures short street flooding in dense built-up areas.
 
 **Overlapping urbanization and heat stress: 6.2 km² in BIN QASIM TOWN** — _Overlapping environmental stress, Composite index + DBSCAN, current period_  
 25 contiguous cells in the top decile of the composite index (mean UVI 0.69). heat 0.79, flood 0.51, urbanization 0.87, environmental 0.58 (percentile-scale dimension scores). 72 % stay in the top quintile under 95 % of alternative weightings. WorldPop estimates 4,627 residents (2025).

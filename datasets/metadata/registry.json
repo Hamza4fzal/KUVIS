@@ -485,5 +485,62 @@
     ],
     "n_pixels": 171,
     "limitations": "Satellite–gauge blend; one pixel spans ~100 grid cells; not neighbourhood ground truth; monthly totals cannot resolve sub-daily cloudburst intensity."
+  },
+  "osm_overpass": {
+    "key": "osm_overpass",
+    "title": "OpenStreetMap roads, waterways, coastline, buildings (Karachi)",
+    "provider": "OpenStreetMap contributors, via Overpass API",
+    "url": "https://overpass-api.de/",
+    "method": "Overpass QL bbox queries (out geom / out center); snapshot saved in datasets/raw/osm",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T19:41:06+00:00",
+    "files": [
+      {
+        "path": "datasets/raw/osm/roads.json",
+        "bytes": 57643736,
+        "sha256": "13174248d313e5c705f2b1787ecc32bbd828ca86b6ec6c52738440deb5d53e42"
+      },
+      {
+        "path": "datasets/raw/osm/waterways.json",
+        "bytes": 1646257,
+        "sha256": "9cc198781a050ff07eb058f53b56265c95e37f9daa00c4c43f6f51c7b41847d3"
+      },
+      {
+        "path": "datasets/raw/osm/coastline.json",
+        "bytes": 804284,
+        "sha256": "6e37b462bfc253a769b5cfa8dae7f7f46570084fdb738cf7328a43a38274d1f1"
+      },
+      {
+        "path": "datasets/raw/osm/buildings.json",
+        "bytes": 33544047,
+        "sha256": "fb151ff12decf6361d19b5ba93b1fd5546110f77248d11758a47098702b9ac8b"
+      }
+    ],
+    "license": "ODbL 1.0",
+    "crs": "EPSG:4326 → EPSG:32642",
+    "spatial_resolution": "vector",
+    "temporal_coverage": "snapshot 2026-11-11",
+    "variables": [
+      "road_km",
+      "road_major_km",
+      "road_density_km_km2",
+      "major_road_density_km_km2",
+      "intersections",
+      "intersection_density_km2",
+      "osm_buildings",
+      "osm_building_density_km2",
+      "dist_waterway_m",
+      "dist_drain_m",
+      "dist_river_stream_m",
+      "dist_coast_m"
+    ],
+    "counts": {
+      "roads": 104549,
+      "waterways": 1263,
+      "coastline": 127,
+      "buildings": 116263,
+      "intersections": 181005
+    },
+    "limitations": "Completeness varies spatially; drains under-mapped; road density ≠ traffic congestion."
   }
 }

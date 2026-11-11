@@ -231,6 +231,33 @@ def run() -> list[dict]:
                               "threshold": float(thr), "strength_definition": "min(1, |mean change| / 0.3)"},
                     strength=float(min(1, abs(sub.ndvi_rel_change_2001_2024.mean()) / 0.3)), grid_ids=comp)
 
+    # 7b — flood-related K-means profile with clearly elevated observed intermittent water (≥ 3 × the base rate)
+    e = _exp("flood_kmeans")
+    fc_p = out("flood_cells.parquet")
+    ea = _exp("flood_association")
+    if e and fc_p.exists() and ea:
+        fc = pd.read_parquet(fc_p)
+        base = ea["metrics"]["base_rate"]
+        prof = pd.DataFrame(e["results"]["profiles"]).sort_values("share_intermittent_water", ascending=False)
+        for r in prof.itertuples():
+            if r.share_intermittent_water < 3 * base or r.n_cells < 30:
+                continue
+            ids = fc.grid_id[fc.flood_kmeans == r.cluster].tolist()
+            add(category="Flood-related profile",
+                title=f"Profile “{r.name}”: intermittent surface water in {r.share_intermittent_water * 100:.0f} % of cells",
+                description=(f"K-means (K={e['parameters']['k']}) groups {r.n_cells} cells with mean elevation {r.mean_elev_mean:.1f} m, "
+                             f"slope {r.mean_slope_mean:.1f}°, NDVI {r.mean_s2_ndvi_mean:.2f} and built-up share {r.mean_built_frac * 100:.0f} %. "
+                             f"JRC Global Surface Water (1984–2021) observed intermittent water in {r.share_intermittent_water * 100:.0f} % of them "
+                             f"— {r.share_intermittent_water / base:.1f}× the {base * 100:.1f} % rate across analysed cells. The water label was "
+                             "not a clustering input. Intermittent water is not the same as urban flooding: Landsat rarely captures "
+                             "short street flooding in dense built-up areas."),
+                period="1984–2021 water history; current terrain/land cover", algorithm="K-means + independent JRC label",
+                experiment_id="flood_kmeans", variables=e["input_features"], sources=["NASADEM", "ESA WorldCover", "Sentinel-2",
+                                                                                      "OpenStreetMap", "CHIRPS", "JRC GSW"],
+                evidence={"share_intermittent_water": r.share_intermittent_water, "base_rate": base,
+                          "ratio_to_base": r.share_intermittent_water / base, "strength_definition": "min(1, ratio / 10)"},
+                strength=float(min(1, r.share_intermittent_water / base / 10)), grid_ids=ids)
+
     # 8 — overlapping stress concentrations
     vh = out("vulnerability_hotspots.parquet")
     vcp = out("vulnerability_cells.parquet")
