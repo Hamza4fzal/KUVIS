@@ -210,26 +210,26 @@ def run() -> list[dict]:
                     evidence={**tr, "share_of_source_class": tr["km2"] / total_from, "strength_definition": "min(1, km² / 50)"},
                     strength=float(min(1, tr["km2"] / 50)), grid_ids=[], lon=None, lat=None)
 
-    # 7 — vegetation loss / gain concentrations (Landsat 2005→2024)
-    if "ndvi_change_2005_2024" in df:
-        land = df[df.is_land_cell & df.ndvi_change_2005_2024.notna()]
+    # 7 — vegetation loss / gain concentrations (Landsat 2001→2024)
+    if "ndvi_change_2001_2024" in df:
+        land = df[df.is_land_cell & df.ndvi_change_2001_2024.notna()]
         for sign, label in ((-1, "loss"), (1, "gain")):
-            thr = land.ndvi_change_2005_2024.quantile(0.05 if sign < 0 else 0.95)
-            sel = land[(land.ndvi_change_2005_2024 * sign >= abs(thr)) & (land.ndvi_change_2005_2024 * sign > 0.05)]
+            thr = land.ndvi_change_2001_2024.quantile(0.05 if sign < 0 else 0.95)
+            sel = land[(land.ndvi_change_2001_2024 * sign >= abs(thr)) & (land.ndvi_change_2001_2024 * sign > 0.05)]
             for comp in sorted(_components(df, sel.grid_id), key=len, reverse=True)[:3]:
                 if len(comp) < 8:
                     continue
                 sub = df[df.grid_id.isin(comp)]
                 add(category="Vegetation change",
                     title=f"Concentrated vegetation {label}: {len(comp) * 0.25:.1f} km² in {_subs(df, comp)}",
-                    description=(f"{len(comp)} contiguous cells fall in Karachi's most extreme 5 % of NDVI {label} between the 2004–06 and 2023–25 "
-                                 f"Landsat epochs (mean change {sub.ndvi_change_2005_2024.mean():+.2f}; NDVI {sub.ls_ndvi_2005.mean():.2f} → "
-                                 f"{sub.ls_ndvi_2024.mean():.2f}). Relative surface heat changed by {sub.lst_rel_change_2005_2024.mean():+.1f} °C."),
-                    period="2004–06 → 2023–25", algorithm="Change detection + connected components", experiment_id="urban_kmeans",
-                    variables=["ndvi_change_2005_2024", "lst_rel_change_2005_2024"], sources=["Landsat 5", "Landsat 8/9"],
-                    evidence={"n_cells": len(comp), "mean_ndvi_change": float(sub.ndvi_change_2005_2024.mean()),
+                    description=(f"{len(comp)} contiguous cells fall in Karachi's most extreme 5 % of NDVI {label} between the 2000–02 and 2023–25 "
+                                 f"Landsat epochs (mean change {sub.ndvi_change_2001_2024.mean():+.2f}; NDVI {sub.ls_ndvi_2001.mean():.2f} → "
+                                 f"{sub.ls_ndvi_2024.mean():.2f}). Relative surface heat changed by {sub.lst_rel_change_2001_2024.mean():+.1f} °C."),
+                    period="2000–02 → 2023–25", algorithm="Change detection + connected components", experiment_id="urban_kmeans",
+                    variables=["ndvi_change_2001_2024", "lst_rel_change_2001_2024"], sources=["Landsat 5", "Landsat 8/9"],
+                    evidence={"n_cells": len(comp), "mean_ndvi_change": float(sub.ndvi_change_2001_2024.mean()),
                               "threshold": float(thr), "strength_definition": "min(1, |mean change| / 0.3)"},
-                    strength=float(min(1, abs(sub.ndvi_change_2005_2024.mean()) / 0.3)), grid_ids=comp)
+                    strength=float(min(1, abs(sub.ndvi_change_2001_2024.mean()) / 0.3)), grid_ids=comp)
 
     # 8 — overlapping stress concentrations
     vh = out("vulnerability_hotspots.parquet")

@@ -184,5 +184,62 @@
     "limitations": "Archive `lulcvhr_2017.zip` contains files named *_2005 but 2017 content (verified from attributes). Imperviousness uses band mid-points (estimate). Coverage limited to the EO4SD mapped extents.",
     "transitions_hr_km2": 2944.4360415180845,
     "transitions_vhr_km2": 370.95267011520446
+  },
+  "sentinel2_l2a": {
+    "key": "sentinel2_l2a",
+    "title": "Sentinel-2 MSI Level-2A surface reflectance",
+    "provider": "ESA Copernicus, via Microsoft Planetary Computer",
+    "url": "https://planetarycomputer.microsoft.com/dataset/sentinel-2-l2a",
+    "method": "STAC search 2023-11-01–2024-02-29, cloud<20%, clearest 3 per MGRS tile; SCL-masked median composite on 20 m UTM 42N grid; baseline-04.00 offset removed",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T16:51:47+00:00",
+    "files": [
+      {
+        "path": "datasets/interim/s2_ndvi.tif",
+        "bytes": 71366796,
+        "sha256": "ce762d8038a996a719d6bb992bdfd214e8a06a45968a4233d8a8d3b340b921ab"
+      },
+      {
+        "path": "datasets/interim/s2_ndwi.tif",
+        "bytes": 68353867,
+        "sha256": "65e48f547350e7dcb6ad33c45b467bc6d6ebfac36e615d8aa869177235d97250"
+      },
+      {
+        "path": "datasets/interim/s2_ndbi.tif",
+        "bytes": 72009426,
+        "sha256": "8cd1968e8f0b1427c221b263da9ddfa8184865b6165d4aa640db3cb669c32e88"
+      }
+    ],
+    "license": "Copernicus open licence (free, attribution)",
+    "crs": "EPSG:32642",
+    "spatial_resolution": "20 m (10 m bands from 20 m COG overview)",
+    "temporal_coverage": "2023-11-01 to 2024-02-29 (dry season)",
+    "variables": [
+      "NDVI",
+      "NDWI (McFeeters)",
+      "NDBI",
+      "vegetation fraction (NDVI>0.3)"
+    ],
+    "items": [
+      "S2B_MSIL2A_20231102T061019_R134_T42RUP_20241017T061436",
+      "S2B_MSIL2A_20231102T061019_R134_T42RTN_20241017T061436",
+      "S2B_MSIL2A_20231102T061019_R134_T41RRH_20241017T061436",
+      "S2B_MSIL2A_20231102T061019_R134_T42RTP_20241017T061436",
+      "S2B_MSIL2A_20231102T061019_R134_T41RRJ_20241017T061436",
+      "S2B_MSIL2A_20231202T061219_R134_T42RTP_20231202T091913",
+      "S2B_MSIL2A_20231202T061219_R134_T41RRJ_20241113T194550",
+      "S2A_MSIL2A_20231207T061231_R134_T42RTN_20241114T024147",
+      "S2A_MSIL2A_20231207T061231_R134_T41RRH_20241114T024147",
+      "S2A_MSIL2A_20231207T061231_R134_T42RUN_20241114T024147",
+      "S2A_MSIL2A_20231227T061251_R134_T42RTP_20231227T102114",
+      "S2A_MSIL2A_20231227T061251_R134_T41RRJ_20231227T104352",
+      "S2B_MSIL2A_20231229T060249_R091_T42RUP_20231229T091856",
+      "S2B_MSIL2A_20240121T061149_R134_T42RUN_20240121T131718",
+      "S2B_MSIL2A_20240210T061009_R134_T42RUP_20240210T092250",
+      "S2B_MSIL2A_20240210T061009_R134_T42RUN_20240210T092230",
+      "S2A_MSIL2A_20240215T060941_R134_T42RTN_20240215T100924",
+      "S2A_MSIL2A_20240215T060941_R134_T41RRH_20240215T100842"
+    ],
+    "limitations": "NDBI is a spectral proxy for built-up/bare surfaces; it confuses bare soil with built-up in arid Karachi."
   }
 }

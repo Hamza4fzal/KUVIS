@@ -42,7 +42,7 @@ landsat:
   # Epoch → (start_year, end_year) pooled for a robust median. Sensors chosen to avoid L7 SLC-off
   # gaps where an alternative exists (L5 for the 2000s, L8/9 for 2014+).
   epochs:
-    "2005": {years: [2004, 2006], platforms: ["landsat-5"]}
+    "2001": {years: [2000, 2002], platforms: ["landsat-5"]}   # no L5 over Karachi in the 2003–2008 USGS holdings
     "2010": {years: [2009, 2011], platforms: ["landsat-5"]}
     "2015": {years: [2014, 2016], platforms: ["landsat-8"]}
     "2020": {years: [2019, 2021], platforms: ["landsat-8"]}

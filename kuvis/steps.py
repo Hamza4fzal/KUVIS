@@ -41,7 +41,7 @@ def step_sentinel2():
 
 
 def step_landsat():
-    """Set KUVIS_EPOCHS=2024,2005 to process a subset of epochs (results merge with earlier runs)."""
+    """Set KUVIS_EPOCHS=2024,2001 to process a subset of epochs (results merge with earlier runs)."""
     import os
     from .acquisition import satellite
     ep = os.environ.get("KUVIS_EPOCHS")

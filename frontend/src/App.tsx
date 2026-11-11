@@ -42,7 +42,7 @@ const router = createBrowserRouter([
         element: (
           <ModulePage module="urban" title="Urbanization & Land-use Intelligence" color="#c9a46b" groups={["Urbanization", "History", "Population"]}
             defaultLayers={["ndvi_change", "built"]}
-            intro={<>Change between the 2004–06 and 2023–25 Landsat epochs (vegetation, built-up spectral signal, relative heat), World Bank EO4SD land-use
+            intro={<>Change between the 2000–02 and 2023–25 Landsat epochs (vegetation, built-up spectral signal, relative heat), World Bank EO4SD land-use
               2005→2017 transitions, and population growth — clustered into development trajectories and screened for unusually large changes.</>}
             caveat="Landsat 5 (TM) and Landsat 8/9 (OLI) differ slightly in band response; small index differences can be sensor effects. WorldCover 2020 vs 2021 differences are algorithmic and are never treated as change." />
         ),

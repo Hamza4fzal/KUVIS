@@ -1,7 +1,7 @@
 """Module C — Urbanization and Land-use Intelligence.
 
 C1 Land-use change: EO4SD 2005→2017 transition matrices (exact polygon areas) and cell-level built-up change.
-C2 K-means development trajectories on Landsat 2005→2024 change vectors and population growth.
+C2 K-means development trajectories on Landsat 2001→2024 change vectors and population growth.
 C3 Temporal analysis: per-cell Theil–Sen NDVI trend across all available epochs with Kendall's τ.
 C4 Contextual Isolation Forest: changes that are unusual relative to cells that started in a similar state.
 """
@@ -18,9 +18,9 @@ from ..mining import anomaly, clustering, experiment
 from .common import features, out, relabel_by
 
 log = get_logger("kuvis.urban")
-KM_FEATS = ["ndvi_change_2005_2024", "ndbi_change_2005_2024", "lst_rel_change_2005_2024", "pop_growth_log", "built_frac"]
-NICE = {"ndvi_change_2005_2024": "NDVI change", "ndbi_change_2005_2024": "NDBI change",
-        "lst_rel_change_2005_2024": "relative-heat change", "pop_growth_log": "population growth", "built_frac": "built-up (2021)"}
+KM_FEATS = ["ndvi_change_2001_2024", "ndbi_change_2001_2024", "lst_rel_change_2001_2024", "pop_growth_log", "built_frac"]
+NICE = {"ndvi_change_2001_2024": "NDVI change", "ndbi_change_2001_2024": "NDBI change",
+        "lst_rel_change_2001_2024": "relative-heat change", "pop_growth_log": "population growth", "built_frac": "built-up (2021)"}
 
 
 def run() -> pd.DataFrame:
@@ -65,12 +65,12 @@ def run() -> pd.DataFrame:
         X = StandardScaler().fit_transform(kb[KM_FEATS].values)
         sweep = clustering.kmeans_sweep(X, tuple(mc["kmeans"]["k_range"]), rs)
         k, rule = clustering.choose_k(sweep)
-        lab = relabel_by(clustering.fit_kmeans(X, k, rs).labels_, kb["ndvi_change_2005_2024"])
+        lab = relabel_by(clustering.fit_kmeans(X, k, rs).labels_, kb["ndvi_change_2001_2024"])
         res.loc[kb.index, "urban_kmeans"] = lab
         prof = clustering.profile(kb, lab, KM_FEATS, NICE)
         prof.to_parquet(out("urban_kmeans_profiles.parquet"))
         experiment.save("urban_kmeans", module="urban", algorithm="K-means",
-                        purpose="Group cells by their 2005→2024 development trajectory", inputs=KM_FEATS, n_samples=len(kb),
+                        purpose="Group cells by their 2001→2024 development trajectory", inputs=KM_FEATS, n_samples=len(kb),
                         params={"k": k, "selection": rule, "pop_growth_log": "ln(1+pop2025) − ln(1+pop2015) (WorldPop)"},
                         metrics={"sweep": sweep.to_dict("records"), "chosen": sweep[sweep.k == k].iloc[0].to_dict()},
                         results={"profiles": prof.to_dict("records")},
@@ -106,13 +106,13 @@ def run() -> pd.DataFrame:
         log.info("NDVI trend skipped: only %d Landsat epochs available", len(cols))
 
     # ---------------- C4 contextual anomaly of change
-    ab = b.dropna(subset=["ndvi_change_2005_2024", "ndbi_change_2005_2024", "lst_rel_change_2005_2024", "ls_ndvi_2005"])
+    ab = b.dropna(subset=["ndvi_change_2001_2024", "ndbi_change_2001_2024", "lst_rel_change_2001_2024", "ls_ndvi_2001"])
     if len(ab) > 200:
-        start = pd.qcut(ab["ls_ndvi_2005"], 10, labels=False, duplicates="drop").astype(str) + "_" + \
+        start = pd.qcut(ab["ls_ndvi_2001"], 10, labels=False, duplicates="drop").astype(str) + "_" + \
                 pd.cut(ab["built_frac"].fillna(0), [-0.01, 0.2, 0.5, 1.01], labels=["low", "mid", "high"]).astype(str)
-        ctx = pd.DataFrame({"chg_ndvi": anomaly.robust_z(ab["ndvi_change_2005_2024"], start),
-                            "chg_ndbi": anomaly.robust_z(ab["ndbi_change_2005_2024"], start),
-                            "chg_lst_rel": anomaly.robust_z(ab["lst_rel_change_2005_2024"], start)}, index=ab.index)
+        ctx = pd.DataFrame({"chg_ndvi": anomaly.robust_z(ab["ndvi_change_2001_2024"], start),
+                            "chg_ndbi": anomaly.robust_z(ab["ndbi_change_2001_2024"], start),
+                            "chg_lst_rel": anomaly.robust_z(ab["lst_rel_change_2001_2024"], start)}, index=ab.index)
         Xa = StandardScaler().fit_transform(ctx.values)
         ic = mc["isolation_forest"]
         score, flag = anomaly.isolation_forest(Xa, ic["contamination"], ic["n_estimators"], rs)
@@ -126,9 +126,9 @@ def run() -> pd.DataFrame:
         res.loc[ab.index, "chg_lof_flag"] = lflag
         res.loc[ab.index, "chg_direction"] = direction
         experiment.save("urban_isolation_forest", module="urban", algorithm="Isolation Forest (+ LOF comparison)",
-                        purpose="Find cells whose 2005→2024 change is unusual relative to cells with a similar 2005 state",
+                        purpose="Find cells whose 2001→2024 change is unusual relative to cells with a similar 2001 state",
                         inputs=list(ctx.columns), n_samples=len(ab),
-                        params={**ic, "context": "robust z within groups of 2005-NDVI decile × 2021 built-up band"},
+                        params={**ic, "context": "robust z within groups of 2001-NDVI decile × 2021 built-up band"},
                         metrics={"n_flagged": int(flag.sum()), "n_down": int(((direction == "unusual vegetation loss") & flag).sum()),
                                  "n_up": int(((direction == "unusual vegetation gain") & flag).sum()),
                                  "if_vs_lof": anomaly.agreement(flag, lflag)},

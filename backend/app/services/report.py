@@ -22,7 +22,7 @@ SECTIONS = [
     ("Terrain", ["elev_mean", "elev_min", "elev_max", "slope_mean", "tpi_2km_m"]),
     ("Land cover", ["built_frac", "veg_frac_wc", "bare_frac", "water_frac", "dominant_cover"]),
     ("Vegetation & surface indices", ["s2_ndvi_mean", "s2_veg_frac", "s2_ndwi_mean", "s2_ndbi_mean"]),
-    ("Surface heat", ["lst_mean_2024", "lst_rel_2024", "lst_p90_2024", "lst_rel_change_2005_2024"]),
+    ("Surface heat", ["lst_mean_2024", "lst_rel_2024", "lst_p90_2024", "lst_rel_change_2001_2024"]),
     ("Rainfall (assigned from ≈5.5 km CHIRPS pixel)", ["rain_annual_normal_mm", "rain_jjas_normal_mm", "rain_jjas_cv",
                                                        "rain_max_month_mm", "rain_jjas_2022_mm", "rain_jjas_2022_anom_pct",
                                                        "rain_aug_2020_mm", "rain_trend_mm_decade"]),
@@ -31,7 +31,7 @@ SECTIONS = [
     ("Population", ["pop_2025", "pop_density_2025", "pop_change_2015_2025"]),
     ("Infrastructure (OpenStreetMap)", ["road_density_km_km2", "major_road_density_km_km2", "intersection_density_km2",
                                         "osm_building_density_km2"]),
-    ("Change 2005 → 2024", ["ndvi_change_2005_2024", "ndbi_change_2005_2024"]),
+    ("Change 2001 → 2024", ["ndvi_change_2001_2024", "ndbi_change_2001_2024"]),
 ]
 
 

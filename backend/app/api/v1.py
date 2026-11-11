@@ -118,7 +118,7 @@ def area_associations(grid_id: str):
 @router.get("/compare")
 def compare(ids: str = Query(..., description="comma-separated grid ids (2–6)"),
             features: str = Query("lst_mean_2024,lst_rel_2024,s2_ndvi_mean,built_frac,pop_density_2025,elev_mean,"
-                                  "rain_jjas_normal_mm,road_density_km_km2,ndvi_change_2005_2024")):
+                                  "rain_jjas_normal_mm,road_density_km_km2,ndvi_change_2001_2024")):
     gids = [_gid(g.strip()) for g in ids.split(",") if g.strip()]
     if not 2 <= len(gids) <= 6:
         raise HTTPException(422, "provide 2–6 grid ids")

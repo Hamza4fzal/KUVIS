@@ -47,7 +47,7 @@ _f("s2_ndbi_mean", "NDBI (Sentinel-2)", "index", "Sentinel-2 L2A", "Nov 2023–F
 _f("s2_veg_frac", "Vegetated share (NDVI>0.3)", "fraction", "Sentinel-2 L2A", "Nov 2023–Feb 2024", "derived",
    "Share of valid 20 m pixels with NDVI > 0.3")
 # Landsat
-for e in ["2005", "2010", "2015", "2020", "2024"]:
+for e in ["2001", "2010", "2015", "2020", "2024"]:
     _f(f"lst_mean_{e}", f"Land surface temperature {e}", "°C", "Landsat C2 L2 ST", f"Apr–Jun, epoch {e}", "observed",
        "Median of clear-sky LST observations per pixel, cell mean (surface, not air, temperature)")
     _f(f"lst_rel_{e}", f"Relative LST {e}", "°C", "Landsat C2 L2 ST", f"Apr–Jun, epoch {e}", "derived",
@@ -55,11 +55,11 @@ for e in ["2005", "2010", "2015", "2020", "2024"]:
     _f(f"lst_p90_{e}", f"LST 90th pct. {e}", "°C", "Landsat C2 L2 ST", f"epoch {e}", "derived", "90th pct. of pixel LST")
     _f(f"ls_ndvi_{e}", f"NDVI (Landsat) {e}", "index", "Landsat C2 L2 SR", f"Apr–Jun, epoch {e}", "derived", "Median NDVI")
     _f(f"ls_ndbi_{e}", f"NDBI (Landsat) {e}", "index", "Landsat C2 L2 SR", f"Apr–Jun, epoch {e}", "derived", "Median NDBI")
-_f("ndvi_change_2005_2024", "NDVI change 2005→2024", "index Δ", "Landsat", "2005 vs 2024", "derived",
-   "Landsat NDVI 2024 − 2005 (TM vs OLI sensors; small cross-sensor bias possible)")
-_f("ndbi_change_2005_2024", "NDBI change 2005→2024", "index Δ", "Landsat", "2005 vs 2024", "derived", "NDBI 2024 − 2005")
-_f("lst_rel_change_2005_2024", "Relative LST change 2005→2024", "°C", "Landsat", "2005 vs 2024", "derived",
-   "Relative LST 2024 − relative LST 2005")
+_f("ndvi_change_2001_2024", "NDVI change 2001→2024", "index Δ", "Landsat", "2001 vs 2024", "derived",
+   "Landsat NDVI 2024 − 2001 (TM vs OLI sensors; small cross-sensor bias possible)")
+_f("ndbi_change_2001_2024", "NDBI change 2001→2024", "index Δ", "Landsat", "2001 vs 2024", "derived", "NDBI 2024 − 2001")
+_f("lst_rel_change_2001_2024", "Relative LST change 2001→2024", "°C", "Landsat", "2001 vs 2024", "derived",
+   "Relative LST 2024 − relative LST 2001")
 # Population
 for y in ["2015", "2020", "2025"]:
     _f(f"pop_{y}", f"Population {y}", "persons", "WorldPop R2025A", y, "modelled", "Sum of 100 m constrained counts")

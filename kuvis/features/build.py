@@ -100,11 +100,11 @@ def run() -> pd.DataFrame:
         if col in df:
             ok = land & (df.get(f"lst_cov_{e}", 1) >= 0.5)
             df[f"lst_rel_{e}"] = np.where(ok, df[col] - df.loc[ok, col].median(), np.nan)
-    if {"ls_ndvi_2005", "ls_ndvi_2024"} <= set(df):
-        df["ndvi_change_2005_2024"] = df["ls_ndvi_2024"] - df["ls_ndvi_2005"]
-        df["ndbi_change_2005_2024"] = df["ls_ndbi_2024"] - df["ls_ndbi_2005"]
-    if {"lst_rel_2005", "lst_rel_2024"} <= set(df):
-        df["lst_rel_change_2005_2024"] = df["lst_rel_2024"] - df["lst_rel_2005"]
+    if {"ls_ndvi_2001", "ls_ndvi_2024"} <= set(df):
+        df["ndvi_change_2001_2024"] = df["ls_ndvi_2024"] - df["ls_ndvi_2001"]
+        df["ndbi_change_2001_2024"] = df["ls_ndbi_2024"] - df["ls_ndbi_2001"]
+    if {"lst_rel_2001", "lst_rel_2024"} <= set(df):
+        df["lst_rel_change_2001_2024"] = df["lst_rel_2024"] - df["lst_rel_2001"]
     for y in cfg()["worldpop"]["years"]:
         if f"pop_density_{y}" in df:
             df[f"log_pop_density_{y}"] = np.log1p(df[f"pop_density_{y}"])

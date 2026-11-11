@@ -59,14 +59,20 @@ def run(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame) -> pd.DataFrame:
     h, w = arr0.shape
     log.info("CHIRPS window %dx%d pixels, transform %s", w, h, tr)
 
+    # Each window is ~2 KB; time is dominated by request latency (several range requests to open a COG), so a
+    # small pool of concurrent readers helps. 4 workers stays polite; 429s are still handled by back-off in _read.
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     results = {}
-    for i, ym in enumerate(months):
-        a, t, _, _ = _read(urls[ym], bbox, cache)
-        if a.shape != (h, w) or not np.allclose(tuple(t)[:6], tuple(tr)[:6]):
-            raise RuntimeError(f"CHIRPS grid mismatch in {ym}")
-        results[ym] = a
-        if i % 60 == 0:
-            log.info("CHIRPS %d/%d months", i + 1, len(months))
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        futs = {ex.submit(_read, urls[ym], bbox, cache): ym for ym in months}
+        for i, fu in enumerate(as_completed(futs)):
+            ym = futs[fu]
+            a, t, _, _ = fu.result()
+            if a.shape != (h, w) or not np.allclose(tuple(t)[:6], tuple(tr)[:6]):
+                raise RuntimeError(f"CHIRPS grid mismatch in {ym}")
+            results[ym] = a
+            if i % 60 == 0:
+                log.info("CHIRPS %d/%d months", i + 1, len(months))
 
     # Pixel table (native geometry)
     pix = []

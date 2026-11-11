@@ -15,9 +15,9 @@ CATALOG: list[dict] = [
      "unit": "°C vs city median", "scale": "diverging", "palette": "diverging", "kind": "derived",
      "source": "Landsat 8/9 C2 L2 ST", "period": "Apr–Jun 2023–2025",
      "description": "LST minus the median of all Karachi land cells in the same period."},
-    {"id": "lst_rel_change", "prop": "lst_rel_change_2005_2024", "group": "Heat", "title": "Relative heat change 2005→2024",
+    {"id": "lst_rel_change", "prop": "lst_rel_change_2001_2024", "group": "Heat", "title": "Relative heat change 2001→2024",
      "unit": "°C", "scale": "diverging", "palette": "diverging", "kind": "derived",
-     "source": "Landsat 5 / 8 / 9", "period": "2004–06 vs 2023–25", "description": "Change in relative LST between epochs."},
+     "source": "Landsat 5 / 8 / 9", "period": "2000–02 vs 2023–25", "description": "Change in relative LST between epochs."},
     {"id": "heat_kmeans", "prop": "heat_kmeans", "group": "Heat", "title": "Thermal profile clusters (K-means)",
      "unit": "cluster", "scale": "categorical", "kind": "cluster", "source": "KUVIS heat_kmeans experiment",
      "period": "2024", "description": "Cells grouped by LST, vegetation, built-up share and population density."},
@@ -35,9 +35,9 @@ CATALOG: list[dict] = [
     {"id": "ndvi", "prop": "s2_ndvi_mean", "group": "Environment", "title": "Vegetation index (NDVI)",
      "unit": "index", "scale": "sequential", "palette": "green", "kind": "derived", "source": "Sentinel-2 L2A",
      "period": "Nov 2023–Feb 2024", "description": "Normalized difference vegetation index, dry-season median."},
-    {"id": "ndvi_change", "prop": "ndvi_change_2005_2024", "group": "Urbanization", "title": "NDVI change 2005→2024",
+    {"id": "ndvi_change", "prop": "ndvi_change_2001_2024", "group": "Urbanization", "title": "NDVI change 2001→2024",
      "unit": "Δ index", "scale": "diverging", "palette": "diverging_green", "kind": "derived", "source": "Landsat 5 / 8 / 9",
-     "period": "2004–06 vs 2023–25", "description": "Vegetation gain (green) or loss (brown)."},
+     "period": "2000–02 vs 2023–25", "description": "Vegetation gain (green) or loss (brown)."},
     {"id": "built", "prop": "built_frac", "group": "Urbanization", "title": "Built-up share", "unit": "fraction",
      "scale": "sequential", "palette": "built", "kind": "observed", "source": "ESA WorldCover v200", "period": "2021",
      "description": "Share of 10 m pixels classified as built-up."},
@@ -65,7 +65,7 @@ CATALOG: list[dict] = [
 ]
 
 
-for _e in ("2005", "2010", "2015", "2020", "2024"):
+for _e in ("2001", "2010", "2015", "2020", "2024"):
     CATALOG.append({"id": f"hist_lst_rel_{_e}", "prop": f"lst_rel_{_e}", "group": "History",
                     "title": f"Relative surface heat {_e}", "unit": "°C vs city median", "scale": "diverging",
                     "palette": "diverging", "kind": "derived", "source": "Landsat C2 L2 ST", "period": f"Apr–Jun epoch {_e}",

@@ -39,7 +39,7 @@ machine-readable registry, which the pipeline writes only after a file actually 
 | URL | https://planetarycomputer.microsoft.com/dataset/landsat-c2-l2 |
 | Method | STAC search → QA-masked per-scene processing → per-pixel median composite (`kuvis/acquisition/satellite.py`) |
 | Resolution | 30 m (thermal: 100 m TIRS / 120 m TM, delivered resampled at 30 m by USGS) |
-| Temporal | Epochs 2005 (2004–06, L5), 2010 (2009–11, L5), 2015 (2014–16, L8), 2020 (2019–21, L8), 2024 (2023–25, L8+L9); Apr–Jun each |
+| Temporal | Epochs 2001 (2000–02, L5 — the USGS archive holds no Landsat-5 scenes over Karachi for 2003–2008), 2010 (2009–11, L5), 2015 (2014–16, L8), 2020 (2019–21, L8), 2024 (2023–25, L8+L9); Apr–Jun each |
 | CRS | UTM 42N (EPSG:32642) native |
 | License | Public domain |
 | Variables | LST °C = ST·0.00341802 + 149.0 − 273.15; SR = DN·0.0000275 − 0.2 → NDVI, NDBI, MNDWI |

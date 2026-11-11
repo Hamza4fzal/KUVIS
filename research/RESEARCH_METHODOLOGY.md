@@ -24,7 +24,7 @@ associated with urban vulnerability across Karachi?* Supporting questions RQ1–
 
 | Source | Processing | Cleaning / quality |
 |---|---|---|
-| Landsat C2 L2 | per epoch (2004–06, 2009–11, 2014–16, 2019–21, 2023–25; Apr–Jun) select clearest 5 Tier-1 scenes per WRS tile; warp to one 30 m UTM grid; per-pixel median | QA_PIXEL fill/dilated cloud/cirrus/cloud/shadow; ST_QA > 4 K; LST ∉ [−5, 75] °C; SR ∉ (0, 1] |
+| Landsat C2 L2 | per epoch (2000–02, 2009–11, 2014–16, 2019–21, 2023–25; Apr–Jun) select clearest 3 Tier-1 scenes per WRS tile; warp to one 60 m UTM grid (COG overview; thermal native 100 m); per-pixel median | QA_PIXEL fill/dilated cloud/cirrus/cloud/shadow; ST_QA > 4 K; LST ∉ [−5, 75] °C; SR ∉ (0, 1] |
 | Sentinel-2 L2A | Nov 2023–Feb 2024, clearest 5 per MGRS tile, 20 m median | SCL ∈ {4,5,6,7}; baseline-04.00 offset removed |
 | NASADEM | mosaic, bilinear to 30 m UTM, Horn slope | nodata masked |
 | WorldCover | native 10 m class fractions | class 0 = nodata excluded |
