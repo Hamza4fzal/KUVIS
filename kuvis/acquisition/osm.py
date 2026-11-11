@@ -43,16 +43,46 @@ def _overpass(q: str, name: str) -> dict:
     raw = path("raw", "osm", f"{name}.json")
     if raw.exists() and raw.stat().st_size > 100:
         return json.loads(raw.read_text(encoding="utf-8"))
-    url, to = cfg()["osm"]["overpass_url"], cfg()["osm"]["timeout_s"]
+    to = cfg()["osm"]["timeout_s"]
+    mirrors = [cfg()["osm"]["overpass_url"], "https://overpass.kumi.systems/api/interpreter",
+               "https://overpass.private.coffee/api/interpreter"]
     body = f"[out:json][timeout:{to}];{q}"
-    for attempt in range(5):
-        r = requests.post(url, data={"data": body}, headers={"User-Agent": UA}, timeout=to + 60)
-        if r.status_code == 200:
-            raw.write_text(r.text, encoding="utf-8")
-            return r.json()
-        log.warning("overpass %s HTTP %s, retry in %ds", name, r.status_code, 30 * (attempt + 1))
-        time.sleep(30 * (attempt + 1))
+    for attempt in range(6):
+        url = mirrors[attempt % len(mirrors)]
+        try:
+            r = requests.post(url, data={"data": body}, headers={"User-Agent": UA}, timeout=to + 60)
+            if r.status_code == 200 and r.text.lstrip().startswith("{"):
+                raw.write_text(r.text, encoding="utf-8")
+                log.info("overpass %s: %.1f MB from %s", name, len(r.content) / 1e6, url)
+                return r.json()
+            status = r.status_code
+        except requests.RequestException as exc:
+            status = type(exc).__name__
+        log.warning("overpass %s via %s failed (%s), retry in %ds", name, url, status, 20 * (attempt + 1))
+        time.sleep(20 * (attempt + 1))
     raise RuntimeError(f"Overpass failed for {name}")
+
+
+def _overpass_tiled(q: str, name: str, bbox, n: int) -> dict:
+    """Run a heavy query as n×n bbox tiles (each cached) and merge elements, de-duplicated by OSM id.
+    Ways crossing tile edges appear in several tiles with identical full geometry, so de-duplication is exact."""
+    merged = path("raw", "osm", f"{name}.json")
+    if merged.exists() and merged.stat().st_size > 100:
+        return json.loads(merged.read_text(encoding="utf-8"))
+    w, s, e, nn = bbox
+    xs, ys = np.linspace(w, e, n + 1), np.linspace(s, nn, n + 1)
+    seen, elements = set(), []
+    for i in range(n):
+        for j in range(n):
+            bb = f"{ys[j]:.5f},{xs[i]:.5f},{ys[j + 1]:.5f},{xs[i + 1]:.5f}"
+            part = _overpass(q.format(bb=bb), f"{name}_t{i}{j}")
+            for el in part.get("elements", []):
+                if el["id"] not in seen:
+                    seen.add(el["id"])
+                    elements.append(el)
+    data = {"elements": elements, "tiles": n}
+    merged.write_text(json.dumps(data), encoding="utf-8")
+    return data
 
 
 def _lines(data: dict) -> gpd.GeoDataFrame:
@@ -66,9 +96,11 @@ def _lines(data: dict) -> gpd.GeoDataFrame:
 
 
 def run(grid: gpd.GeoDataFrame, study: gpd.GeoDataFrame) -> pd.DataFrame:
-    w, s, e, n = stac.study_bbox_ll(study, 2000)
+    bbox = stac.study_bbox_ll(study, 2000)
+    w, s, e, n = bbox
     bb = f"{s},{w},{n},{e}"
-    data = {k: _overpass(q.format(bb=bb), k) for k, q in QUERIES.items()}
+    data = {k: (_overpass_tiled(q, k, bbox, 3) if k in ("roads", "buildings") else _overpass(q.format(bb=bb), k))
+            for k, q in QUERIES.items()}
     pcrs = projected_crs()
     g = grid.set_index("grid_id")
     cells = gpd.GeoDataFrame({"grid_id": g.index}, geometry=g.geometry.values, crs=pcrs)

@@ -141,5 +141,48 @@
       "ESA_WorldCover_10m_2021_v200_N24E066"
     ],
     "limitations": "2020 (v100) and 2021 (v200) use different algorithms; differences are not change."
+  },
+  "worldbank_eo4sd_lulc": {
+    "key": "worldbank_eo4sd_lulc",
+    "title": "Karachi Land Use/Land Cover 2005 & 2017 (ESA EO4SD-Urban), core (VHR) and peri-urban (HR)",
+    "provider": "World Bank / ESA EO4SD-Urban",
+    "url": "https://datacatalog.worldbank.org/search/dataset/0041102",
+    "method": "HTTP download of shapefile archives; exact polygon–cell area overlay in UTM 42N",
+    "status": "acquired",
+    "accessed_utc": "2026-11-11T14:37:41+00:00",
+    "files": [
+      {
+        "path": "datasets/raw/worldbank_lulc/eo4sd_karachi_lulchr_2005.zip",
+        "bytes": 9123234,
+        "sha256": "b8fdd356871efbd2323fc357a684511bea72d698f2af1b8e8ec1dad36ae2ad7d"
+      },
+      {
+        "path": "datasets/raw/worldbank_lulc/eo4sd_karachi_lulchr_2017.zip",
+        "bytes": 7757519,
+        "sha256": "bd189513f962bc9b0cfad92be15637567da78eb54581b589fc2cfcad5854a9a2"
+      },
+      {
+        "path": "datasets/raw/worldbank_lulc/eo4sd_karachi_lulcvhr_2005.zip",
+        "bytes": 4091772,
+        "sha256": "9792d53e457334732325e35ea304936b365b91499d128e2d2e7e36f786f370e3"
+      },
+      {
+        "path": "datasets/raw/worldbank_lulc/eo4sd_karachi_lulcvhr_2017.zip",
+        "bytes": 4091645,
+        "sha256": "4ab815591926193df581d09dc51979658b80fb517755a87d05e7366d7e2ad8a1"
+      }
+    ],
+    "license": "CC BY 4.0",
+    "crs": "EPSG:32642 (native)",
+    "spatial_resolution": "vector polygons (HR ≈ 10 m-class mapping; VHR ≈ sub-metre-class mapping)",
+    "temporal_coverage": "2005, 2017",
+    "variables": [
+      "class fractions (HR L2, VHR L3)",
+      "artificial-surface share",
+      "imperviousness estimate (VHR L4 sealing mid-points)"
+    ],
+    "limitations": "Archive `lulcvhr_2017.zip` contains files named *_2005 but 2017 content (verified from attributes). Imperviousness uses band mid-points (estimate). Coverage limited to the EO4SD mapped extents.",
+    "transitions_hr_km2": 2944.4360415180845,
+    "transitions_vhr_km2": 370.95267011520446
   }
 }

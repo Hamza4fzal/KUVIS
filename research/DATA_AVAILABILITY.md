@@ -32,4 +32,14 @@ after files exist (and the Data Sources page reads).
 * **Database.** Docker Desktop is installed but WSL 2 is not, so the Linux engine cannot start without admin
   rights and a reboot. PostgreSQL 17.7 portable binaries (EDB) + PostGIS 3.6.2 bundle (OSGeo) are used instead;
   `infrastructure/deployment/docker-compose.yml` is provided for machines with Docker.
+* **Boundary consistency (measured).** The study area (ADM2 2019 `Karachi`) is 3,559.6 km² in UTM 42N, consistent
+  with the commonly cited ≈3,527 km² for Karachi Division. The independently produced ADM3 (2017 census) layer
+  does not nest inside it: 24 ADM3 units (18 towns + 6 cantonments) lie > 50 % inside, but ~300 km² of the ADM2 area
+  falls in ADM3 units of neighbouring districts (Thano Bula Khan 175 km², Mirpur Sakro 126 km²) and Gadap Town is
+  only 75 % inside. 2,138 of 14,701 cells therefore have no Karachi subdivision and are reported as unassigned rather
+  than forced into a neighbouring district.
+* **Optical download volume.** Landsat is processed on a 60 m grid read from the COGs' first internal overview
+  (thermal data are natively 100 m, so LST loses no information) and Sentinel-2 10 m bands are read from their 20 m
+  overview; 3 clearest scenes per WRS/MGRS tile and period. Full-resolution reads were measured at ~10 h for
+  Sentinel-2 alone on this connection.
 * **No synthetic data.** Synthetic arrays appear only inside unit tests (`tests/`), never in `datasets/`.

@@ -43,9 +43,21 @@ LS_OVR = 0
 SR_SCALE, SR_OFF = 0.0000275, -0.2
 
 
+def _dedupe(items: list, key_fn) -> list:
+    """Keep one product per (tile, acquisition date). Planetary Computer lists both original and
+    reprocessed Sentinel-2 products for the same acquisition; the id ends with the processing timestamp,
+    so the lexicographically largest id is the most recent processing."""
+    best = {}
+    for it in items:
+        k = (key_fn(it), it.datetime.date())
+        if k not in best or it.id > best[k].id:
+            best[k] = it
+    return list(best.values())
+
+
 def _pick_clearest(items: list, key_fn, per_group: int) -> list:
     groups = defaultdict(list)
-    for it in items:
+    for it in _dedupe(items, key_fn):
         groups[key_fn(it)].append(it)
     out = []
     for g, its in groups.items():
