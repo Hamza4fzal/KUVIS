@@ -31,7 +31,7 @@ SECTIONS = [
     ("Population", ["pop_2025", "pop_density_2025", "pop_change_2015_2025"]),
     ("Infrastructure (OpenStreetMap)", ["road_density_km_km2", "major_road_density_km_km2", "intersection_density_km2",
                                         "osm_building_density_km2"]),
-    ("Change 2001 → 2024", ["ndvi_change_2001_2024", "ndbi_change_2001_2024"]),
+    ("Change 2001 → 2024", ["ndvi_rel_change_2001_2024", "ndvi_change_2001_2024", "ndbi_rel_change_2001_2024"]),
 ]
 
 

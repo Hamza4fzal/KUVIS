@@ -100,9 +100,19 @@ def run() -> pd.DataFrame:
         if col in df:
             ok = land & (df.get(f"lst_cov_{e}", 1) >= 0.5)
             df[f"lst_rel_{e}"] = np.where(ok, df[col] - df.loc[ok, col].median(), np.nan)
+        # Relative NDVI/NDBI (cell − land-cell median of the epoch) remove epoch-wide shifts — sensor calibration
+        # (TM vs OLI), antecedent rainfall, phenology on the acquisition dates — that otherwise appear as a uniform
+        # city-wide "trend". Change detection uses the relative forms; absolute change is kept and reported.
+        for v in ("ndvi", "ndbi"):
+            c = f"ls_{v}_{e}"
+            if c in df:
+                ok = land & df[c].notna()
+                df[f"ls_{v}_rel_{e}"] = np.where(ok, df[c] - df.loc[ok, c].median(), np.nan)
     if {"ls_ndvi_2001", "ls_ndvi_2024"} <= set(df):
         df["ndvi_change_2001_2024"] = df["ls_ndvi_2024"] - df["ls_ndvi_2001"]
         df["ndbi_change_2001_2024"] = df["ls_ndbi_2024"] - df["ls_ndbi_2001"]
+        df["ndvi_rel_change_2001_2024"] = df["ls_ndvi_rel_2024"] - df["ls_ndvi_rel_2001"]
+        df["ndbi_rel_change_2001_2024"] = df["ls_ndbi_rel_2024"] - df["ls_ndbi_rel_2001"]
     if {"lst_rel_2001", "lst_rel_2024"} <= set(df):
         df["lst_rel_change_2001_2024"] = df["lst_rel_2024"] - df["lst_rel_2001"]
     for y in cfg()["worldpop"]["years"]:

@@ -1,0 +1,167 @@
+{
+  "experiment_id": "urban_kmeans",
+  "module": "urban",
+  "algorithm": "K-means",
+  "purpose": "Group cells by their 2001→2024 development trajectory",
+  "input_features": [
+    "ndvi_rel_change_2001_2024",
+    "lst_rel_change_2001_2024",
+    "pop_growth_log",
+    "built_frac"
+  ],
+  "n_samples": 12777,
+  "parameters": {
+    "k": 3,
+    "selection": "K=3: highest silhouette (0.378) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=4",
+    "pop_growth_log": "ln(1+pop2025) − ln(1+pop2015) (WorldPop)"
+  },
+  "metrics": {
+    "sweep": [
+      {
+        "k": 2,
+        "inertia": 33649.764885,
+        "silhouette": 0.430548,
+        "davies_bouldin": 1.085432,
+        "calinski_harabasz": 6627.953479,
+        "min_cluster_share": 0.237458,
+        "elbow_distance": 0.0
+      },
+      {
+        "k": 3,
+        "inertia": 24654.61205,
+        "silhouette": 0.378357,
+        "davies_bouldin": 1.13156,
+        "calinski_harabasz": 6852.995854,
+        "min_cluster_share": 0.164827,
+        "elbow_distance": 0.194855
+      },
+      {
+        "k": 4,
+        "inertia": 19985.330735,
+        "silhouette": 0.369886,
+        "davies_bouldin": 1.082065,
+        "calinski_harabasz": 6630.36262,
+        "min_cluster_share": 0.083275,
+        "elbow_distance": 0.253495
+      },
+      {
+        "k": 5,
+        "inertia": 17944.886178,
+        "silhouette": 0.301428,
+        "davies_bouldin": 1.073375,
+        "calinski_harabasz": 5900.85115,
+        "min_cluster_share": 0.062847,
+        "elbow_distance": 0.229357
+      },
+      {
+        "k": 6,
+        "inertia": 16123.793544,
+        "silhouette": 0.324542,
+        "davies_bouldin": 1.142433,
+        "calinski_harabasz": 5541.977029,
+        "min_cluster_share": 0.04829,
+        "elbow_distance": 0.198312
+      },
+      {
+        "k": 7,
+        "inertia": 14570.981276,
+        "silhouette": 0.321656,
+        "davies_bouldin": 1.080862,
+        "calinski_harabasz": 5336.856783,
+        "min_cluster_share": 0.011896,
+        "elbow_distance": 0.158819
+      },
+      {
+        "k": 8,
+        "inertia": 13118.490831,
+        "silhouette": 0.326538,
+        "davies_bouldin": 1.046795,
+        "calinski_harabasz": 5282.495586,
+        "min_cluster_share": 0.012679,
+        "elbow_distance": 0.116167
+      },
+      {
+        "k": 9,
+        "inertia": 11949.34749,
+        "silhouette": 0.326151,
+        "davies_bouldin": 1.006073,
+        "calinski_harabasz": 5230.188029,
+        "min_cluster_share": 0.010175,
+        "elbow_distance": 0.064593
+      },
+      {
+        "k": 10,
+        "inertia": 11193.667461,
+        "silhouette": 0.303927,
+        "davies_bouldin": 1.060048,
+        "calinski_harabasz": 5058.298857,
+        "min_cluster_share": 0.009548,
+        "elbow_distance": 0.0
+      }
+    ],
+    "chosen": {
+      "k": 3.0,
+      "inertia": 24654.61205,
+      "silhouette": 0.378357,
+      "davies_bouldin": 1.13156,
+      "calinski_harabasz": 6852.995854,
+      "min_cluster_share": 0.164827,
+      "elbow_distance": 0.194855
+    }
+  },
+  "results": {
+    "profiles": [
+      {
+        "cluster": 0,
+        "n_cells": 2106,
+        "share": 0.164827,
+        "name": "high built-up (2021) · low relative NDVI change · high population growth",
+        "mean_ndvi_rel_change_2001_2024": -0.052864,
+        "mean_lst_rel_change_2001_2024": -1.516203,
+        "mean_pop_growth_log": 0.16658,
+        "mean_built_frac": 0.755794,
+        "z_ndvi_rel_change_2001_2024": -1.11922,
+        "z_lst_rel_change_2001_2024": -0.630297,
+        "z_pop_growth_log": 0.761962,
+        "z_built_frac": 2.066177
+      },
+      {
+        "cluster": 1,
+        "n_cells": 6544,
+        "share": 0.51217,
+        "name": "low population growth · high relative-heat change · low built-up (2021)",
+        "mean_ndvi_rel_change_2001_2024": -0.001228,
+        "mean_lst_rel_change_2001_2024": 1.579421,
+        "mean_pop_growth_log": 0.035994,
+        "mean_built_frac": 0.005111,
+        "z_ndvi_rel_change_2001_2024": -0.025831,
+        "z_lst_rel_change_2001_2024": 0.623268,
+        "z_pop_growth_log": -0.67235,
+        "z_built_frac": -0.519884
+      },
+      {
+        "cluster": 2,
+        "n_cells": 4127,
+        "share": 0.323002,
+        "name": "high population growth · low relative-heat change · high relative NDVI change",
+        "mean_ndvi_rel_change_2001_2024": 0.028899,
+        "mean_lst_rel_change_2001_2024": -1.605973,
+        "mean_pop_growth_log": 0.158871,
+        "mean_built_frac": 0.089257,
+        "z_ndvi_rel_change_2001_2024": 0.612094,
+        "z_lst_rel_change_2001_2024": -0.666649,
+        "z_pop_growth_log": 0.677288,
+        "z_built_frac": -0.230009
+      }
+    ]
+  },
+  "interpretation_notes": [
+    "Cluster 0 = strongest mean vegetation loss."
+  ],
+  "limitations": [
+    "Landsat 5 TM vs 8/9 OLI sensor differences add small offsets to index changes.",
+    "Population growth 2015–2025 is modelled, and covers a different period than the Landsat change."
+  ],
+  "run_utc": "2026-11-11T18:38:01+00:00",
+  "code_version": "aea7c6e"
+}

@@ -18,8 +18,8 @@ from ..mining import anomaly, clustering, experiment
 from .common import features, out, relabel_by
 
 log = get_logger("kuvis.urban")
-KM_FEATS = ["ndvi_change_2001_2024", "ndbi_change_2001_2024", "lst_rel_change_2001_2024", "pop_growth_log", "built_frac"]
-NICE = {"ndvi_change_2001_2024": "NDVI change", "ndbi_change_2001_2024": "NDBI change",
+KM_FEATS = ["ndvi_rel_change_2001_2024", "lst_rel_change_2001_2024", "pop_growth_log", "built_frac"]
+NICE = {"ndvi_rel_change_2001_2024": "relative NDVI change",
         "lst_rel_change_2001_2024": "relative-heat change", "pop_growth_log": "population growth", "built_frac": "built-up (2021)"}
 
 
@@ -65,7 +65,7 @@ def run() -> pd.DataFrame:
         X = StandardScaler().fit_transform(kb[KM_FEATS].values)
         sweep = clustering.kmeans_sweep(X, tuple(mc["kmeans"]["k_range"]), rs)
         k, rule = clustering.choose_k(sweep)
-        lab = relabel_by(clustering.fit_kmeans(X, k, rs).labels_, kb["ndvi_change_2001_2024"])
+        lab = relabel_by(clustering.fit_kmeans(X, k, rs).labels_, kb["ndvi_rel_change_2001_2024"])
         res.loc[kb.index, "urban_kmeans"] = lab
         prof = clustering.profile(kb, lab, KM_FEATS, NICE)
         prof.to_parquet(out("urban_kmeans_profiles.parquet"))
@@ -81,9 +81,10 @@ def run() -> pd.DataFrame:
 
     # ---------------- C3 temporal NDVI trend
     epochs = [int(e) for e in cfg()["landsat"]["epochs"]]
-    cols = [f"ls_ndvi_{e}" for e in epochs if f"ls_ndvi_{e}" in b]
-    yrs = np.array([int(c[-4:]) for c in cols])
-    if len(cols) >= 4:
+
+    def trend(prefix):
+        cols = [f"{prefix}_{e}" for e in epochs if f"{prefix}_{e}" in b]
+        yrs = np.array([int(c[-4:]) for c in cols])
         V = b[cols].values
         slope, tau_p = np.full(len(b), np.nan), np.full(len(b), np.nan)
         for i in range(len(b)):
@@ -91,27 +92,42 @@ def run() -> pd.DataFrame:
             if ok.sum() >= 4:
                 slope[i] = theilslopes(V[i, ok], yrs[ok])[0] * 10
                 tau_p[i] = kendalltau(yrs[ok], V[i, ok]).pvalue
+        stats = {"share_decreasing_p05": float(np.mean((slope < 0) & (tau_p < 0.05))),
+                 "share_increasing_p05": float(np.mean((slope > 0) & (tau_p < 0.05))),
+                 "median_trend_per_decade": float(np.nanmedian(slope))}
+        return cols, yrs, slope, tau_p, stats
+
+    cols, yrs, slope, tau_p, abs_stats = trend("ls_ndvi")
+    if len(cols) >= 4:
+        rcols, _, rslope, rtau, rel_stats = trend("ls_ndvi_rel")
         res["ndvi_trend_decade"], res["ndvi_trend_p"] = slope, tau_p
+        res["ndvi_rel_trend_decade"], res["ndvi_rel_trend_p"] = rslope, rtau
         city = b[cols].median()
         experiment.save("urban_ndvi_trend", module="urban", algorithm="Theil–Sen trend + Kendall τ (per cell)",
-                        purpose="Long-term vegetation trend across Landsat epochs", inputs=cols, n_samples=int(np.isfinite(slope).sum()),
-                        params={"epochs": yrs.tolist(), "min_epochs": 4},
+                        purpose="Long-term vegetation trend across Landsat epochs, absolute and relative to the city median",
+                        inputs=cols + rcols, n_samples=int(np.isfinite(rslope).sum()),
+                        params={"epochs": yrs.tolist(), "min_epochs": 4,
+                                "relative": "NDVI − land-cell median NDVI of the same epoch"},
                         metrics={"city_median_ndvi_by_epoch": dict(zip(map(str, yrs), city.values)),
-                                 "share_decreasing_p05": float(np.mean((slope < 0) & (tau_p < 0.05))),
-                                 "share_increasing_p05": float(np.mean((slope > 0) & (tau_p < 0.05))),
-                                 "median_trend_per_decade": float(np.nanmedian(slope))},
+                                 "absolute": abs_stats, "relative": rel_stats,
+                                 "share_decreasing_p05": rel_stats["share_decreasing_p05"],
+                                 "share_increasing_p05": rel_stats["share_increasing_p05"]},
+                        interpretation_notes=["The absolute trend contains epoch-wide shifts (TM→OLI sensor change, "
+                                              "antecedent rainfall, acquisition dates) common to all cells; the relative "
+                                              "trend isolates cells that greened or browned compared with Karachi as a whole. "
+                                              "Headline shares use the relative trend."],
                         limitations=["With ≤ 5 epochs, Kendall's τ has little power: p < 0.05 needs a near-monotonic "
                                      "series.", "Epoch composites differ in scene count and weather."])
     else:
         log.info("NDVI trend skipped: only %d Landsat epochs available", len(cols))
 
     # ---------------- C4 contextual anomaly of change
-    ab = b.dropna(subset=["ndvi_change_2001_2024", "ndbi_change_2001_2024", "lst_rel_change_2001_2024", "ls_ndvi_2001"])
+    ab = b.dropna(subset=["ndvi_rel_change_2001_2024", "ndbi_rel_change_2001_2024", "lst_rel_change_2001_2024", "ls_ndvi_2001"])
     if len(ab) > 200:
         start = pd.qcut(ab["ls_ndvi_2001"], 10, labels=False, duplicates="drop").astype(str) + "_" + \
                 pd.cut(ab["built_frac"].fillna(0), [-0.01, 0.2, 0.5, 1.01], labels=["low", "mid", "high"]).astype(str)
-        ctx = pd.DataFrame({"chg_ndvi": anomaly.robust_z(ab["ndvi_change_2001_2024"], start),
-                            "chg_ndbi": anomaly.robust_z(ab["ndbi_change_2001_2024"], start),
+        ctx = pd.DataFrame({"chg_ndvi": anomaly.robust_z(ab["ndvi_rel_change_2001_2024"], start),
+                            "chg_ndbi": anomaly.robust_z(ab["ndbi_rel_change_2001_2024"], start),
                             "chg_lst_rel": anomaly.robust_z(ab["lst_rel_change_2001_2024"], start)}, index=ab.index)
         Xa = StandardScaler().fit_transform(ctx.values)
         ic = mc["isolation_forest"]

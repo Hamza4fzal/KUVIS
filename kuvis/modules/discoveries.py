@@ -211,25 +211,25 @@ def run() -> list[dict]:
                     strength=float(min(1, tr["km2"] / 50)), grid_ids=[], lon=None, lat=None)
 
     # 7 — vegetation loss / gain concentrations (Landsat 2001→2024)
-    if "ndvi_change_2001_2024" in df:
-        land = df[df.is_land_cell & df.ndvi_change_2001_2024.notna()]
+    if "ndvi_rel_change_2001_2024" in df:
+        land = df[df.is_land_cell & df.ndvi_rel_change_2001_2024.notna()]
         for sign, label in ((-1, "loss"), (1, "gain")):
-            thr = land.ndvi_change_2001_2024.quantile(0.05 if sign < 0 else 0.95)
-            sel = land[(land.ndvi_change_2001_2024 * sign >= abs(thr)) & (land.ndvi_change_2001_2024 * sign > 0.05)]
+            thr = land.ndvi_rel_change_2001_2024.quantile(0.05 if sign < 0 else 0.95)
+            sel = land[(land.ndvi_rel_change_2001_2024 * sign >= abs(thr)) & (land.ndvi_rel_change_2001_2024 * sign > 0.05)]
             for comp in sorted(_components(df, sel.grid_id), key=len, reverse=True)[:3]:
                 if len(comp) < 8:
                     continue
                 sub = df[df.grid_id.isin(comp)]
                 add(category="Vegetation change",
                     title=f"Concentrated vegetation {label}: {len(comp) * 0.25:.1f} km² in {_subs(df, comp)}",
-                    description=(f"{len(comp)} contiguous cells fall in Karachi's most extreme 5 % of NDVI {label} between the 2000–02 and 2023–25 "
-                                 f"Landsat epochs (mean change {sub.ndvi_change_2001_2024.mean():+.2f}; NDVI {sub.ls_ndvi_2001.mean():.2f} → "
+                    description=(f"{len(comp)} contiguous cells fall in Karachi's most extreme 5 % of NDVI {label} relative to the city-wide median between the 2000–02 and 2023–25 "
+                                 f"Landsat epochs (mean relative change {sub.ndvi_rel_change_2001_2024.mean():+.2f}; NDVI {sub.ls_ndvi_2001.mean():.2f} → "
                                  f"{sub.ls_ndvi_2024.mean():.2f}). Relative surface heat changed by {sub.lst_rel_change_2001_2024.mean():+.1f} °C."),
                     period="2000–02 → 2023–25", algorithm="Change detection + connected components", experiment_id="urban_kmeans",
-                    variables=["ndvi_change_2001_2024", "lst_rel_change_2001_2024"], sources=["Landsat 5", "Landsat 8/9"],
-                    evidence={"n_cells": len(comp), "mean_ndvi_change": float(sub.ndvi_change_2001_2024.mean()),
+                    variables=["ndvi_rel_change_2001_2024", "lst_rel_change_2001_2024"], sources=["Landsat 5", "Landsat 8/9"],
+                    evidence={"n_cells": len(comp), "mean_relative_ndvi_change": float(sub.ndvi_rel_change_2001_2024.mean()),
                               "threshold": float(thr), "strength_definition": "min(1, |mean change| / 0.3)"},
-                    strength=float(min(1, abs(sub.ndvi_change_2001_2024.mean()) / 0.3)), grid_ids=comp)
+                    strength=float(min(1, abs(sub.ndvi_rel_change_2001_2024.mean()) / 0.3)), grid_ids=comp)
 
     # 8 — overlapping stress concentrations
     vh = out("vulnerability_hotspots.parquet")
@@ -237,7 +237,10 @@ def run() -> list[dict]:
     if vh.exists() and vcp.exists():
         hs, vc = pd.read_parquet(vh), pd.read_parquet(vcp)
         for r in hs.itertuples():
-            if r.n_cells < 10:
+            # Quality threshold: ≥ 10 cells AND robust to the weighting — at least half the cells must stay in the
+            # top quintile in 95 % of the Dirichlet weight draws (heat and flood are opposed, so many
+            # concentrations are top-ranked only under particular weights).
+            if r.n_cells < 10 or r.share_stable_top < 0.5:
                 continue
             ids = vc.grid_id[vc.combined_hotspot == r.hotspot].tolist()
             dims = {d: getattr(r, f"mean_dim_{d}") for d in ("heat", "flood", "urbanization", "environmental") if hasattr(r, f"mean_dim_{d}")}

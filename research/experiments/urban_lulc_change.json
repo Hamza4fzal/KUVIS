@@ -1,0 +1,1812 @@
+{
+  "experiment_id": "urban_lulc_change",
+  "module": "urban",
+  "algorithm": "Land-use change detection (transition matrix)",
+  "purpose": "Quantify 2005→2017 land-use transitions from the World Bank EO4SD maps",
+  "input_features": [
+    "EO4SD HR C_L2",
+    "EO4SD VHR C_L3"
+  ],
+  "n_samples": 9110,
+  "parameters": {
+    "method": "intersection of 2005 and 2017 polygons, exact area in UTM 42N",
+    "cell_change_rule": "only where both years cover ≥ 50 % of the cell"
+  },
+  "metrics": {
+    "cells_with_change_estimate": 9110,
+    "mean_cell_built_change": 0.087449,
+    "cells_built_gain_gt_25pct": 1072
+  },
+  "results": {
+    "hr": {
+      "matrix": [
+        {
+          "from": 11000,
+          "to": 11000,
+          "km2": 267.563553,
+          "from_name": "urban_fabric",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 11000,
+          "to": 12000,
+          "km2": 0.959938,
+          "from_name": "urban_fabric",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 11000,
+          "to": 13000,
+          "km2": 0.400985,
+          "from_name": "urban_fabric",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 11000,
+          "to": 14000,
+          "km2": 0.044548,
+          "from_name": "urban_fabric",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 11000,
+          "to": 20000,
+          "km2": 0.120868,
+          "from_name": "urban_fabric",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 11000,
+          "to": 32000,
+          "km2": 0.805261,
+          "from_name": "urban_fabric",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 11000,
+          "to": 51000,
+          "km2": 0.022538,
+          "from_name": "urban_fabric",
+          "to_name": "water"
+        },
+        {
+          "from": 12000,
+          "to": 11000,
+          "km2": 1.087613,
+          "from_name": "industrial_commercial_transport",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 12000,
+          "to": 12000,
+          "km2": 192.117981,
+          "from_name": "industrial_commercial_transport",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 12000,
+          "to": 13000,
+          "km2": 1.78388,
+          "from_name": "industrial_commercial_transport",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 12000,
+          "to": 14000,
+          "km2": 0.324107,
+          "from_name": "industrial_commercial_transport",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 12000,
+          "to": 20000,
+          "km2": 0.388641,
+          "from_name": "industrial_commercial_transport",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 12000,
+          "to": 32000,
+          "km2": 2.927971,
+          "from_name": "industrial_commercial_transport",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 12000,
+          "to": 51000,
+          "km2": 0.009538,
+          "from_name": "industrial_commercial_transport",
+          "to_name": "water"
+        },
+        {
+          "from": 13000,
+          "to": 11000,
+          "km2": 48.160503,
+          "from_name": "mine_dump_construction",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 13000,
+          "to": 12000,
+          "km2": 12.27143,
+          "from_name": "mine_dump_construction",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 13000,
+          "to": 13000,
+          "km2": 90.045607,
+          "from_name": "mine_dump_construction",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 13000,
+          "to": 14000,
+          "km2": 2.023185,
+          "from_name": "mine_dump_construction",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 13000,
+          "to": 20000,
+          "km2": 0.75841,
+          "from_name": "mine_dump_construction",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 13000,
+          "to": 32000,
+          "km2": 4.661456,
+          "from_name": "mine_dump_construction",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 13000,
+          "to": 51000,
+          "km2": 0.086838,
+          "from_name": "mine_dump_construction",
+          "to_name": "water"
+        },
+        {
+          "from": 14000,
+          "to": 11000,
+          "km2": 0.535321,
+          "from_name": "urban_green",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 14000,
+          "to": 12000,
+          "km2": 1.253681,
+          "from_name": "urban_green",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 14000,
+          "to": 13000,
+          "km2": 0.367236,
+          "from_name": "urban_green",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 14000,
+          "to": 14000,
+          "km2": 26.872792,
+          "from_name": "urban_green",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 14000,
+          "to": 20000,
+          "km2": 0.060709,
+          "from_name": "urban_green",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 14000,
+          "to": 32000,
+          "km2": 0.11162,
+          "from_name": "urban_green",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 14000,
+          "to": 51000,
+          "km2": 0.028135,
+          "from_name": "urban_green",
+          "to_name": "water"
+        },
+        {
+          "from": 20000,
+          "to": 11000,
+          "km2": 4.098092,
+          "from_name": "agriculture",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 20000,
+          "to": 12000,
+          "km2": 4.586042,
+          "from_name": "agriculture",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 20000,
+          "to": 13000,
+          "km2": 15.2885,
+          "from_name": "agriculture",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 20000,
+          "to": 14000,
+          "km2": 0.835672,
+          "from_name": "agriculture",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 20000,
+          "to": 20000,
+          "km2": 340.648637,
+          "from_name": "agriculture",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 20000,
+          "to": 32000,
+          "km2": 59.641236,
+          "from_name": "agriculture",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 20000,
+          "to": 51000,
+          "km2": 0.388997,
+          "from_name": "agriculture",
+          "to_name": "water"
+        },
+        {
+          "from": 32000,
+          "to": 11000,
+          "km2": 25.756252,
+          "from_name": "natural_grass_shrub",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 32000,
+          "to": 12000,
+          "km2": 32.845235,
+          "from_name": "natural_grass_shrub",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 32000,
+          "to": 13000,
+          "km2": 146.720986,
+          "from_name": "natural_grass_shrub",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 32000,
+          "to": 14000,
+          "km2": 2.984889,
+          "from_name": "natural_grass_shrub",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 32000,
+          "to": 20000,
+          "km2": 35.404942,
+          "from_name": "natural_grass_shrub",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 32000,
+          "to": 32000,
+          "km2": 1500.798353,
+          "from_name": "natural_grass_shrub",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 32000,
+          "to": 51000,
+          "km2": 3.605878,
+          "from_name": "natural_grass_shrub",
+          "to_name": "water"
+        },
+        {
+          "from": 51000,
+          "to": 11000,
+          "km2": 0.369607,
+          "from_name": "water",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 51000,
+          "to": 12000,
+          "km2": 0.830458,
+          "from_name": "water",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 51000,
+          "to": 13000,
+          "km2": 0.851122,
+          "from_name": "water",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 51000,
+          "to": 14000,
+          "km2": 0.047725,
+          "from_name": "water",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 51000,
+          "to": 20000,
+          "km2": 0.174695,
+          "from_name": "water",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 51000,
+          "to": 32000,
+          "km2": 4.740622,
+          "from_name": "water",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 51000,
+          "to": 51000,
+          "km2": 108.023759,
+          "from_name": "water",
+          "to_name": "water"
+        }
+      ],
+      "area_2005_km2": {
+        "agriculture": 425.487176,
+        "industrial_commercial_transport": 198.639729,
+        "mine_dump_construction": 158.00743,
+        "natural_grass_shrub": 1748.116536,
+        "urban_fabric": 269.917691,
+        "urban_green": 29.229494,
+        "water": 115.037987
+      },
+      "area_2017_km2": {
+        "agriculture": 377.556901,
+        "industrial_commercial_transport": 244.864765,
+        "mine_dump_construction": 255.458316,
+        "natural_grass_shrub": 1573.686519,
+        "urban_fabric": 347.570939,
+        "urban_green": 33.132918,
+        "water": 112.165683
+      },
+      "net_change_km2": {
+        "agriculture": -47.930274,
+        "industrial_commercial_transport": 46.225035,
+        "mine_dump_construction": 97.450886,
+        "natural_grass_shrub": -174.430017,
+        "urban_fabric": 77.653248,
+        "urban_green": 3.903424,
+        "water": -2.872303
+      },
+      "top_transitions": [
+        {
+          "from": 32000,
+          "to": 13000,
+          "km2": 146.720986,
+          "from_name": "natural_grass_shrub",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 20000,
+          "to": 32000,
+          "km2": 59.641236,
+          "from_name": "agriculture",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 13000,
+          "to": 11000,
+          "km2": 48.160503,
+          "from_name": "mine_dump_construction",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 32000,
+          "to": 20000,
+          "km2": 35.404942,
+          "from_name": "natural_grass_shrub",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 32000,
+          "to": 12000,
+          "km2": 32.845235,
+          "from_name": "natural_grass_shrub",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 32000,
+          "to": 11000,
+          "km2": 25.756252,
+          "from_name": "natural_grass_shrub",
+          "to_name": "urban_fabric"
+        },
+        {
+          "from": 20000,
+          "to": 13000,
+          "km2": 15.2885,
+          "from_name": "agriculture",
+          "to_name": "mine_dump_construction"
+        },
+        {
+          "from": 13000,
+          "to": 12000,
+          "km2": 12.27143,
+          "from_name": "mine_dump_construction",
+          "to_name": "industrial_commercial_transport"
+        },
+        {
+          "from": 51000,
+          "to": 32000,
+          "km2": 4.740622,
+          "from_name": "water",
+          "to_name": "natural_grass_shrub"
+        },
+        {
+          "from": 13000,
+          "to": 32000,
+          "km2": 4.661456,
+          "from_name": "mine_dump_construction",
+          "to_name": "natural_grass_shrub"
+        }
+      ],
+      "unchanged_share": 0.857913
+    },
+    "vhr": {
+      "matrix": [
+        {
+          "from": 11100,
+          "to": 11100,
+          "km2": 80.380393,
+          "from_name": "continuous_urban",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 11100,
+          "to": 11200,
+          "km2": 1.23701,
+          "from_name": "continuous_urban",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 11100,
+          "to": 12100,
+          "km2": 0.029699,
+          "from_name": "continuous_urban",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 11100,
+          "to": 12200,
+          "km2": 0.054971,
+          "from_name": "continuous_urban",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 11100,
+          "to": 12300,
+          "km2": 0.0,
+          "from_name": "continuous_urban",
+          "to_name": "port"
+        },
+        {
+          "from": 11100,
+          "to": 13300,
+          "km2": 0.069635,
+          "from_name": "continuous_urban",
+          "to_name": "construction"
+        },
+        {
+          "from": 11100,
+          "to": 13400,
+          "km2": 0.009274,
+          "from_name": "continuous_urban",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 11100,
+          "to": 14100,
+          "km2": 0.0,
+          "from_name": "continuous_urban",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 11100,
+          "to": 20000,
+          "km2": 0.0,
+          "from_name": "continuous_urban",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 11100,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "continuous_urban",
+          "to_name": "forest"
+        },
+        {
+          "from": 11100,
+          "to": 32000,
+          "km2": 0.0,
+          "from_name": "continuous_urban",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 11100,
+          "to": 33000,
+          "km2": 0.007684,
+          "from_name": "continuous_urban",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 11100,
+          "to": 51000,
+          "km2": 4e-05,
+          "from_name": "continuous_urban",
+          "to_name": "water"
+        },
+        {
+          "from": 11200,
+          "to": 11100,
+          "km2": 15.255721,
+          "from_name": "discontinuous_urban",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 11200,
+          "to": 11200,
+          "km2": 24.610198,
+          "from_name": "discontinuous_urban",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 11200,
+          "to": 12100,
+          "km2": 0.01767,
+          "from_name": "discontinuous_urban",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 11200,
+          "to": 12200,
+          "km2": 0.018396,
+          "from_name": "discontinuous_urban",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 11200,
+          "to": 12400,
+          "km2": 0.0,
+          "from_name": "discontinuous_urban",
+          "to_name": "airport"
+        },
+        {
+          "from": 11200,
+          "to": 13300,
+          "km2": 0.071604,
+          "from_name": "discontinuous_urban",
+          "to_name": "construction"
+        },
+        {
+          "from": 11200,
+          "to": 13400,
+          "km2": 0.01526,
+          "from_name": "discontinuous_urban",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 11200,
+          "to": 14100,
+          "km2": 0.007688,
+          "from_name": "discontinuous_urban",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 11200,
+          "to": 20000,
+          "km2": 0.0,
+          "from_name": "discontinuous_urban",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 11200,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "discontinuous_urban",
+          "to_name": "forest"
+        },
+        {
+          "from": 11200,
+          "to": 32000,
+          "km2": 0.0,
+          "from_name": "discontinuous_urban",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 11200,
+          "to": 33000,
+          "km2": 0.0,
+          "from_name": "discontinuous_urban",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 11200,
+          "to": 51000,
+          "km2": 0.000451,
+          "from_name": "discontinuous_urban",
+          "to_name": "water"
+        },
+        {
+          "from": 12100,
+          "to": 11100,
+          "km2": 0.309615,
+          "from_name": "industrial_commercial",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 12100,
+          "to": 11200,
+          "km2": 0.126049,
+          "from_name": "industrial_commercial",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 12100,
+          "to": 12100,
+          "km2": 61.772399,
+          "from_name": "industrial_commercial",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 12100,
+          "to": 12200,
+          "km2": 0.059642,
+          "from_name": "industrial_commercial",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 12100,
+          "to": 12300,
+          "km2": 0.0,
+          "from_name": "industrial_commercial",
+          "to_name": "port"
+        },
+        {
+          "from": 12100,
+          "to": 12400,
+          "km2": 0.0,
+          "from_name": "industrial_commercial",
+          "to_name": "airport"
+        },
+        {
+          "from": 12100,
+          "to": 13300,
+          "km2": 0.173839,
+          "from_name": "industrial_commercial",
+          "to_name": "construction"
+        },
+        {
+          "from": 12100,
+          "to": 13400,
+          "km2": 0.252114,
+          "from_name": "industrial_commercial",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 12100,
+          "to": 14100,
+          "km2": 0.062668,
+          "from_name": "industrial_commercial",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 12100,
+          "to": 20000,
+          "km2": 0.023846,
+          "from_name": "industrial_commercial",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 12100,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "industrial_commercial",
+          "to_name": "forest"
+        },
+        {
+          "from": 12100,
+          "to": 32000,
+          "km2": 0.005953,
+          "from_name": "industrial_commercial",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 12100,
+          "to": 33000,
+          "km2": 0.122083,
+          "from_name": "industrial_commercial",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 12100,
+          "to": 51000,
+          "km2": 0.0,
+          "from_name": "industrial_commercial",
+          "to_name": "water"
+        },
+        {
+          "from": 12200,
+          "to": 11100,
+          "km2": 0.0,
+          "from_name": "roads_rail",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 12200,
+          "to": 11200,
+          "km2": 0.0,
+          "from_name": "roads_rail",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 12200,
+          "to": 12100,
+          "km2": 0.002323,
+          "from_name": "roads_rail",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 12200,
+          "to": 12200,
+          "km2": 14.363052,
+          "from_name": "roads_rail",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 12200,
+          "to": 12300,
+          "km2": 0.0,
+          "from_name": "roads_rail",
+          "to_name": "port"
+        },
+        {
+          "from": 12200,
+          "to": 12400,
+          "km2": 0.0,
+          "from_name": "roads_rail",
+          "to_name": "airport"
+        },
+        {
+          "from": 12200,
+          "to": 13300,
+          "km2": 0.001059,
+          "from_name": "roads_rail",
+          "to_name": "construction"
+        },
+        {
+          "from": 12200,
+          "to": 13400,
+          "km2": 0.012452,
+          "from_name": "roads_rail",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 12200,
+          "to": 14100,
+          "km2": 0.0,
+          "from_name": "roads_rail",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 12200,
+          "to": 20000,
+          "km2": 0.002714,
+          "from_name": "roads_rail",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 12200,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "roads_rail",
+          "to_name": "forest"
+        },
+        {
+          "from": 12200,
+          "to": 32000,
+          "km2": 0.01171,
+          "from_name": "roads_rail",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 12200,
+          "to": 33000,
+          "km2": 0.0,
+          "from_name": "roads_rail",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 12200,
+          "to": 51000,
+          "km2": 0.001046,
+          "from_name": "roads_rail",
+          "to_name": "water"
+        },
+        {
+          "from": 12300,
+          "to": 11100,
+          "km2": 0.0,
+          "from_name": "port",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 12300,
+          "to": 12100,
+          "km2": 0.0,
+          "from_name": "port",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 12300,
+          "to": 12200,
+          "km2": 0.0,
+          "from_name": "port",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 12300,
+          "to": 12300,
+          "km2": 5.836784,
+          "from_name": "port",
+          "to_name": "port"
+        },
+        {
+          "from": 12300,
+          "to": 33000,
+          "km2": 0.0,
+          "from_name": "port",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 12300,
+          "to": 51000,
+          "km2": 0.007153,
+          "from_name": "port",
+          "to_name": "water"
+        },
+        {
+          "from": 12400,
+          "to": 11200,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 12400,
+          "to": 12100,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 12400,
+          "to": 12200,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 12400,
+          "to": 12400,
+          "km2": 9.441673,
+          "from_name": "airport",
+          "to_name": "airport"
+        },
+        {
+          "from": 12400,
+          "to": 13400,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 12400,
+          "to": 14100,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 12400,
+          "to": 20000,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 12400,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "forest"
+        },
+        {
+          "from": 12400,
+          "to": 32000,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 12400,
+          "to": 51000,
+          "km2": 0.0,
+          "from_name": "airport",
+          "to_name": "water"
+        },
+        {
+          "from": 13300,
+          "to": 11100,
+          "km2": 8.451374,
+          "from_name": "construction",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 13300,
+          "to": 11200,
+          "km2": 7.41852,
+          "from_name": "construction",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 13300,
+          "to": 12100,
+          "km2": 2.479268,
+          "from_name": "construction",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 13300,
+          "to": 12200,
+          "km2": 0.436262,
+          "from_name": "construction",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 13300,
+          "to": 13300,
+          "km2": 15.266872,
+          "from_name": "construction",
+          "to_name": "construction"
+        },
+        {
+          "from": 13300,
+          "to": 13400,
+          "km2": 0.22205,
+          "from_name": "construction",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 13300,
+          "to": 14100,
+          "km2": 0.96071,
+          "from_name": "construction",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 13300,
+          "to": 20000,
+          "km2": 0.009116,
+          "from_name": "construction",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 13300,
+          "to": 32000,
+          "km2": 0.128049,
+          "from_name": "construction",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 13300,
+          "to": 33000,
+          "km2": 0.0,
+          "from_name": "construction",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 13300,
+          "to": 51000,
+          "km2": 0.049061,
+          "from_name": "construction",
+          "to_name": "water"
+        },
+        {
+          "from": 13400,
+          "to": 11100,
+          "km2": 1.305451,
+          "from_name": "vacant_land",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 13400,
+          "to": 11200,
+          "km2": 0.415966,
+          "from_name": "vacant_land",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 13400,
+          "to": 12100,
+          "km2": 1.813358,
+          "from_name": "vacant_land",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 13400,
+          "to": 12200,
+          "km2": 0.078447,
+          "from_name": "vacant_land",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 13400,
+          "to": 12300,
+          "km2": 0.262043,
+          "from_name": "vacant_land",
+          "to_name": "port"
+        },
+        {
+          "from": 13400,
+          "to": 12400,
+          "km2": 0.0,
+          "from_name": "vacant_land",
+          "to_name": "airport"
+        },
+        {
+          "from": 13400,
+          "to": 13300,
+          "km2": 1.632546,
+          "from_name": "vacant_land",
+          "to_name": "construction"
+        },
+        {
+          "from": 13400,
+          "to": 13400,
+          "km2": 7.944808,
+          "from_name": "vacant_land",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 13400,
+          "to": 14100,
+          "km2": 0.545758,
+          "from_name": "vacant_land",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 13400,
+          "to": 20000,
+          "km2": 0.168263,
+          "from_name": "vacant_land",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 13400,
+          "to": 31000,
+          "km2": 0.017071,
+          "from_name": "vacant_land",
+          "to_name": "forest"
+        },
+        {
+          "from": 13400,
+          "to": 32000,
+          "km2": 0.015758,
+          "from_name": "vacant_land",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 13400,
+          "to": 33000,
+          "km2": 0.0,
+          "from_name": "vacant_land",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 13400,
+          "to": 51000,
+          "km2": 0.017107,
+          "from_name": "vacant_land",
+          "to_name": "water"
+        },
+        {
+          "from": 14100,
+          "to": 11100,
+          "km2": 0.158046,
+          "from_name": "urban_green",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 14100,
+          "to": 11200,
+          "km2": 0.082773,
+          "from_name": "urban_green",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 14100,
+          "to": 12100,
+          "km2": 0.410863,
+          "from_name": "urban_green",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 14100,
+          "to": 12200,
+          "km2": 0.034345,
+          "from_name": "urban_green",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 14100,
+          "to": 12300,
+          "km2": 0.0,
+          "from_name": "urban_green",
+          "to_name": "port"
+        },
+        {
+          "from": 14100,
+          "to": 12400,
+          "km2": 0.0,
+          "from_name": "urban_green",
+          "to_name": "airport"
+        },
+        {
+          "from": 14100,
+          "to": 13300,
+          "km2": 0.163645,
+          "from_name": "urban_green",
+          "to_name": "construction"
+        },
+        {
+          "from": 14100,
+          "to": 13400,
+          "km2": 0.133918,
+          "from_name": "urban_green",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 14100,
+          "to": 14100,
+          "km2": 15.051329,
+          "from_name": "urban_green",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 14100,
+          "to": 20000,
+          "km2": 0.0,
+          "from_name": "urban_green",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 14100,
+          "to": 32000,
+          "km2": 0.0,
+          "from_name": "urban_green",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 14100,
+          "to": 33000,
+          "km2": 0.0,
+          "from_name": "urban_green",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 14100,
+          "to": 51000,
+          "km2": 0.023878,
+          "from_name": "urban_green",
+          "to_name": "water"
+        },
+        {
+          "from": 20000,
+          "to": 11100,
+          "km2": 0.695344,
+          "from_name": "agriculture",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 20000,
+          "to": 11200,
+          "km2": 0.333306,
+          "from_name": "agriculture",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 20000,
+          "to": 12100,
+          "km2": 0.197953,
+          "from_name": "agriculture",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 20000,
+          "to": 12200,
+          "km2": 0.029575,
+          "from_name": "agriculture",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 20000,
+          "to": 13300,
+          "km2": 1.705998,
+          "from_name": "agriculture",
+          "to_name": "construction"
+        },
+        {
+          "from": 20000,
+          "to": 13400,
+          "km2": 0.918662,
+          "from_name": "agriculture",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 20000,
+          "to": 14100,
+          "km2": 0.039406,
+          "from_name": "agriculture",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 20000,
+          "to": 20000,
+          "km2": 15.685406,
+          "from_name": "agriculture",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 20000,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "agriculture",
+          "to_name": "forest"
+        },
+        {
+          "from": 20000,
+          "to": 32000,
+          "km2": 0.624805,
+          "from_name": "agriculture",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 20000,
+          "to": 33000,
+          "km2": 0.059944,
+          "from_name": "agriculture",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 20000,
+          "to": 51000,
+          "km2": 0.035149,
+          "from_name": "agriculture",
+          "to_name": "water"
+        },
+        {
+          "from": 31000,
+          "to": 11100,
+          "km2": 0.007886,
+          "from_name": "forest",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 31000,
+          "to": 11200,
+          "km2": 0.0,
+          "from_name": "forest",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 31000,
+          "to": 12100,
+          "km2": 0.01361,
+          "from_name": "forest",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 31000,
+          "to": 12200,
+          "km2": 0.0,
+          "from_name": "forest",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 31000,
+          "to": 12400,
+          "km2": 0.0,
+          "from_name": "forest",
+          "to_name": "airport"
+        },
+        {
+          "from": 31000,
+          "to": 13300,
+          "km2": 0.136118,
+          "from_name": "forest",
+          "to_name": "construction"
+        },
+        {
+          "from": 31000,
+          "to": 13400,
+          "km2": 0.064353,
+          "from_name": "forest",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 31000,
+          "to": 14100,
+          "km2": 0.023629,
+          "from_name": "forest",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 31000,
+          "to": 20000,
+          "km2": 0.323978,
+          "from_name": "forest",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 31000,
+          "to": 31000,
+          "km2": 0.952642,
+          "from_name": "forest",
+          "to_name": "forest"
+        },
+        {
+          "from": 31000,
+          "to": 32000,
+          "km2": 0.411472,
+          "from_name": "forest",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 31000,
+          "to": 33000,
+          "km2": 0.0,
+          "from_name": "forest",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 31000,
+          "to": 51000,
+          "km2": 0.0,
+          "from_name": "forest",
+          "to_name": "water"
+        },
+        {
+          "from": 32000,
+          "to": 11100,
+          "km2": 0.35337,
+          "from_name": "natural_grass",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 32000,
+          "to": 11200,
+          "km2": 0.371614,
+          "from_name": "natural_grass",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 32000,
+          "to": 12100,
+          "km2": 0.63054,
+          "from_name": "natural_grass",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 32000,
+          "to": 12200,
+          "km2": 0.05188,
+          "from_name": "natural_grass",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 32000,
+          "to": 12400,
+          "km2": 0.009026,
+          "from_name": "natural_grass",
+          "to_name": "airport"
+        },
+        {
+          "from": 32000,
+          "to": 13300,
+          "km2": 3.865028,
+          "from_name": "natural_grass",
+          "to_name": "construction"
+        },
+        {
+          "from": 32000,
+          "to": 13400,
+          "km2": 0.446115,
+          "from_name": "natural_grass",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 32000,
+          "to": 14100,
+          "km2": 0.297737,
+          "from_name": "natural_grass",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 32000,
+          "to": 20000,
+          "km2": 1.890738,
+          "from_name": "natural_grass",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 32000,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "natural_grass",
+          "to_name": "forest"
+        },
+        {
+          "from": 32000,
+          "to": 32000,
+          "km2": 22.359172,
+          "from_name": "natural_grass",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 32000,
+          "to": 33000,
+          "km2": 0.026115,
+          "from_name": "natural_grass",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 32000,
+          "to": 51000,
+          "km2": 0.193663,
+          "from_name": "natural_grass",
+          "to_name": "water"
+        },
+        {
+          "from": 33000,
+          "to": 11100,
+          "km2": 0.400114,
+          "from_name": "bare_land",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 33000,
+          "to": 11200,
+          "km2": 0.142484,
+          "from_name": "bare_land",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 33000,
+          "to": 12100,
+          "km2": 0.264121,
+          "from_name": "bare_land",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 33000,
+          "to": 12200,
+          "km2": 0.07772,
+          "from_name": "bare_land",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 33000,
+          "to": 12300,
+          "km2": 0.005007,
+          "from_name": "bare_land",
+          "to_name": "port"
+        },
+        {
+          "from": 33000,
+          "to": 13300,
+          "km2": 0.759161,
+          "from_name": "bare_land",
+          "to_name": "construction"
+        },
+        {
+          "from": 33000,
+          "to": 13400,
+          "km2": 0.052651,
+          "from_name": "bare_land",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 33000,
+          "to": 14100,
+          "km2": 0.055637,
+          "from_name": "bare_land",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 33000,
+          "to": 20000,
+          "km2": 0.190513,
+          "from_name": "bare_land",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 33000,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "bare_land",
+          "to_name": "forest"
+        },
+        {
+          "from": 33000,
+          "to": 32000,
+          "km2": 1.746782,
+          "from_name": "bare_land",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 33000,
+          "to": 33000,
+          "km2": 8.149606,
+          "from_name": "bare_land",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 33000,
+          "to": 51000,
+          "km2": 0.18227,
+          "from_name": "bare_land",
+          "to_name": "water"
+        },
+        {
+          "from": 51000,
+          "to": 11100,
+          "km2": 0.279213,
+          "from_name": "water",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 51000,
+          "to": 11200,
+          "km2": 0.074309,
+          "from_name": "water",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 51000,
+          "to": 12100,
+          "km2": 0.109571,
+          "from_name": "water",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 51000,
+          "to": 12200,
+          "km2": 0.003316,
+          "from_name": "water",
+          "to_name": "roads_rail"
+        },
+        {
+          "from": 51000,
+          "to": 12300,
+          "km2": 0.563211,
+          "from_name": "water",
+          "to_name": "port"
+        },
+        {
+          "from": 51000,
+          "to": 12400,
+          "km2": 0.0,
+          "from_name": "water",
+          "to_name": "airport"
+        },
+        {
+          "from": 51000,
+          "to": 13300,
+          "km2": 0.70911,
+          "from_name": "water",
+          "to_name": "construction"
+        },
+        {
+          "from": 51000,
+          "to": 13400,
+          "km2": 0.020407,
+          "from_name": "water",
+          "to_name": "vacant_land"
+        },
+        {
+          "from": 51000,
+          "to": 14100,
+          "km2": 0.047725,
+          "from_name": "water",
+          "to_name": "urban_green"
+        },
+        {
+          "from": 51000,
+          "to": 20000,
+          "km2": 0.084365,
+          "from_name": "water",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 51000,
+          "to": 31000,
+          "km2": 0.0,
+          "from_name": "water",
+          "to_name": "forest"
+        },
+        {
+          "from": 51000,
+          "to": 32000,
+          "km2": 0.25422,
+          "from_name": "water",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 51000,
+          "to": 33000,
+          "km2": 2.347746,
+          "from_name": "water",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 51000,
+          "to": 51000,
+          "km2": 21.608658,
+          "from_name": "water",
+          "to_name": "water"
+        }
+      ],
+      "area_2005_km2": {
+        "agriculture": 20.325547,
+        "airport": 9.441673,
+        "bare_land": 12.026065,
+        "construction": 35.421283,
+        "continuous_urban": 81.788705,
+        "discontinuous_urban": 39.996987,
+        "forest": 1.933688,
+        "industrial_commercial": 62.908207,
+        "natural_grass": 30.494997,
+        "port": 5.843937,
+        "roads_rail": 14.394357,
+        "urban_green": 16.058796,
+        "vacant_land": 14.216577,
+        "water": 26.101851
+      },
+      "area_2017_km2": {
+        "agriculture": 18.378938,
+        "airport": 9.450699,
+        "bare_land": 10.713178,
+        "construction": 24.554617,
+        "continuous_urban": 107.596526,
+        "discontinuous_urban": 34.812229,
+        "forest": 0.969713,
+        "industrial_commercial": 67.741375,
+        "natural_grass": 25.557921,
+        "port": 6.667044,
+        "roads_rail": 15.207604,
+        "urban_green": 17.092285,
+        "vacant_land": 10.092064,
+        "water": 22.118477
+      },
+      "net_change_km2": {
+        "agriculture": -1.946609,
+        "airport": 0.009026,
+        "bare_land": -1.312887,
+        "construction": -10.866666,
+        "continuous_urban": 25.807821,
+        "discontinuous_urban": -5.184759,
+        "forest": -0.963974,
+        "industrial_commercial": 4.833168,
+        "natural_grass": -4.937076,
+        "port": 0.823107,
+        "roads_rail": 0.813248,
+        "urban_green": 1.03349,
+        "vacant_land": -4.124514,
+        "water": -3.983374
+      },
+      "top_transitions": [
+        {
+          "from": 11200,
+          "to": 11100,
+          "km2": 15.255721,
+          "from_name": "discontinuous_urban",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 13300,
+          "to": 11100,
+          "km2": 8.451374,
+          "from_name": "construction",
+          "to_name": "continuous_urban"
+        },
+        {
+          "from": 13300,
+          "to": 11200,
+          "km2": 7.41852,
+          "from_name": "construction",
+          "to_name": "discontinuous_urban"
+        },
+        {
+          "from": 32000,
+          "to": 13300,
+          "km2": 3.865028,
+          "from_name": "natural_grass",
+          "to_name": "construction"
+        },
+        {
+          "from": 13300,
+          "to": 12100,
+          "km2": 2.479268,
+          "from_name": "construction",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 51000,
+          "to": 33000,
+          "km2": 2.347746,
+          "from_name": "water",
+          "to_name": "bare_land"
+        },
+        {
+          "from": 32000,
+          "to": 20000,
+          "km2": 1.890738,
+          "from_name": "natural_grass",
+          "to_name": "agriculture"
+        },
+        {
+          "from": 13400,
+          "to": 12100,
+          "km2": 1.813358,
+          "from_name": "vacant_land",
+          "to_name": "industrial_commercial"
+        },
+        {
+          "from": 33000,
+          "to": 32000,
+          "km2": 1.746782,
+          "from_name": "bare_land",
+          "to_name": "natural_grass"
+        },
+        {
+          "from": 20000,
+          "to": 13300,
+          "km2": 1.705998,
+          "from_name": "agriculture",
+          "to_name": "construction"
+        }
+      ],
+      "unchanged_share": 0.817956
+    }
+  },
+  "interpretation_notes": [],
+  "limitations": [
+    "Polygon boundaries of the two years were mapped independently; slivers inflate small transitions.",
+    "Covers only the EO4SD mapped extents."
+  ],
+  "run_utc": "2026-11-11T18:37:54+00:00",
+  "code_version": "aea7c6e"
+}

@@ -73,7 +73,7 @@ MAP_EXTRA = [  # (parquet, column, map column)
     ("vulnerability_cells.parquet", "combined_kmeans", "combined_kmeans"),
 ]
 MAP_FEATURES = ["lst_mean_2024", "lst_rel_2024", "lst_rel_change_2001_2024", "lst_mean_2001", "lst_rel_2001",
-                "s2_ndvi_mean", "s2_ndbi_mean", "ndvi_change_2001_2024", "built_frac", "veg_frac_wc", "pop_density_2025",
+                "s2_ndvi_mean", "s2_ndbi_mean", "ndvi_change_2001_2024", "ndvi_rel_change_2001_2024", "built_frac", "veg_frac_wc", "pop_density_2025",
                 "elev_mean", "slope_mean", "road_density_km_km2", "intersection_density_km2", "rain_jjas_normal_mm",
                 "gsw_occurrence_mean", "data_quality_score", "lulc_built_change_2005_2017"] + \
                [f"{p}_{e}" for e in ("2001", "2010", "2015", "2020", "2024") for p in ("lst_rel", "ls_ndvi")]

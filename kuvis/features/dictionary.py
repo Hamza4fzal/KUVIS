@@ -58,6 +58,10 @@ for e in ["2001", "2010", "2015", "2020", "2024"]:
 _f("ndvi_change_2001_2024", "NDVI change 2001→2024", "index Δ", "Landsat", "2001 vs 2024", "derived",
    "Landsat NDVI 2024 − 2001 (TM vs OLI sensors; small cross-sensor bias possible)")
 _f("ndbi_change_2001_2024", "NDBI change 2001→2024", "index Δ", "Landsat", "2001 vs 2024", "derived", "NDBI 2024 − 2001")
+_f("ndvi_rel_change_2001_2024", "Relative NDVI change 2001→2024", "index Δ", "Landsat", "2001 vs 2024", "derived",
+   "(NDVI − land-cell median NDVI) 2024 minus the same in 2001; removes epoch-wide sensor/weather shifts")
+_f("ndbi_rel_change_2001_2024", "Relative NDBI change 2001→2024", "index Δ", "Landsat", "2001 vs 2024", "derived",
+   "(NDBI − land-cell median NDBI) 2024 minus the same in 2001")
 _f("lst_rel_change_2001_2024", "Relative LST change 2001→2024", "°C", "Landsat", "2001 vs 2024", "derived",
    "Relative LST 2024 − relative LST 2001")
 # Population

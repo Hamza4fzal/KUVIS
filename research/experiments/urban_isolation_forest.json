@@ -1,0 +1,35 @@
+{
+  "experiment_id": "urban_isolation_forest",
+  "module": "urban",
+  "algorithm": "Isolation Forest (+ LOF comparison)",
+  "purpose": "Find cells whose 2001→2024 change is unusual relative to cells with a similar 2001 state",
+  "input_features": [
+    "chg_ndvi",
+    "chg_ndbi",
+    "chg_lst_rel"
+  ],
+  "n_samples": 12777,
+  "parameters": {
+    "contamination": 0.02,
+    "n_estimators": 300,
+    "context": "robust z within groups of 2001-NDVI decile × 2021 built-up band"
+  },
+  "metrics": {
+    "n_flagged": 256,
+    "n_down": 93,
+    "n_up": 163,
+    "if_vs_lof": {
+      "n_a": 256,
+      "n_b": 256,
+      "n_both": 94,
+      "jaccard": 0.22488
+    }
+  },
+  "results": {},
+  "interpretation_notes": [],
+  "limitations": [
+    "Unusual change is statistical; it may reflect construction, reservoir level, irrigation, or sensor/compositing differences."
+  ],
+  "run_utc": "2026-11-11T18:38:54+00:00",
+  "code_version": "aea7c6e"
+}

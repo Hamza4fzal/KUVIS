@@ -1,0 +1,61 @@
+{
+  "experiment_id": "urban_ndvi_trend",
+  "module": "urban",
+  "algorithm": "Theil–Sen trend + Kendall τ (per cell)",
+  "purpose": "Long-term vegetation trend across Landsat epochs, absolute and relative to the city median",
+  "input_features": [
+    "ls_ndvi_2001",
+    "ls_ndvi_2010",
+    "ls_ndvi_2015",
+    "ls_ndvi_2020",
+    "ls_ndvi_2024",
+    "ls_ndvi_rel_2001",
+    "ls_ndvi_rel_2010",
+    "ls_ndvi_rel_2015",
+    "ls_ndvi_rel_2020",
+    "ls_ndvi_rel_2024"
+  ],
+  "n_samples": 13184,
+  "parameters": {
+    "epochs": [
+      2001,
+      2010,
+      2015,
+      2020,
+      2024
+    ],
+    "min_epochs": 4,
+    "relative": "NDVI − land-cell median NDVI of the same epoch"
+  },
+  "metrics": {
+    "city_median_ndvi_by_epoch": {
+      "2001": 0.066288,
+      "2010": 0.088156,
+      "2015": 0.103528,
+      "2020": 0.134866,
+      "2024": 0.157114
+    },
+    "absolute": {
+      "share_decreasing_p05": 0.000227,
+      "share_increasing_p05": 0.587548,
+      "median_trend_per_decade": 0.037884
+    },
+    "relative": {
+      "share_decreasing_p05": 0.03784,
+      "share_increasing_p05": 0.021612,
+      "median_trend_per_decade": -0.001429
+    },
+    "share_decreasing_p05": 0.03784,
+    "share_increasing_p05": 0.021612
+  },
+  "results": {},
+  "interpretation_notes": [
+    "The absolute trend contains epoch-wide shifts (TM→OLI sensor change, antecedent rainfall, acquisition dates) common to all cells; the relative trend isolates cells that greened or browned compared with Karachi as a whole. Headline shares use the relative trend."
+  ],
+  "limitations": [
+    "With ≤ 5 epochs, Kendall's τ has little power: p < 0.05 needs a near-monotonic series.",
+    "Epoch composites differ in scene count and weather."
+  ],
+  "run_utc": "2026-11-11T18:38:53+00:00",
+  "code_version": "aea7c6e"
+}
