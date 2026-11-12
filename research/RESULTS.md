@@ -1,31 +1,31 @@
 # KUVIS — Results
 
-_Generated 2026-11-11 19:44 UTC by `scripts/generate_results.py` from `research/experiments/*.json`. Do not edit by hand._
+_Generated 2026-11-12 18:47 UTC by `scripts/generate_results.py` from `research/experiments/*.json`. Do not edit by hand._
 
 ## Module: heat
 
 ### FP-Growth association rules — `heat_association`
 
-*Discover combinations of land-surface conditions that co-occur with high or low relative LST* · n = 11,889 · run 2026-11-11T18:07:00+00:00 · code 0202263
-- n rules: **8**
+*Discover combinations of land-surface conditions that co-occur with high or low relative LST* · n = 11,889 · run 2026-11-12T18:33:19+00:00 · code bd8b44b
+- n rules: **14**
 
 | rule | support | confidence | lift |
 |---|---|---|---|
 | Bare ground=Low ∧ Elevation=Low ∧ Vegetation=Sparse ⇒ Surface heat=Low | 0.072 | 0.935 | 2.80 |
 | Bare ground=Low ∧ Vegetation=Sparse ⇒ Surface heat=Low | 0.092 | 0.915 | 2.74 |
 | Elevation=Low ∧ Vegetation=Sparse ⇒ Surface heat=Low | 0.110 | 0.840 | 2.52 |
+| Distance to coast=Near ∧ Vegetation=Sparse ⇒ Surface heat=Low | 0.110 | 0.811 | 2.43 |
 | Bare ground=Low ∧ Elevation=Low ⇒ Surface heat=Low | 0.164 | 0.770 | 2.31 |
+| Bare ground=Low ∧ Distance to coast=Near ⇒ Surface heat=Low | 0.151 | 0.764 | 2.29 |
+| Distance to coast=Far ∧ Vegetation=Sparse ⇒ Surface heat=High | 0.063 | 0.741 | 2.22 |
 | Elevation=Low ⇒ Surface heat=Low | 0.234 | 0.702 | 2.11 |
-| Elevation=High ∧ Vegetation=Sparse ⇒ Surface heat=High | 0.060 | 0.671 | 2.01 |
-| Bare ground=Medium ∧ Elevation=High ⇒ Surface heat=High | 0.056 | 0.656 | 1.97 |
-| Bare ground=Low ⇒ Surface heat=Low | 0.202 | 0.605 | 1.82 |
 
 _Limitations:_ Association ≠ causation. Tertile cut-points are data-driven, not physical thresholds.
 
 ### Spearman correlation + standardized OLS (HC3) — `heat_correlation`
 
-*Quantify associations of LST with vegetation, built-up, population, coast and terrain* · n = 11,889 · run 2026-11-11T18:07:00+00:00 · code 0202263
-- ols r2: **0.554**
+*Quantify associations of LST with vegetation, built-up, population, coast and terrain* · n = 11,889 · run 2026-11-12T18:33:19+00:00 · code bd8b44b
+- ols r2: **0.674**
 
 | feature | Spearman ρ | n |
 |---|---|---|
@@ -35,21 +35,23 @@ _Limitations:_ Association ≠ causation. Tertile cut-points are data-driven, no
 | veg_frac_wc | 0.214 | 11889 |
 | bare_frac | 0.447 | 11889 |
 | log_pop_density_2025 | -0.493 | 11889 |
+| dist_coast_m | 0.677 | 11889 |
 | elev_mean | 0.638 | 11889 |
 
 | feature | std. β | 95 % CI |
 |---|---|---|
-| s2_ndvi_mean | -0.607 | -0.632 – -0.582 |
-| built_frac | -0.759 | -0.780 – -0.737 |
-| bare_frac | -0.288 | -0.310 – -0.265 |
-| log_pop_density_2025 | 0.163 | 0.135 – 0.191 |
-| elev_mean | 0.333 | 0.313 – 0.354 |
+| s2_ndvi_mean | -0.594 | -0.616 – -0.571 |
+| built_frac | -0.757 | -0.777 – -0.737 |
+| bare_frac | -0.356 | -0.376 – -0.337 |
+| log_pop_density_2025 | 0.242 | 0.217 – 0.268 |
+| dist_coast_m | 0.763 | 0.741 – 0.784 |
+| elev_mean | -0.245 | -0.264 – -0.226 |
 
 _Limitations:_ Neighbouring cells are not independent (residual Moran's I reported); naive p-values are overstated. Correlation does not establish causation.
 
 ### DBSCAN (feature space) — `heat_dbscan_feature`
 
-*Density-based thermal profiles without fixing K; compare with K-means* · n = 11,889 · run 2026-11-11T18:06:51+00:00 · code 0202263
+*Density-based thermal profiles without fixing K; compare with K-means* · n = 11,889 · run 2026-11-12T18:33:10+00:00 · code bd8b44b
 - n clusters: **3**
 - noise share: **0.042**
 - ari vs kmeans non noise: **0.134**
@@ -58,14 +60,14 @@ _Limitations:_ A single global eps cannot adapt to varying density; most cells m
 
 ### DBSCAN (geographic, hot cells) — `heat_dbscan_geographic`
 
-*Find spatially concentrated groups of the hottest 10 % of land cells* · n = 1,189 · run 2026-11-11T18:06:55+00:00 · code 0202263
+*Find spatially concentrated groups of the hottest 10 % of land cells* · n = 1,189 · run 2026-11-12T18:33:14+00:00 · code bd8b44b
 - n hotspots: **20**
 
 _Limitations:_ Hot threshold is relative to Karachi land cells; bare desert can be hottest.
 
 ### Getis–Ord Gi* + Global Moran's I — `heat_gi_star`
 
-*Statistically significant spatial clustering of surface temperature* · n = 11,889 · run 2026-11-11T18:06:56+00:00 · code 0202263
+*Statistically significant spatial clustering of surface temperature* · n = 11,889 · run 2026-11-12T18:33:15+00:00 · code bd8b44b
 - n hot: **3604**
 - n cold: **2430**
 - n hot fdr: **3210**
@@ -75,7 +77,7 @@ _Limitations:_ Hot spots are statistical clustering, not causal evidence. Pseudo
 
 ### Epoch comparison of LST composites — `heat_history`
 
-*Historical thermal comparison of Karachi land cells* · n = 14,701 · run 2026-11-11T18:07:00+00:00 · code 0202263
+*Historical thermal comparison of Karachi land cells* · n = 14,701 · run 2026-11-12T18:33:19+00:00 · code bd8b44b
 
 | epoch | cells | median LST °C | built − (rel.) | bare (rel.) | vegetated (rel.) |
 |---|---|---|---|---|---|
@@ -89,7 +91,7 @@ _Limitations:_ Absolute LST differs between epochs with weather on acquisition d
 
 ### Isolation Forest (+ LOF comparison) — `heat_isolation_forest`
 
-*Find cells whose LST is unusual relative to land-cover peers, neighbours and own history* · n = 11,887 · run 2026-11-11T18:06:59+00:00 · code 0202263
+*Find cells whose LST is unusual relative to land-cover peers, neighbours and own history* · n = 11,887 · run 2026-11-12T18:33:18+00:00 · code bd8b44b
 - n flagged: **238**
 - n warmer: **74**
 - n cooler: **164**
@@ -101,7 +103,7 @@ _Limitations:_ Contamination (2 %) sets how many cells are flagged; anomalies ar
 
 ### K-means — `heat_kmeans`
 
-*Identify thermal–environmental profiles of land cells* · n = 11,889 · run 2026-11-11T18:06:36+00:00 · code 0202263
+*Identify thermal–environmental profiles of land cells* · n = 11,889 · run 2026-11-12T18:32:56+00:00 · code bd8b44b
 
 - Selected: K=3: highest silhouette (0.531) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=4
 - Silhouette 0.531, Davies–Bouldin 0.657, Calinski–Harabasz 11354
@@ -130,7 +132,7 @@ _Limitations:_ K-means assumes roughly spherical clusters in standardized space.
 
 ### FP-Growth association rules — `flood_association`
 
-*Find combinations of terrain/surface/drainage/rainfall conditions that co-occur with observed intermittent surface water* · n = 13,184 · run 2026-11-11T19:43:27+00:00 · code ab1adb5
+*Find combinations of terrain/surface/drainage/rainfall conditions that co-occur with observed intermittent surface water* · n = 13,184 · run 2026-11-12T18:33:53+00:00 · code bd8b44b
 - n rules: **28**
 - base rate: **0.069**
 
@@ -149,14 +151,14 @@ _Limitations:_ Intermittent water ≠ urban flooding; short urban floods under c
 
 ### DBSCAN (feature space) — `flood_dbscan_feature`
 
-*Density-based flood-related profiles; compare with K-means* · n = 11,913 · run 2026-11-11T19:43:25+00:00 · code ab1adb5
+*Density-based flood-related profiles; compare with K-means* · n = 11,913 · run 2026-11-12T18:33:52+00:00 · code bd8b44b
 - n clusters: **4**
 - noise share: **0.021**
 - ari vs kmeans non noise: **0.003**
 
 ### K-means — `flood_kmeans`
 
-*Group land cells by flood-related terrain, surface and rainfall characteristics* · n = 11,913 · run 2026-11-11T19:42:59+00:00 · code ab1adb5
+*Group land cells by flood-related terrain, surface and rainfall characteristics* · n = 11,913 · run 2026-11-12T18:33:26+00:00 · code bd8b44b
 
 - Selected: K=7: highest silhouette (0.342) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=5
 - Silhouette 0.342, Davies–Bouldin 1.078, Calinski–Harabasz 4091
@@ -185,15 +187,55 @@ _Limitations:_ Intermittent water ≠ urban flooding; short urban floods under c
 
 _Limitations:_ Rainfall is assigned from ≈5.5 km CHIRPS pixels and varies little inside the city. 30 m DEM cannot represent drains or micro-topography.
 
+### Independent validation against Sentinel-1 event flood extent — `flood_sar_validation`
+
+*Do the flood findings learned from the long-term JRC intermittent-water proxy (A1 clusters, A3 rules, A4 tree) also identify cells where radar saw new open water after the heaviest 2020/2022 rain days?* · n = 11,097 · run 2026-11-12T18:33:59+00:00 · code bd8b44b
+- n positive: **159**
+- positive rate: **0.014**
+- tree auc: **0.845**
+- tree balanced accuracy: **0.817**
+- tree precision: **0.057**
+- tree recall: **0.836**
+- kmeans spearman jrc vs sar: **0.964**
+- rules checked: **25**
+- rules with sar lift gt 1: **25**
+- median rule sar lift: **5.221**
+
+| label threshold | balanced acc. | ROC-AUC | positive rate |
+|---|---|---|---|
+| 0.01 | — | 0.850 | 0.016 |
+| 0.02 | — | 0.845 | 0.014 |
+| 0.05 | — | 0.861 | 0.010 |
+| 0.1 | — | 0.854 | 0.005 |
+
+| scorer of SAR-flooded cells | ROC-AUC |
+|---|---|
+| decision tree (out-of-fold) | 0.845 |
+| low_elevation_only (−elev_mean) | 0.766 |
+| jrc_intermittent_label | 0.875 |
+| jrc_seasonal_share | 0.914 |
+
+| stratum | cells | SAR-positive | tree ROC-AUC |
+|---|---|---|---|
+| built-up ≥ 50 % | 1880 | 2 | — |
+| built-up < 50 % | 9217 | 157 | 0.840 |
+| within 2 km of coast | 1188 | 63 | 0.772 |
+| ≥ 2 km from coast | 9909 | 96 | 0.807 |
+| elevation < 10 m | 1155 | 98 | 0.683 |
+| elevation ≥ 10 m | 9942 | 61 | 0.722 |
+
+_Limitations:_ C-band SAR misses most flooding between buildings (double bounce, shadow), so SAR-negative urban cells are not confirmed dry; agreement is tested mainly where open ground floods. Only scenes ≤ 48 h after event days are used; water that drained earlier is missed.
+
 ### Decision Tree (spatially blocked CV) — `flood_tree`
 
-*Which terrain/surface characteristics distinguish cells with observed intermittent surface water?* · n = 11,913 · run 2026-11-11T19:43:32+00:00 · code ab1adb5
+*Which terrain/surface characteristics distinguish cells with observed intermittent surface water?* · n = 11,913 · run 2026-11-12T18:33:59+00:00 · code bd8b44b
 - balanced accuracy: **0.852**
 - roc auc: **0.896**
 - precision: **0.264**
 - recall: **0.862**
 - f1: **0.404**
 - best depth: **3**
+- positive rate: **0.062**
 
 | label threshold | balanced acc. | ROC-AUC | positive rate |
 |---|---|---|---|
@@ -207,7 +249,7 @@ _Limitations:_ The target is intermittent surface water, not validated flood occ
 
 ### Isolation Forest (+ LOF comparison) — `urban_isolation_forest`
 
-*Find cells whose 2001→2024 change is unusual relative to cells with a similar 2001 state* · n = 12,777 · run 2026-11-11T18:38:54+00:00 · code aea7c6e
+*Find cells whose 2001→2024 change is unusual relative to cells with a similar 2001 state* · n = 12,777 · run 2026-11-12T18:35:01+00:00 · code bd8b44b
 - n flagged: **256**
 - Isolation Forest vs LOF Jaccard = 0.225
 
@@ -215,7 +257,7 @@ _Limitations:_ Unusual change is statistical; it may reflect construction, reser
 
 ### K-means — `urban_kmeans`
 
-*Group cells by their 2001→2024 development trajectory* · n = 12,777 · run 2026-11-11T18:38:01+00:00 · code aea7c6e
+*Group cells by their 2001→2024 development trajectory* · n = 12,777 · run 2026-11-12T18:34:07+00:00 · code bd8b44b
 
 - Selected: K=3: highest silhouette (0.378) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=4
 - Silhouette 0.378, Davies–Bouldin 1.132, Calinski–Harabasz 6853
@@ -242,13 +284,13 @@ _Limitations:_ Landsat 5 TM vs 8/9 OLI sensor differences add small offsets to i
 
 ### Land-use change detection (transition matrix) — `urban_lulc_change`
 
-*Quantify 2005→2017 land-use transitions from the World Bank EO4SD maps* · n = 9,110 · run 2026-11-11T18:37:54+00:00 · code aea7c6e
+*Quantify 2005→2017 land-use transitions from the World Bank EO4SD maps* · n = 9,110 · run 2026-11-12T18:33:59+00:00 · code bd8b44b
 
 _Limitations:_ Polygon boundaries of the two years were mapped independently; slivers inflate small transitions. Covers only the EO4SD mapped extents.
 
 ### Theil–Sen trend + Kendall τ (per cell) — `urban_ndvi_trend`
 
-*Long-term vegetation trend across Landsat epochs, absolute and relative to the city median* · n = 13,184 · run 2026-11-11T18:38:53+00:00 · code aea7c6e
+*Long-term vegetation trend across Landsat epochs, absolute and relative to the city median* · n = 13,184 · run 2026-11-12T18:35:00+00:00 · code bd8b44b
 
 _Limitations:_ With ≤ 5 epochs, Kendall's τ has little power: p < 0.05 needs a near-monotonic series. Epoch composites differ in scene count and weather.
 
@@ -256,7 +298,7 @@ _Limitations:_ With ≤ 5 epochs, Kendall's τ has little power: p < 0.05 needs 
 
 ### K-means — `infra_kmeans`
 
-*Profile mapped road-network supply relative to population* · n = 13,187 · run 2026-11-11T19:42:04+00:00 · code ab1adb5
+*Profile mapped road-network supply relative to population* · n = 13,187 · run 2026-11-12T18:35:08+00:00 · code bd8b44b
 
 - Selected: K=8: highest silhouette (0.585) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=5
 - Silhouette 0.585, Davies–Bouldin 0.807, Calinski–Harabasz 16878
@@ -288,7 +330,7 @@ _Limitations:_ Describes mapped infrastructure supply, not traffic or congestion
 
 ### Spearman correlation (completeness check) — `infra_osm_completeness`
 
-*Assess how completely OSM maps buildings where other sources show dense settlement* · n = 13,187 · run 2026-11-11T19:42:04+00:00 · code ab1adb5
+*Assess how completely OSM maps buildings where other sources show dense settlement* · n = 13,187 · run 2026-11-12T18:35:08+00:00 · code bd8b44b
 
 | feature | Spearman ρ | n |
 |---|---|---|
@@ -301,7 +343,7 @@ _Limitations:_ A low count may also reflect very large buildings; this is a scre
 
 ### FP-Growth association rules — `vulnerability_association`
 
-*Which stress dimensions tend to co-occur in the same cells?* · n = 13,187 · run 2026-11-11T19:44:19+00:00 · code ab1adb5
+*Which stress dimensions tend to co-occur in the same cells?* · n = 13,187 · run 2026-11-12T18:35:28+00:00 · code bd8b44b
 - n rules: **11**
 
 | rule | support | confidence | lift |
@@ -319,12 +361,12 @@ _Limitations:_ Co-occurrence only. Dimensions share some inputs indirectly (e.g.
 
 ### DBSCAN (geographic, top-decile UVI) — `vulnerability_dbscan_geographic`
 
-*Locate spatial concentrations of the most stressed cells* · n = 1,319 · run 2026-11-11T19:44:17+00:00 · code ab1adb5
+*Locate spatial concentrations of the most stressed cells* · n = 1,319 · run 2026-11-12T18:35:27+00:00 · code bd8b44b
 - n hotspots: **37**
 
 ### Getis–Ord Gi* + Global Moran's I — `vulnerability_gi_star`
 
-*Statistically significant clustering of the composite index* · n = 13,187 · run 2026-11-11T19:44:18+00:00 · code ab1adb5
+*Statistically significant clustering of the composite index* · n = 13,187 · run 2026-11-12T18:35:27+00:00 · code bd8b44b
 - n hot: **3130**
 - n cold: **2615**
 - n hot fdr: **2630**
@@ -332,7 +374,7 @@ _Limitations:_ Co-occurrence only. Dimensions share some inputs indirectly (e.g.
 
 ### Composite index (UVI) + weight sensitivity — `vulnerability_index`
 
-*Combine normalized dimension indicators into an explainable composite index* · n = 13,187 · run 2026-11-11T19:44:18+00:00 · code ab1adb5
+*Combine normalized dimension indicators into an explainable composite index* · n = 13,187 · run 2026-11-12T18:35:27+00:00 · code bd8b44b
 - n scored: **13187**
 - top quintile stable share: **0.218**
 - median rank range width: **55.440**
@@ -341,7 +383,7 @@ _Limitations:_ Not an official disaster-risk assessment. Percentile normalisatio
 
 ### K-means — `vulnerability_kmeans`
 
-*Identify combinations of overlapping stress across the four dimensions* · n = 13,135 · run 2026-11-11T19:44:14+00:00 · code ab1adb5
+*Identify combinations of overlapping stress across the four dimensions* · n = 13,135 · run 2026-11-12T18:35:23+00:00 · code bd8b44b
 
 - Selected: K=3: highest silhouette (0.334) among K≥3 without clusters <2% of cells; elbow heuristic suggests K=4
 - Silhouette 0.334, Davies–Bouldin 1.168, Calinski–Harabasz 7211
@@ -414,11 +456,14 @@ DBSCAN groups 366 of Karachi's hottest-decile cells into one contiguous concentr
 **Persistently cool anomaly in GADAP TOWN (4 cells)** — _Unusual heat observation, Isolation Forest, Apr–Jun 2023–2025_  
 Isolation Forest flags these cells as cooler than context: their relative LST is -3.3 robust-SD from cells with the same land cover and -3.1 °C from neighbours within 1.5 km; the deviation recurs on 100 % of individual satellite dates. Dominant cover: crop. Statistically unusual, not necessarily hazardous.
 
+**Surface heat rises with distance from the coast (ρ = 0.68)** — _Statistical relationship, Spearman + standardized OLS, 2023–2025_  
+Across 11,889 land cells, Spearman ρ between 2023–25 LST and distance from the coast is 0.68. Holding the other variables fixed, the standardized OLS coefficient is +0.76 (95 % CI +0.74 to +0.78; model R² = 0.67). Neighbouring cells are not independent, so significance is overstated; this is association, not causation.
+
 **2.8 km² heat concentration around GADAP TOWN** — _Spatial heat concentration, DBSCAN (geographic) + Gi*, Apr–Jun 2023–2025_  
 DBSCAN groups 11 of Karachi's hottest-decile cells into one contiguous concentration. Mean pre-monsoon land surface temperature is 56.0 °C, +5.3 °C relative to the city median; mean NDVI 0.16, built-up share 0 %, dominant land cover 'bare'. 100 % of its cells are also Getis–Ord Gi* hot spots. WorldPop estimates 11 residents (2025) in these cells.
 
 **Surface heat rises with elevation (ρ = 0.64)** — _Statistical relationship, Spearman + standardized OLS, 2023–2025_  
-Across 11,889 land cells, Spearman ρ between 2023–25 LST and elevation is 0.64. Holding the other variables fixed, the standardized OLS coefficient is +0.33 (95 % CI +0.31 to +0.35; model R² = 0.55). Neighbouring cells are not independent, so significance is overstated; this is association, not causation.
+Across 11,889 land cells, Spearman ρ between 2023–25 LST and elevation is 0.64. Holding the other variables fixed, the standardized OLS coefficient is -0.24 (95 % CI -0.26 to -0.23; model R² = 0.67). Neighbouring cells are not independent, so significance is overstated; this is association, not causation.
 
 **Overlapping urbanization and flood stress: 3.2 km² in KIAMARI TOWN** — _Overlapping environmental stress, Composite index + DBSCAN, current period_  
 13 contiguous cells in the top decile of the composite index (mean UVI 0.67). heat 0.55, flood 0.73, urbanization 0.86, environmental 0.55 (percentile-scale dimension scores). 92 % stay in the top quintile under 95 % of alternative weightings. WorldPop estimates 2,006 residents (2025).
@@ -436,7 +481,7 @@ In 9.2 % of analysed cells these conditions occur together with Surface heat=Low
 DBSCAN groups 452 of Karachi's hottest-decile cells into one contiguous concentration. Mean pre-monsoon land surface temperature is 55.2 °C, +4.5 °C relative to the city median; mean NDVI 0.17, built-up share 1 %, dominant land cover 'bare'. 100 % of its cells are also Getis–Ord Gi* hot spots. WorldPop estimates 10,245 residents (2025) in these cells.
 
 **Surface heat falls with built-up share (ρ = -0.56)** — _Statistical relationship, Spearman + standardized OLS, 2023–2025_  
-Across 11,889 land cells, Spearman ρ between 2023–25 LST and built-up share is -0.56. Holding the other variables fixed, the standardized OLS coefficient is -0.76 (95 % CI -0.78 to -0.74; model R² = 0.55). Neighbouring cells are not independent, so significance is overstated; this is association, not causation.
+Across 11,889 land cells, Spearman ρ between 2023–25 LST and built-up share is -0.56. Holding the other variables fixed, the standardized OLS coefficient is -0.76 (95 % CI -0.78 to -0.74; model R² = 0.67). Neighbouring cells are not independent, so significance is overstated; this is association, not causation.
 
 **Surface heat rises with NDBI (ρ = 0.55)** — _Statistical relationship, Spearman + standardized OLS, 2023–2025_  
 Across 11,889 land cells, Spearman ρ between 2023–25 LST and NDBI is 0.55. Neighbouring cells are not independent, so significance is overstated; this is association, not causation.
@@ -473,9 +518,6 @@ K-means (K=7) groups 592 cells with mean elevation 31.7 m, slope 1.6°, NDVI 0.5
 
 **4.5 km² heat concentration around GADAP TOWN** — _Spatial heat concentration, DBSCAN (geographic) + Gi*, Apr–Jun 2023–2025_  
 DBSCAN groups 18 of Karachi's hottest-decile cells into one contiguous concentration. Mean pre-monsoon land surface temperature is 54.7 °C, +4.0 °C relative to the city median; mean NDVI 0.19, built-up share 0 %, dominant land cover 'bare'. 100 % of its cells are also Getis–Ord Gi* hot spots. WorldPop estimates 50 residents (2025) in these cells.
-
-**Surface heat falls with population density (ρ = -0.49)** — _Statistical relationship, Spearman + standardized OLS, 2023–2025_  
-Across 11,889 land cells, Spearman ρ between 2023–25 LST and population density is -0.49. Holding the other variables fixed, the standardized OLS coefficient is +0.16 (95 % CI +0.13 to +0.19; model R² = 0.55). Neighbouring cells are not independent, so significance is overstated; this is association, not causation.
 
 **Environmental=High + Heat=Low ⇒ Flood=High** — _Environmental association, FP-Growth, current period_  
 In 13.5 % of analysed cells these conditions occur together with Flood=High. When the conditions hold, Flood=High follows 82 % of the time — 2.47× its base rate of 33 %. Co-occurrence, not causation.

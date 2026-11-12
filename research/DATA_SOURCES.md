@@ -126,12 +126,21 @@ machine-readable registry, which the pipeline writes only after a file actually 
 | License | CC BY 4.0 |
 | Data-quality note | The `lulcvhr_2017.zip` archive contains files *named* `EO4SD_KARACHI_LULCVHR_2005.*`. Its sizes differ from the 2005 archive; the year is verified from attribute content before use (see DATA_AVAILABILITY.md). |
 
+## 10a. Sentinel-1 RTC and CHIRPS v3 daily (flood-event validation)
+
+| Field | Value |
+|---|---|
+| Provider | ESA Copernicus Sentinel-1A; radiometric terrain correction by Microsoft Planetary Computer (`sentinel-1-rtc`). Event days from UCSB CHC CHIRPS v3 daily `sat` (`data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/final/sat/`) |
+| Variables | VV γ0 (dB), read from the COG overview at 40 m, 3 × 3 median filtered → per-cell share of newly dark open water (`s1_flood_frac_2020`, `s1_flood_frac_2022`, `s1_flood_frac_max`) |
+| Temporal | Passes ≤ 48 h after CHIRPS days with city-mean ≥ 20 mm (2020: 6 days; 2022: 12 days); references from January–May of the same year and orbit |
+| License | Copernicus data free and open; RTC product CC BY 4.0; CHIRPS public domain |
+| Limitations | Open water only: water between buildings, shallow water on rough surfaces and water drained before the overpass are missed (zero = not detected). Coastal low ground has residual false alarms (leave-one-out QC in `datasets/processed/sentinel1_events.json`). CHIRPS daily timing is disaggregated from pentads, not observed daily. Used only to validate, never to train. |
+
 ## 11. Sources investigated but not (yet) used
 
 | Source | Finding | Decision |
 |---|---|---|
 | Google Earth Engine | No credentials configured; requires a Google Cloud project | Same products read from MPC; GEE optional |
-| Sentinel-1 GRD/RTC | Available on MPC (`sentinel-1-grd`, `sentinel-1-rtc`) | Planned for flood-extent extension (Aug 2020 / 2022 monsoon) |
 | GPM IMERG | MPC `gpm-imerg-hhr` (half-hourly) | Planned extension for sub-daily rainfall intensity |
 | GHSL (BUILT-S, POP, SMOD) | JRC FTP reachable | Planned for built-up history 1975–2030 |
 | PMD station data | Requires a formal request to the Climate Data Processing Centre | Not bypassed; not used |

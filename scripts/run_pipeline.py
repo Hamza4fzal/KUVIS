@@ -36,6 +36,7 @@ STEPS: dict[str, tuple[str, str, str]] = {
     "osm": ("kuvis.steps", "step_osm", "OpenStreetMap roads, waterways, buildings, coastline"),
     "jrc_gsw": ("kuvis.steps", "step_jrc_gsw", "JRC Global Surface Water occurrence/seasonality"),
     "lulc": ("kuvis.steps", "step_lulc", "World Bank EO4SD Karachi LULC 2005/2017"),
+    "sentinel1": ("kuvis.steps", "step_sentinel1", "Sentinel-1 post-event flood extent 2020/2022 (CHIRPS daily event days)"),
     "features": ("kuvis.steps", "step_features", "Assemble analytical feature tables"),
     "mine_heat": ("kuvis.steps", "step_mine_heat", "Module B — urban heat intelligence"),
     "mine_flood": ("kuvis.steps", "step_mine_flood", "Module A — flood vulnerability intelligence"),

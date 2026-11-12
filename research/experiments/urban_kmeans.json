@@ -162,6 +162,6 @@
     "Landsat 5 TM vs 8/9 OLI sensor differences add small offsets to index changes.",
     "Population growth 2015–2025 is modelled, and covers a different period than the Landsat change."
   ],
-  "run_utc": "2026-11-11T18:38:01+00:00",
-  "code_version": "aea7c6e"
+  "run_utc": "2026-11-12T18:34:07+00:00",
+  "code_version": "bd8b44b"
 }

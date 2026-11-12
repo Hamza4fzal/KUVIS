@@ -9,6 +9,7 @@
     "Vegetation",
     "Bare ground",
     "Population density",
+    "Distance to coast",
     "Elevation"
   ],
   "n_samples": 11889,
@@ -24,9 +25,9 @@
     "redundancy_pruning": "drop rule if a more general rule has ≥ 98 % of its lift"
   },
   "metrics": {
-    "n_rules": 8,
+    "n_rules": 14,
     "n_transactions": 11889,
-    "n_items": 12,
+    "n_items": 15,
     "base_rate_high_heat": 0.333333
   },
   "results": {
@@ -79,6 +80,21 @@
       },
       {
         "antecedents": [
+          "Distance to coast=Near",
+          "Vegetation=Sparse"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.109681,
+        "confidence": 0.81145,
+        "lift": 2.43435,
+        "leverage": 0.064626,
+        "conviction": 3.535754,
+        "antecedent_support": 0.135167,
+        "consequent_support": 0.333333,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
           "Bare ground=Low",
           "Elevation=Low"
         ],
@@ -89,6 +105,36 @@
         "leverage": 0.093027,
         "conviction": 2.893836,
         "antecedent_support": 0.213222,
+        "consequent_support": 0.333333,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Bare ground=Low",
+          "Distance to coast=Near"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.150643,
+        "confidence": 0.764078,
+        "lift": 2.292235,
+        "leverage": 0.084924,
+        "conviction": 2.825799,
+        "antecedent_support": 0.197157,
+        "consequent_support": 0.333333,
+        "n_items": 2
+      },
+      {
+        "antecedents": [
+          "Distance to coast=Far",
+          "Vegetation=Sparse"
+        ],
+        "consequent": "Surface heat=High",
+        "support": 0.062579,
+        "confidence": 0.741036,
+        "lift": 2.223108,
+        "leverage": 0.03443,
+        "conviction": 2.574359,
+        "antecedent_support": 0.084448,
         "consequent_support": 0.333333,
         "n_items": 2
       },
@@ -105,6 +151,35 @@
         "antecedent_support": 0.333333,
         "consequent_support": 0.333333,
         "n_items": 1
+      },
+      {
+        "antecedents": [
+          "Distance to coast=Near"
+        ],
+        "consequent": "Surface heat=Low",
+        "support": 0.231222,
+        "confidence": 0.693666,
+        "lift": 2.080999,
+        "leverage": 0.120111,
+        "conviction": 2.176277,
+        "antecedent_support": 0.333333,
+        "consequent_support": 0.333333,
+        "n_items": 1
+      },
+      {
+        "antecedents": [
+          "Bare ground=Medium",
+          "Distance to coast=Far"
+        ],
+        "consequent": "Surface heat=High",
+        "support": 0.059214,
+        "confidence": 0.674976,
+        "lift": 2.024928,
+        "leverage": 0.029972,
+        "conviction": 2.051131,
+        "antecedent_support": 0.087728,
+        "consequent_support": 0.333333,
+        "n_items": 2
       },
       {
         "antecedents": [
@@ -138,6 +213,20 @@
       },
       {
         "antecedents": [
+          "Distance to coast=Far"
+        ],
+        "consequent": "Surface heat=High",
+        "support": 0.202035,
+        "confidence": 0.606106,
+        "lift": 1.818319,
+        "leverage": 0.090924,
+        "conviction": 1.692505,
+        "antecedent_support": 0.333333,
+        "consequent_support": 0.333333,
+        "n_items": 1
+      },
+      {
+        "antecedents": [
           "Bare ground=Low"
         ],
         "consequent": "Surface heat=Low",
@@ -159,6 +248,6 @@
     "Association ≠ causation.",
     "Tertile cut-points are data-driven, not physical thresholds."
   ],
-  "run_utc": "2026-11-11T18:07:00+00:00",
-  "code_version": "0202263"
+  "run_utc": "2026-11-12T18:33:19+00:00",
+  "code_version": "bd8b44b"
 }

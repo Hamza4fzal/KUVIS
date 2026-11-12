@@ -30,6 +30,6 @@
   "limitations": [
     "Unusual change is statistical; it may reflect construction, reservoir level, irrigation, or sensor/compositing differences."
   ],
-  "run_utc": "2026-11-11T18:38:54+00:00",
-  "code_version": "aea7c6e"
+  "run_utc": "2026-11-12T18:35:01+00:00",
+  "code_version": "bd8b44b"
 }

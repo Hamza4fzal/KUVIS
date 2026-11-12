@@ -33,8 +33,8 @@ const router = createBrowserRouter([
           <ModulePage module="flood" title="Flood Vulnerability Intelligence" color="#4f8fd9" groups={["Flood", "Terrain", "Urbanization"]}
             defaultLayers={["flood_kmeans", "rain_jjas", "elevation"]}
             intro={<>Terrain, imperviousness, vegetation, drainage proximity, surface-water history and CHIRPS rainfall mined for flood-related
-              profiles and associations. Supervised models are trained only against an independent flood label.</>}
-            caveat="No validated, cell-level record of historical urban flooding in Karachi is openly available; results describe flood-related susceptibility characteristics, not observed flood depth or frequency. Rainfall is assigned from ≈5.5 km pixels." />
+              profiles and associations. The decision tree is trained on long-term intermittent surface water (JRC) and then checked, out of sample, against Sentinel-1 radar flood water mapped after the heaviest 2020 and 2022 rain days.</>}
+            caveat="No validated, cell-level record of historical urban flooding in Karachi is openly available; results describe flood-related susceptibility characteristics, not observed flood depth or frequency. Radar sees open water on open ground but misses most flooding between buildings, so a radar zero is not proof a street stayed dry. Rainfall is assigned from ≈5.5 km pixels." />
         ),
       },
       {

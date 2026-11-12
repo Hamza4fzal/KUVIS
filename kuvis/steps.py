@@ -73,6 +73,11 @@ def step_lulc():
     lulc.run(_grid(), _study())
 
 
+def step_sentinel1():
+    from .acquisition import sentinel1
+    sentinel1.run(_grid(), _study())
+
+
 def step_features():
     from .features import build
     build.run()

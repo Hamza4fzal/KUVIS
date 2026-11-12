@@ -23,7 +23,7 @@
   provider: ESA Copernicus via Planetary Computer
   url: https://planetarycomputer.microsoft.com/dataset/sentinel-1-grd
   status: alternative_selected
-  limitations: Verified available; flood-extent extension not yet executed (urban SAR flood mapping is unreliable in dense built-up areas).
+  limitations: GRD not used; the terrain-corrected RTC product (sentinel-1-rtc) is acquired instead for 2020/2022 post-event flood water (see the sentinel1 provenance record).
 - key: gpm_imerg
   title: NASA GPM IMERG half-hourly
   provider: NASA via Planetary Computer

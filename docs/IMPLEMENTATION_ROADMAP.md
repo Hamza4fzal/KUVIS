@@ -12,12 +12,12 @@ marked done on the basis of code alone.
 | 5 Backend & database | PostGIS schema + migrations, loader, FastAPI REST, MVT vector tiles | Done (2026-11-11) |
 | 6 Frontend | React/MapLibre app: 12 screens incl. location report, history, compare, discoveries, methodology, sources | Done (2026-11-12) |
 | 7 Integration & optimisation | Tile props whitelist, source rebuild per layer set, shared legends, loading/error states | Done (2026-11-12) |
-| 8 Validation & presentation | 24 pytest tests; Playwright browser test of 12 pages + report + PDF export; final report (`research/reports/FINAL_REPORT.md`) | Done (2026-11-12) |
+| 8 Validation & presentation | 27 pytest tests; Playwright browser test of 12 pages + report + PDF export; final report (`research/reports/FINAL_REPORT.md`) | Done (2026-11-12) |
+| 9 Extension: Sentinel-1 flood validation | CHIRPS daily event days → Sentinel-1 RTC post-event change detection (2020, 2022) with leave-one-out false-alarm QC; out-of-sample check of the flood tree, rules and profiles (`flood_sar_validation`) | Done (2026-11-12) |
 
 ### Not done (documented, not acquired)
 
-* Sentinel-1 flood extents for the 2020 / 2022 monsoons (independent inundation label).
-* IMERG sub-daily rainfall; GHSL built-up history; night-time LST.
+* IMERG sub-daily rainfall (available on MPC, not added); GHSL built-up history; night-time LST.
 * Traffic / congestion: no open observations exist for Karachi, so Module D covers infrastructure supply only.
 
 ## Vertical slice (Module B — Urban Heat)

@@ -56,6 +56,11 @@ CATALOG: list[dict] = [
     {"id": "water_occurrence", "prop": "gsw_occurrence_mean", "group": "Flood", "title": "Surface-water occurrence",
      "unit": "%", "scale": "sequential", "palette": "blue", "kind": "observed", "source": "JRC GSW v1.4",
      "period": "1984–2021", "description": "How often open water was observed; context, not a flood record."},
+    {"id": "sar_flood", "prop": "s1_flood_frac_max", "group": "Flood", "title": "Radar-detected flood water (2020/2022)",
+     "unit": "fraction", "scale": "sequential", "palette": "blue", "kind": "observed", "source": "Sentinel-1 RTC + CHIRPS daily",
+     "period": "≤ 48 h after the heaviest 2020 and 2022 rain days",
+     "description": "Share of the cell that turned into open water after a storm (radar change detection). "
+                    "Radar misses most flooding between buildings: 0 means not detected, not dry."},
     {"id": "uvi", "prop": "uvi", "group": "Vulnerability", "title": "Composite vulnerability index (UVI)",
      "unit": "0–1", "scale": "sequential", "palette": "uvi", "kind": "composite", "source": "KUVIS vulnerability",
      "period": "current", "description": "Equal-weight composite of normalized dimension indicators; not an official risk rating."},

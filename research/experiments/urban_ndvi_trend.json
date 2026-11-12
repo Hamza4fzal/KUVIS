@@ -56,6 +56,6 @@
     "With ≤ 5 epochs, Kendall's τ has little power: p < 0.05 needs a near-monotonic series.",
     "Epoch composites differ in scene count and weather."
   ],
-  "run_utc": "2026-11-11T18:38:53+00:00",
-  "code_version": "aea7c6e"
+  "run_utc": "2026-11-12T18:35:00+00:00",
+  "code_version": "bd8b44b"
 }

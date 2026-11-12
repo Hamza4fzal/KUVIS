@@ -51,7 +51,9 @@ def main():
                         L.append(f"| {p['cluster']} | {p['n_cells']} | {p['name']} |\n")
             for key in ("n_clusters", "noise_share", "ari_vs_kmeans_non_noise", "n_hotspots", "n_hot", "n_cold", "n_hot_fdr",
                         "n_flagged", "n_warmer", "n_cooler", "n_rules", "base_rate", "ols_r2", "balanced_accuracy", "roc_auc",
-                        "precision", "recall", "f1", "best_depth", "n_scored", "top_quintile_stable_share",
+                        "precision", "recall", "f1", "best_depth", "n_positive", "positive_rate", "tree_auc",
+                        "tree_balanced_accuracy", "tree_precision", "tree_recall", "kmeans_spearman_jrc_vs_sar",
+                        "rules_checked", "rules_with_sar_lift_gt_1", "median_rule_sar_lift", "n_scored", "top_quintile_stable_share",
                         "median_rank_range_width", "median_persistence_flagged", "median_persistence_unflagged"):
                 if key in m and not isinstance(m[key], (list, dict)):
                     L.append(f"- {key.replace('_', ' ')}: **{f(m[key])}**\n")
@@ -70,7 +72,17 @@ def main():
             if "label_threshold_sensitivity" in m:
                 L.append("\n| label threshold | balanced acc. | ROC-AUC | positive rate |\n|---|---|---|---|\n")
                 for t, s in m["label_threshold_sensitivity"].items():
-                    L.append(f"| {t} | {f(s['balanced_accuracy'])} | {f(s['roc_auc'])} | {f(s['positive_rate'])} |\n")
+                    L.append(f"| {t} | {f(s.get('balanced_accuracy'))} | {f(s.get('roc_auc', s.get('tree_auc')))} | "
+                             f"{f(s['positive_rate'])} |\n")
+            if "baseline_auc" in m:
+                L.append("\n| scorer of SAR-flooded cells | ROC-AUC |\n|---|---|\n")
+                L.append(f"| decision tree (out-of-fold) | {f(m.get('tree_auc'))} |\n")
+                for k_, v_ in m["baseline_auc"].items():
+                    L.append(f"| {k_} | {f(v_)} |\n")
+            if "by_urban_stratum" in m:
+                L.append("\n| stratum | cells | SAR-positive | tree ROC-AUC |\n|---|---|---|---|\n")
+                for k_, v_ in m["by_urban_stratum"].items():
+                    L.append(f"| {k_} | {v_['n']} | {v_.get('n_positive', '—')} | {f(v_.get('tree_auc'))} |\n")
             if "top_rules" in e["results"]:
                 L.append("\n| rule | support | confidence | lift |\n|---|---|---|---|\n")
                 for r in e["results"]["top_rules"][:8]:

@@ -76,6 +76,6 @@
     "Absolute LST differs between epochs with weather on acquisition days; compare relative LST.",
     "Land-cover classes are from 2021 and applied to all epochs."
   ],
-  "run_utc": "2026-11-11T18:07:00+00:00",
-  "code_version": "0202263"
+  "run_utc": "2026-11-12T18:33:19+00:00",
+  "code_version": "bd8b44b"
 }

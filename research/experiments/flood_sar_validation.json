@@ -1,0 +1,426 @@
+{
+  "experiment_id": "flood_sar_validation",
+  "module": "flood",
+  "algorithm": "Independent validation against Sentinel-1 event flood extent",
+  "purpose": "Do the flood findings learned from the long-term JRC intermittent-water proxy (A1 clusters, A3 rules, A4 tree) also identify cells where radar saw new open water after the heaviest 2020/2022 rain days?",
+  "input_features": [
+    "flood_tree out-of-fold probability",
+    "flood_kmeans cluster",
+    "flood_association rules",
+    "s1_flood_frac_max"
+  ],
+  "n_samples": 11097,
+  "parameters": {
+    "sar_label": "s1_flood_frac_max ≥ 0.02",
+    "events": "CHIRPS daily study-mean ≥ 20 mm; S1 ≤ 48 h after",
+    "note": "SAR label never used for fitting any model"
+  },
+  "metrics": {
+    "n_positive": 159,
+    "positive_rate": 0.014328,
+    "tree_auc": 0.845495,
+    "tree_balanced_accuracy": 0.817124,
+    "tree_precision": 0.056716,
+    "tree_recall": 0.836478,
+    "baseline_auc": {
+      "low_elevation_only (−elev_mean)": 0.765882,
+      "jrc_intermittent_label": 0.875363,
+      "jrc_seasonal_share": 0.914343
+    },
+    "by_year": {
+      "2020": {
+        "n": 11097,
+        "positive_rate": 0.012436,
+        "tree_auc": 0.849497
+      },
+      "2022": {
+        "n": 11097,
+        "positive_rate": 0.007299,
+        "tree_auc": 0.83272
+      }
+    },
+    "by_urban_stratum": {
+      "built-up ≥ 50 %": {
+        "n": 1880,
+        "n_positive": 2,
+        "sar_positive_rate": 0.001064,
+        "tree_auc": null
+      },
+      "built-up < 50 %": {
+        "n": 9217,
+        "n_positive": 157,
+        "sar_positive_rate": 0.017034,
+        "tree_auc": 0.840498
+      },
+      "within 2 km of coast": {
+        "n": 1188,
+        "n_positive": 63,
+        "sar_positive_rate": 0.05303,
+        "tree_auc": 0.77181
+      },
+      "≥ 2 km from coast": {
+        "n": 9909,
+        "n_positive": 96,
+        "sar_positive_rate": 0.009688,
+        "tree_auc": 0.807412
+      },
+      "elevation < 10 m": {
+        "n": 1155,
+        "n_positive": 98,
+        "sar_positive_rate": 0.084848,
+        "tree_auc": 0.68266
+      },
+      "elevation ≥ 10 m": {
+        "n": 9942,
+        "n_positive": 61,
+        "sar_positive_rate": 0.006136,
+        "tree_auc": 0.722276
+      }
+    },
+    "label_threshold_sensitivity": {
+      "0.01": {
+        "positive_rate": 0.016311,
+        "tree_auc": 0.849866
+      },
+      "0.02": {
+        "positive_rate": 0.014328,
+        "tree_auc": 0.845495
+      },
+      "0.05": {
+        "positive_rate": 0.010093,
+        "tree_auc": 0.860741
+      },
+      "0.1": {
+        "positive_rate": 0.005497,
+        "tree_auc": 0.854032
+      }
+    },
+    "kmeans_spearman_jrc_vs_sar": 0.963636,
+    "rules_checked": 25,
+    "rules_with_sar_lift_gt_1": 25,
+    "median_rule_sar_lift": 5.221358
+  },
+  "results": {
+    "clusters": [
+      {
+        "cluster": 0,
+        "n": 402,
+        "intermittent_water_share": 0.0,
+        "sar_flooded_share": 0.0
+      },
+      {
+        "cluster": 1,
+        "n": 14,
+        "intermittent_water_share": 0.0,
+        "sar_flooded_share": 0.0
+      },
+      {
+        "cluster": 2,
+        "n": 2502,
+        "intermittent_water_share": 0.013189,
+        "sar_flooded_share": 0.006795
+      },
+      {
+        "cluster": 3,
+        "n": 4620,
+        "intermittent_water_share": 0.074026,
+        "sar_flooded_share": 0.02013
+      },
+      {
+        "cluster": 4,
+        "n": 1132,
+        "intermittent_water_share": 0.079505,
+        "sar_flooded_share": 0.024735
+      },
+      {
+        "cluster": 5,
+        "n": 1835,
+        "intermittent_water_share": 0.029973,
+        "sar_flooded_share": 0.002725
+      },
+      {
+        "cluster": 6,
+        "n": 592,
+        "intermittent_water_share": 0.341216,
+        "sar_flooded_share": 0.027027
+      }
+    ],
+    "rules": [
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Elevation=≤10 m",
+          "Waterway distance=≥1 km"
+        ],
+        "jrc_lift": 9.389091,
+        "n": 606,
+        "sar_rate": 0.112211,
+        "sar_lift": 6.958787
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Monsoon rainfall=Low",
+          "Waterway distance=≥1 km"
+        ],
+        "jrc_lift": 9.324242,
+        "n": 365,
+        "sar_rate": 0.093151,
+        "sar_lift": 5.776747
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m"
+        ],
+        "jrc_lift": 9.262358,
+        "n": 783,
+        "sar_rate": 0.109834,
+        "sar_lift": 6.811362
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)"
+        ],
+        "jrc_lift": 9.186231,
+        "n": 583,
+        "sar_rate": 0.092624,
+        "sar_lift": 5.744106
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Monsoon rainfall=Low"
+        ],
+        "jrc_lift": 9.075124,
+        "n": 545,
+        "sar_rate": 0.089908,
+        "sar_lift": 5.575667
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)",
+          "Waterway distance=≥1 km"
+        ],
+        "jrc_lift": 9.061651,
+        "n": 474,
+        "sar_rate": 0.075949,
+        "sar_lift": 4.710006
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)",
+          "Terrain position=Neutral"
+        ],
+        "jrc_lift": 9.024796,
+        "n": 401,
+        "sar_rate": 0.099751,
+        "sar_lift": 6.186042
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Elevation=≤10 m",
+          "Terrain position=Neutral"
+        ],
+        "jrc_lift": 8.985317,
+        "n": 531,
+        "sar_rate": 0.141243,
+        "sar_lift": 8.759191
+      },
+      {
+        "antecedents": [
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)"
+        ],
+        "jrc_lift": 8.95599,
+        "n": 590,
+        "sar_rate": 0.081356,
+        "sar_lift": 5.045294
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Elevation=≤10 m"
+        ],
+        "jrc_lift": 8.71709,
+        "n": 953,
+        "sar_rate": 0.134313,
+        "sar_lift": 8.329412
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Slope=Flat (<2°)"
+        ],
+        "jrc_lift": 8.443409,
+        "n": 677,
+        "sar_rate": 0.084195,
+        "sar_lift": 5.221358
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Terrain position=Neutral",
+          "Waterway distance=≥1 km"
+        ],
+        "jrc_lift": 8.432496,
+        "n": 419,
+        "sar_rate": 0.095465,
+        "sar_lift": 5.920294
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Vegetation=Dense",
+          "Waterway distance=≥1 km"
+        ],
+        "jrc_lift": 8.412474,
+        "n": 397,
+        "sar_rate": 0.050378,
+        "sar_lift": 3.124185
+      },
+      {
+        "antecedents": [
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m",
+          "Vegetation=Dense"
+        ],
+        "jrc_lift": 8.301702,
+        "n": 455,
+        "sar_rate": 0.048352,
+        "sar_lift": 2.998531
+      },
+      {
+        "antecedents": [
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m",
+          "Terrain position=Neutral"
+        ],
+        "jrc_lift": 8.105085,
+        "n": 571,
+        "sar_rate": 0.087566,
+        "sar_lift": 5.430392
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Vegetation=Dense"
+        ],
+        "jrc_lift": 7.875398,
+        "n": 550,
+        "sar_rate": 0.074545,
+        "sar_lift": 4.622942
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m",
+          "Waterway distance=≥1 km"
+        ],
+        "jrc_lift": 7.818633,
+        "n": 811,
+        "sar_rate": 0.086313,
+        "sar_lift": 5.352719
+      },
+      {
+        "antecedents": [
+          "Drain distance=≥1 km",
+          "Elevation=≤10 m"
+        ],
+        "jrc_lift": 7.765544,
+        "n": 1069,
+        "sar_rate": 0.083255,
+        "sar_lift": 5.163089
+      },
+      {
+        "antecedents": [
+          "Elevation=≤10 m"
+        ],
+        "jrc_lift": 7.008599,
+        "n": 1405,
+        "sar_rate": 0.097509,
+        "sar_lift": 6.047022
+      },
+      {
+        "antecedents": [
+          "Monsoon rainfall=Low",
+          "Terrain position=Neutral"
+        ],
+        "jrc_lift": 3.172241,
+        "n": 1046,
+        "sar_rate": 0.033461,
+        "sar_lift": 2.075074
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Monsoon rainfall=Low",
+          "Slope=Flat (<2°)"
+        ],
+        "jrc_lift": 2.918914,
+        "n": 1386,
+        "sar_rate": 0.025974,
+        "sar_lift": 1.610781
+      },
+      {
+        "antecedents": [
+          "Monsoon rainfall=Low",
+          "Slope=Flat (<2°)"
+        ],
+        "jrc_lift": 2.645016,
+        "n": 1596,
+        "sar_rate": 0.023183,
+        "sar_lift": 1.437693
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Slope=Flat (<2°)",
+          "Waterway distance=≥1 km"
+        ],
+        "jrc_lift": 2.452776,
+        "n": 1756,
+        "sar_rate": 0.024487,
+        "sar_lift": 1.518592
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Slope=Flat (<2°)",
+          "Terrain position=Neutral"
+        ],
+        "jrc_lift": 2.248272,
+        "n": 1716,
+        "sar_rate": 0.027972,
+        "sar_lift": 1.734687
+      },
+      {
+        "antecedents": [
+          "Built-up=<20 %",
+          "Slope=Flat (<2°)",
+          "Vegetation=Dense"
+        ],
+        "jrc_lift": 2.128929,
+        "n": 1603,
+        "sar_rate": 0.020586,
+        "sar_lift": 1.276667
+      }
+    ]
+  },
+  "interpretation_notes": [
+    "AUC 0.5 = no better than chance at ranking SAR-flooded above non-flooded cells.",
+    "Baselines show how much of the skill a single variable (elevation) or the JRC proxy itself already carries."
+  ],
+  "limitations": [
+    "C-band SAR misses most flooding between buildings (double bounce, shadow), so SAR-negative urban cells are not confirmed dry; agreement is tested mainly where open ground floods.",
+    "Only scenes ≤ 48 h after event days are used; water that drained earlier is missed."
+  ],
+  "run_utc": "2026-11-12T18:33:59+00:00",
+  "code_version": "bd8b44b"
+}

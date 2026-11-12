@@ -50,6 +50,98 @@ def _prep() -> pd.DataFrame:
     return base
 
 
+S1_T = 0.02  # ≥ 2 % of the cell (≈ 3 pixels of 40 m) newly dark after an event
+
+
+def _auc(y: np.ndarray, s: np.ndarray) -> float | None:
+    from sklearn.metrics import roc_auc_score
+    ok = np.isfinite(s)
+    return float(roc_auc_score(y[ok], s[ok])) if ok.sum() > 50 and len(set(y[ok])) > 1 else None
+
+
+def _validate_sar(b, res, tb, oof, km_lab, km_b, oh, rules) -> None:
+    """A5 — out-of-sample check of A1/A3/A4 against Sentinel-1 event flood extent, which none of them saw.
+
+    The SAR label is an *event* observation (open water ≤ 48 h after the heaviest 2020/2022 rain days); the models
+    were fitted to the long-term JRC intermittent-water proxy. Agreement therefore tests whether the proxy-trained
+    findings transfer to real flood events — within the limits of SAR, which misses most water between buildings."""
+    from sklearn.metrics import balanced_accuracy_score, precision_score, recall_score
+    s1 = b["s1_flood_frac_max"]
+    v = b[s1.notna()]
+    y_all = (v["s1_flood_frac_max"] >= S1_T).astype(int)
+    res.loc[v.index, "s1_flooded"] = y_all.values
+    # A4 tree, out-of-fold probabilities
+    tv = tb.assign(p=oof)[tb.index.isin(v.index)]
+    y = (tv["s1_flood_frac_max"] >= S1_T).astype(int).values
+    pred = (tv["p"].values >= 0.5).astype(int)
+    by_year = {}
+    for yr in (2020, 2022):
+        c = f"s1_flood_frac_{yr}"
+        if c in tv:
+            m = tv[c].notna()
+            yy = (tv.loc[m, c] >= S1_T).astype(int).values
+            by_year[yr] = {"n": int(m.sum()), "positive_rate": float(yy.mean()), "tree_auc": _auc(yy, tv.loc[m, "p"].values)}
+    strata = {}
+    for name, m in (("built-up ≥ 50 %", tv["built_frac"] >= 0.5), ("built-up < 50 %", tv["built_frac"] < 0.5),
+                    ("within 2 km of coast", tv["dist_coast_m"] < 2000), ("≥ 2 km from coast", tv["dist_coast_m"] >= 2000),
+                    ("elevation < 10 m", tv["elev_mean"] < 10), ("elevation ≥ 10 m", tv["elev_mean"] >= 10)):
+        yy = y[m.values]
+        npos = int(yy.sum())
+        # AUC from a handful of positives is noise, so it is withheld below 10 positives
+        strata[name] = {"n": int(m.sum()), "n_positive": npos, "sar_positive_rate": float(yy.mean()) if len(yy) else None,
+                        "tree_auc": _auc(yy, tv.loc[m, "p"].values) if npos >= 10 else None}
+    sens = {str(t): {"positive_rate": float((tv["s1_flood_frac_max"] >= t).mean()),
+                     "tree_auc": _auc((tv["s1_flood_frac_max"] >= t).astype(int).values, tv["p"].values)}
+            for t in (0.01, S1_T, 0.05, 0.10)}
+    baselines = {"low_elevation_only (−elev_mean)": _auc(y, -tv["elev_mean"].values),
+                 "jrc_intermittent_label": _auc(y, tv["intermittent_water"].values),
+                 "jrc_seasonal_share": _auc(y, tv["gsw_seasonal_frac"].values)}
+    # A1 clusters: SAR flood rate per K-means cluster vs the intermittent-water share they were described with
+    kv = km_b.assign(c=km_lab)[km_b.index.isin(v.index)]
+    clusters = [{"cluster": int(c), "n": int(len(g)), "intermittent_water_share": float(g["intermittent_water"].mean()),
+                 "sar_flooded_share": float((g["s1_flood_frac_max"] >= S1_T).mean())} for c, g in kv.groupby("c")]
+    from scipy.stats import spearmanr
+    rho = spearmanr([c["intermittent_water_share"] for c in clusters], [c["sar_flooded_share"] for c in clusters])
+    # A3 rules: does the antecedent raise the SAR flood rate too?
+    ohv = oh.loc[oh.index.isin(v.index)]
+    yv = (b.loc[ohv.index, "s1_flood_frac_max"] >= S1_T)
+    base = float(yv.mean())
+    rule_check = []
+    for r in rules.head(25).itertuples():
+        m = ohv[list(r.antecedents)].all(axis=1)
+        if m.sum() >= 20:
+            rate = float(yv[m].mean())
+            rule_check.append({"antecedents": list(r.antecedents), "jrc_lift": float(r.lift), "n": int(m.sum()),
+                               "sar_rate": rate, "sar_lift": rate / base if base else None})
+    sar_lifts = [r["sar_lift"] for r in rule_check if r["sar_lift"] is not None]
+    experiment.save(
+        "flood_sar_validation", module="flood", algorithm="Independent validation against Sentinel-1 event flood extent",
+        purpose="Do the flood findings learned from the long-term JRC intermittent-water proxy (A1 clusters, A3 rules, "
+                "A4 tree) also identify cells where radar saw new open water after the heaviest 2020/2022 rain days?",
+        inputs=["flood_tree out-of-fold probability", "flood_kmeans cluster", "flood_association rules", "s1_flood_frac_max"],
+        n_samples=int(len(tv)),
+        params={"sar_label": f"s1_flood_frac_max ≥ {S1_T}", "events": "CHIRPS daily study-mean ≥ 20 mm; S1 ≤ 48 h after",
+                "note": "SAR label never used for fitting any model"},
+        metrics={"n_positive": int(y.sum()), "positive_rate": float(y.mean()), "tree_auc": _auc(y, tv["p"].values),
+                 "tree_balanced_accuracy": float(balanced_accuracy_score(y, pred)),
+                 "tree_precision": float(precision_score(y, pred, zero_division=0)),
+                 "tree_recall": float(recall_score(y, pred, zero_division=0)),
+                 "baseline_auc": baselines, "by_year": by_year, "by_urban_stratum": strata,
+                 "label_threshold_sensitivity": sens,
+                 "kmeans_spearman_jrc_vs_sar": float(rho.statistic) if np.isfinite(rho.statistic) else None,
+                 "rules_checked": len(rule_check),
+                 "rules_with_sar_lift_gt_1": int(sum(lf > 1 for lf in sar_lifts)),
+                 "median_rule_sar_lift": float(np.median(sar_lifts)) if sar_lifts else None},
+        results={"clusters": clusters, "rules": rule_check},
+        interpretation_notes=["AUC 0.5 = no better than chance at ranking SAR-flooded above non-flooded cells.",
+                              "Baselines show how much of the skill a single variable (elevation) or the JRC proxy "
+                              "itself already carries."],
+        limitations=["C-band SAR misses most flooding between buildings (double bounce, shadow), so SAR-negative urban "
+                     "cells are not confirmed dry; agreement is tested mainly where open ground floods.",
+                     "Only scenes ≤ 48 h after event days are used; water that drained earlier is missed."])
+    log.info("flood SAR validation: positive rate %.3f, tree AUC %s", y.mean(), _auc(y, tv["p"].values))
+
+
 def run() -> pd.DataFrame:
     mc = cfg()["mining"]
     rs = mc["random_state"]
@@ -171,6 +263,8 @@ def run() -> pd.DataFrame:
                     limitations=["The target is intermittent surface water, not validated flood occurrence; the model "
                                  "explains this proxy and has no demonstrated predictive validity for urban flood events.",
                                  "Spatial blocks reduce but do not eliminate spatial leakage."])
+    if "s1_flood_frac_max" in b:
+        _validate_sar(b, res, tb, main["oof_proba"], lab, km_b, oh, rules)
     res.to_parquet(out("flood_cells.parquet"))
     log.info("flood: K=%d, %d rules, tree balanced acc %.3f AUC %.3f", k, len(rules),
              main["metrics"]["balanced_accuracy"], main["metrics"]["roc_auc"])

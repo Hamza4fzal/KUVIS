@@ -88,6 +88,14 @@ _f("gsw_seasonal_frac", "Seasonal-water share", "fraction", "JRC GSW v1.4", "198
    "Share of pixels with 1–11 water months in a typical year")
 _f("gsw_permanent_frac", "Permanent-water share", "fraction", "JRC GSW v1.4", "1984–2021", "observed",
    "Share of pixels water 12 months")
+# Sentinel-1 event flood extent (independent of the JRC-based label; used for validation only)
+_f("s1_flood_frac_2020", "SAR flood share, 2020 monsoon events", "fraction", "Sentinel-1 RTC + CHIRPS daily", "2020 JJAS",
+   "observed", "Max share of 40 m pixels newly dark (VV < -18 dB, > 3 dB darker than every dry-season pass) in scenes <= 48 h after "
+   "an event day; open water only, urban flooding largely invisible")
+_f("s1_flood_frac_2022", "SAR flood share, 2022 monsoon events", "fraction", "Sentinel-1 RTC + CHIRPS daily", "2022 JJAS",
+   "observed", "As 2020, for the 2022 monsoon event days")
+_f("s1_flood_frac_max", "SAR flood share, max of events", "fraction", "Sentinel-1 RTC + CHIRPS daily", "2020, 2022",
+   "observed", "Maximum of the 2020 and 2022 SAR flood shares")
 # Rainfall (assigned)
 _f("rain_annual_normal_mm", "Annual rainfall normal", "mm/yr", "CHIRPS v3", "1991–2020", "assigned",
    "Mean annual total of the ≈5.5 km CHIRPS pixel containing the cell centroid")

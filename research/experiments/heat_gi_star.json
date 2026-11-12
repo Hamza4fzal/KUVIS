@@ -34,6 +34,6 @@
     "Hot spots are statistical clustering, not causal evidence.",
     "Pseudo p-values from 499 permutations; FDR-adjusted classes also reported."
   ],
-  "run_utc": "2026-11-11T18:06:56+00:00",
-  "code_version": "0202263"
+  "run_utc": "2026-11-12T18:33:15+00:00",
+  "code_version": "bd8b44b"
 }

@@ -22,7 +22,8 @@ whole Karachi Division (14,701 cells). The datasets are:
 - NASADEM
 - ESA WorldCover 2021
 - JRC Global Surface Water
-- CHIRPS v3
+- Sentinel-1 radar (RTC), passes after the heaviest 2020 and 2022 rain days
+- CHIRPS v3 (monthly and daily)
 - WorldPop R2025A
 - OpenStreetMap
 - World Bank EO4SD land use (2005, 2017)
@@ -43,6 +44,9 @@ Four findings stand out:
 3. **Observed intermittent surface water is predictable from terrain alone** under spatially blocked
    cross-validation: balanced accuracy 0.85 and ROC-AUC 0.90. Elevation ≤ 8 m accounts for 80 % of the tree's Gini
    importance. Precision is low (0.26), however, and the satellite proxy does not capture urban street flooding.
+   Checked out of sample against Sentinel-1 radar flood water mapped after the 2020 and 2022 storms, the tree still
+   ranks flooded cells well (ROC-AUC 0.85), but most of that skill comes from separating low from high ground, and
+   radar cannot see water between buildings.
 4. **Volunteered map data is too incomplete to stand in for infrastructure.** 66 % of densely built-up cells have
    fewer than 50 mapped buildings per km² in OpenStreetMap.
 
@@ -91,7 +95,8 @@ The following rules were held throughout:
 | Terrain | NASADEM | 30 m | Elevation, slope, TPI |
 | Land cover | ESA WorldCover v200 | 10 m; 2021 | Built/bare/vegetation shares |
 | Surface water | JRC Global Surface Water v1.4 | 30 m; 1984–2021 | Flood proxy label |
-| Rainfall | CHIRPS v3 | ≈5.5 km; 1981–2025 monthly | Monsoon normals, anomalies |
+| Event flood water | Sentinel-1 RTC (VV), Planetary Computer | 10 m, read at 40 m; 8 passes ≤ 48 h after 2020/2022 event days | Independent validation label |
+| Rainfall | CHIRPS v3 | ≈5.5 km; 1981–2025 monthly; Jun–Sep 2020 and 2022 daily | Monsoon normals, anomalies, event days |
 | Population | WorldPop R2025A (constrained) | 100 m; 2015, 2025 | Exposure, growth |
 | Infrastructure | OpenStreetMap (Overpass) | vector snapshot | Roads, drains, buildings |
 | Land use | World Bank EO4SD Karachi | 2005, 2017 | Transitions |
@@ -105,8 +110,10 @@ Data availability shaped several design decisions:
   value of the pixel containing its centroid, and is flagged *assigned*, not measured.
 - **No real traffic data.** No open traffic observations exist for Karachi (TomTom requires a commercial licence), so
   Module D describes infrastructure *supply* only.
-- **No Sentinel-1 or IMERG.** Sentinel-1 flood mapping and IMERG sub-daily rainfall were investigated but not
-  acquired. Their status is recorded in `config/sources_investigated.yaml`.
+- **Sentinel-1 only around event days; no IMERG.** Radar was read only for passes within 48 h after the heaviest
+  rain days, plus same-orbit dry-season references. IMERG half-hourly rainfall is available on Planetary Computer
+  but was not added; CHIRPS daily (whose day-to-day timing is itself disaggregated with IMERG) was used to pick
+  event days.
 
 All acquisitions are recorded in a provenance registry. The registry refuses to mark a source "acquired" unless the
 files exist on disk.
@@ -140,6 +147,7 @@ files exist on disk.
 | FP-Growth | Co-occurring conditions | Support, confidence, lift; confidence threshold relative to base rate; redundant rules pruned |
 | Isolation Forest (+ LOF) | Cells unusual for their context | Contextual residuals (land-cover peers, 1.5 km neighbours, own history); persistence across individual satellite dates; Jaccard overlap with LOF |
 | Decision Tree | Which terrain/surface variables separate cells with intermittent water | GroupKFold(5) on 5 km spatial blocks; depth search; balanced accuracy, ROC-AUC, precision/recall; label-threshold sensitivity; permutation importance |
+| Sentinel-1 change detection + out-of-sample check | Independent event label for the flood models | Leave-one-out false-alarm test on dry-season passes; threshold sensitivity; ROC-AUC of the tree vs single-variable baselines; per-stratum AUC (withheld below 10 positives) |
 | Theil–Sen + Kendall τ | Per-cell vegetation trend over five epochs | Absolute and relative trends reported side by side |
 
 ### 3.3 Composite index (Module E)
@@ -182,16 +190,24 @@ A traffic dimension was excluded because no real data exists for it.
 
 **Drivers** (`heat_correlation`, n = 11,889 land cells; Spearman ρ with LST):
 
+- Distance to the coast: ρ = +0.68
 - Elevation: ρ = +0.64
 - Built-up share: ρ = −0.56
 - NDBI: ρ = +0.55
 - Population density: ρ = −0.49
 
-A standardised OLS model with HC3 errors explains R² = 0.55 of the variance, with these coefficients:
+A standardised OLS model with HC3 errors explains R² = 0.67 of the variance, with these coefficients:
 
+- Distance to the coast: β = +0.76 (95 % CI 0.74 to 0.78)
 - Built-up share: β = −0.76 (95 % CI −0.78 to −0.74)
-- NDVI: β = −0.61
-- Elevation: β = +0.33
+- NDVI: β = −0.59
+- Bare share: β = −0.36
+- Elevation: β = −0.24
+
+Distance to the coast and elevation are strongly collinear (inland Karachi is higher). Once distance to the coast is
+in the model, elevation's coefficient turns negative, so the elevation coefficient should not be read on its own. The
+built-up coefficient is stable with or without coast distance (−0.76 in both), which is what the cool-island finding
+rests on. Residuals remain spatially autocorrelated (Moran's I = 0.65), so the confidence intervals are optimistic.
 
 NDBI correlates *positively* with LST while built-up share correlates *negatively*. This shows that NDBI here
 responds to bare soil rather than to buildings, which is why NDBI was later removed from the urbanization dimension.
@@ -217,8 +233,10 @@ DBSCAN in feature space agrees only weakly with K-means (ARI = 0.13). It finds o
 The built-up versus bare gap widens in every intermediate epoch. Absolute LST differs between epochs mainly because
 of weather on the acquisition days, so it is not interpreted as warming.
 
-**Association rules** (`heat_association`, 8 rules): the strongest says low bare-ground share, low elevation and
-sparse vegetation together imply low surface heat, with confidence 0.94 and lift 2.80.
+**Association rules** (`heat_association`, 14 rules): the strongest says low bare-ground share, low elevation and
+sparse vegetation together imply low surface heat, with confidence 0.93 and lift 2.80. Proximity to the coast with
+sparse vegetation implies low heat (confidence 0.81, lift 2.43); distance from the coast with sparse vegetation
+implies high heat (0.74, lift 2.22).
 
 **Anomalies** (`heat_isolation_forest`):
 
@@ -252,6 +270,34 @@ monsoon cloud.
 **Profiles** (`flood_kmeans`, K = 7, silhouette 0.34): one profile, *vegetated, low-lying and flat* (592 cells), has
 intermittent water in 34 % of its cells, 5.0 times the base rate. The water label was not a clustering input, so this
 is an independent check.
+
+**Independent check against radar flood water** (`flood_sar_validation`). None of the flood models saw this data.
+
+- *Event days* were chosen from CHIRPS daily rainfall, not from news reports: days with a city-mean of at least
+  20 mm. This gave 6 days in 2020 (the largest 59 mm on 27 August) and 12 in 2022 (the largest 73 mm on 24 July).
+- *Detection.* For each Sentinel-1 pass within 48 h of an event day, a 40 m pixel counts as new water when its VV
+  backscatter is below −18 dB and more than 3 dB darker than **every** dry-season (January–May) pass of the same
+  orbit. Steep slopes, normally-wet pixels and a 320 m strip along each swath edge are excluded.
+- *False alarms.* A first version compared against the dry-season *median*. Run on dry passes against the other dry
+  passes (leave-one-out), it "found" up to 43 km² of flooding, almost all on coastal ground below 10 m where tide
+  and salt pans change from pass to pass. The minimum reference cut this to a median of 0.2 km² per pass, but two
+  of 24 dry passes still show 11 and 21 km². The 21 km² pass (11 January 2022) followed about 10 mm of CHIRPS rain on
+  4–6 January, so part of it may be real ponding; the 11 km² pass (6 February 2020) followed a dry month and is a
+  genuine false alarm. Detections near the coast therefore carry more doubt than inland ones.
+- *What radar saw.* The morning after 27 August 2020 it mapped 40.6 km² of new open water, most of it inland along
+  the north-western edge of Gadap. The 2022 passes show 1–12 km² each. In total 159 of the 11,097 evaluated cells
+  (1.4 %) are radar-flooded (≥ 2 % of the cell).
+- *Does the tree transfer?* Its out-of-fold probabilities rank radar-flooded cells above the rest with ROC-AUC 0.85
+  (0.85 for 2020, 0.83 for 2022), clearly better than elevation alone (0.77). It catches 84 % of radar-flooded cells
+  but with 5.7 % precision, because radar-flooded cells are rare.
+- *But the proxy carries most of it.* The JRC seasonal-water share by itself scores 0.91, higher than the tree: both
+  sources see water on open, low ground. Within strata the tree's AUC falls to 0.68 (below 10 m) and 0.72 (above),
+  so much of its skill is the low/high split. Inland cells (≥ 2 km from the coast, 96 positives) still reach 0.81,
+  so the agreement is not just tide.
+- *Rules and profiles.* All 25 top association rules also raise the radar flood rate (median lift 5.2), and the
+  K-means profiles rank the same way under both labels (Spearman ρ = 0.96 between cluster shares).
+- *The blind spot.* Only 2 of 1,880 mostly built-up cells are radar-flooded. That is not evidence that dense
+  neighbourhoods stay dry: C-band radar cannot see water between buildings.
 
 **Rainfall context** (CHIRPS): June–September 2022 rainfall was a median 280 % above the 1991–2020 normal across all
 170 pixels. 2022, 1994 and 2020 rank as the wettest monsoons since 1981, consistent with the documented flood
@@ -375,9 +421,11 @@ alongside the composite score.
 ### 5.3 What the flood model can and cannot say
 
 The spatially blocked Decision Tree shows that terrain explains where open water is observed. But its precision of
-0.26 and its proxy label limit it to a screening role. The flooding that matters most to residents, in dense
-neighbourhoods with blocked nullahs, is exactly what optical satellite archives miss. Sentinel-1 radar for the 2020
-and 2022 events is the natural next step for an independent inundation label.
+0.26 and its proxy label limit it to a screening role. The Sentinel-1 check shows that what it learned transfers to
+real storm water on open ground, but adds little beyond the water history it was trained on, and says nothing about
+the flooding that matters most to residents: water in dense neighbourhoods with blocked nullahs, which both optical
+archives and C-band radar miss. Validating that needs street-level records (municipal complaints, drainage
+surveys, or very-high-resolution imagery), not another satellite proxy.
 
 ### 5.4 Methodological lessons
 
@@ -415,7 +463,8 @@ KUVIS shows that mining multiple open datasets on a common grid surfaces structu
 
 - a daytime surface cool island in an arid megacity, widening over 23 years;
 - a strong spatial opposition between heat and flood susceptibility, which makes simple composite indices fragile;
-- terrain-driven, but low-precision, predictability of observed surface water;
+- terrain-driven, but low-precision, predictability of observed surface water, which transfers to radar-observed
+  storm water on open ground but cannot speak for dense neighbourhoods;
 - substantial gaps in volunteered infrastructure data.
 
 Every pattern is reported with its evaluation, its evidence type and its limitations, and none is presented as an
@@ -423,7 +472,6 @@ official risk assessment.
 
 **Future work:**
 
-- Sentinel-1 flood extents for 2020 and 2022, as an independent label.
 - Night-time LST from Landsat or ECOSTRESS.
 - IMERG sub-daily rainfall.
 - GHSL built-up history.
@@ -436,7 +484,7 @@ official risk assessment.
 ```bash
 python scripts/run_pipeline.py           # all steps; or name steps, e.g. features mine_heat vulnerability load_db
 python scripts/generate_results.py       # research/RESULTS.md from experiment records
-python -m pytest tests                   # 24 tests (algorithms + live API)
+python -m pytest tests                   # 27 tests (algorithms + live API)
 python scripts/ui_check.py               # browser smoke test of all 12 pages
 ```
 

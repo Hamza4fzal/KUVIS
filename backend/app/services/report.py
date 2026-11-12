@@ -28,6 +28,7 @@ SECTIONS = [
                                                        "rain_aug_2020_mm", "rain_trend_mm_decade"]),
     ("Water history", ["gsw_occurrence_mean", "gsw_seasonal_frac", "gsw_permanent_frac", "dist_coast_m", "dist_waterway_m",
                        "dist_drain_m"]),
+    ("Flood events (Sentinel-1 radar)", ["s1_flood_frac_2020", "s1_flood_frac_2022"]),
     ("Population", ["pop_2025", "pop_density_2025", "pop_change_2015_2025"]),
     ("Infrastructure (OpenStreetMap)", ["road_density_km_km2", "major_road_density_km_km2", "intersection_density_km2",
                                         "osm_building_density_km2"]),

@@ -279,6 +279,6 @@
     "Rainfall is assigned from ≈5.5 km CHIRPS pixels and varies little inside the city.",
     "30 m DEM cannot represent drains or micro-topography."
   ],
-  "run_utc": "2026-11-11T19:42:59+00:00",
-  "code_version": "ab1adb5"
+  "run_utc": "2026-11-12T18:33:26+00:00",
+  "code_version": "bd8b44b"
 }

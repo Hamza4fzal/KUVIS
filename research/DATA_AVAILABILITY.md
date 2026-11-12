@@ -20,7 +20,8 @@ after files exist (and the Data Sources page reads).
 | Google Earth Engine | Requires authentication | Needs a Google Cloud project; optional |
 | PMD station records (CDPC) | Requires manual request | Not bypassed |
 | TomTom Traffic | Requires payment | API key + commercial terms; traffic module limited to infrastructure |
-| Sentinel-1 GRD/RTC | Verified available (MPC) — extension not yet run | Urban SAR flood mapping limits documented |
+| Sentinel-1 RTC | Successfully acquired (MPC `sentinel-1-rtc`) — 8 post-event + 24 dry-season passes, 2020 and 2022 | SAS tokens expire after ~1 h: hrefs are re-signed before every read. Orbit 115 covers <5 % of Karachi and is not used |
+| CHIRPS v3 daily (`sat`) | Successfully acquired, Jun–Sep 2020 and 2022 | Uncompressed strip GeoTIFFs (≈17 MB, no overviews); windowed reads ≈10 files/min; HTTP 429 under load |
 | GPM IMERG | Verified available (MPC `gpm-imerg-hhr`) — extension not yet run | |
 | GHSL R2023A | Verified reachable (JRC FTP) — extension not yet run | |
 

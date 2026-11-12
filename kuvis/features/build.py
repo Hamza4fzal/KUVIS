@@ -24,7 +24,7 @@ from .dictionary import FEATURES
 
 log = get_logger("kuvis.features")
 
-SOURCES = ["terrain", "worldcover", "sentinel2", "landsat", "population", "osm", "jrc_gsw", "lulc"]
+SOURCES = ["terrain", "worldcover", "sentinel2", "landsat", "population", "osm", "jrc_gsw", "lulc", "sentinel1"]
 
 
 def _load(name: str) -> pd.DataFrame | None:

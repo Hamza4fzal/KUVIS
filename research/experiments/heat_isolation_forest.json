@@ -39,6 +39,6 @@
   "limitations": [
     "Contamination (2 %) sets how many cells are flagged; anomalies are statistical, not hazards."
   ],
-  "run_utc": "2026-11-11T18:06:59+00:00",
-  "code_version": "0202263"
+  "run_utc": "2026-11-12T18:33:18+00:00",
+  "code_version": "bd8b44b"
 }
