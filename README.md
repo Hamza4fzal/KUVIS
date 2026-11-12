@@ -19,6 +19,8 @@ interactive map application with per-location intelligence reports.
 | [research/DATA_AVAILABILITY.md](research/DATA_AVAILABILITY.md) | Acquisition status of every investigated source |
 | [research/RESEARCH_METHODOLOGY.md](research/RESEARCH_METHODOLOGY.md) | Spatial framework, preprocessing, methods, evaluation |
 | [research/RESULTS.md](research/RESULTS.md) | Results generated from the experiment records |
+| [research/reports/FINAL_REPORT.md](research/reports/FINAL_REPORT.md) | Final research report: findings, discussion, limitations |
+| [research/literature_review/LITERATURE_REVIEW.md](research/literature_review/LITERATURE_REVIEW.md) | Literature review with verified references |
 | `research/experiments/*.json` | Machine-written experiment records (inputs, parameters, metrics) |
 
 ## Quick start (Windows, Git Bash)
@@ -47,6 +49,7 @@ cd frontend && npm install && npm run dev
 
 # Tests
 .venv/Scripts/python -m pytest tests -q
+.venv/Scripts/python scripts/ui_check.py   # Playwright + installed Edge: 12 pages, location report, PDF export
 ```
 
 No credentials are needed: satellite data are read from Microsoft Planetary Computer (same USGS/ESA products as

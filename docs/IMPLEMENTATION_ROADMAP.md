@@ -6,17 +6,23 @@ marked done on the basis of code alone.
 | Phase | Scope | Status |
 |---|---|---|
 | 1 Research & data feasibility | Environment audit, source verification, DATA_SOURCES / DATA_AVAILABILITY | Done (2026-11-10) |
-| 2 Geospatial preprocessing | Boundary, 500 m grid, terrain, land cover, Sentinel-2, Landsat epochs, CHIRPS, WorldPop, OSM, JRC GSW, EO4SD LULC | In progress |
-| 3 Data-mining experiments | Heat (vertical slice) → flood → urbanization → infrastructure | In progress (heat first) |
-| 4 Vulnerability intelligence | Indicators, composite index, missing-data policy, sensitivity analysis, combined clusters | Planned |
-| 5 Backend & database | PostGIS schema + migrations, loader, FastAPI REST, vector tiles | In progress |
-| 6 Frontend | React/MapLibre app: overview, explore map, module pages, report, history, compare, discoveries, methodology, sources | Planned |
-| 7 Integration & optimisation | Tiles, caching, loading/error states | Planned |
-| 8 Validation & presentation | Re-verify findings, tests, final report, PDF export | Planned |
+| 2 Geospatial preprocessing | Boundary, 500 m grid, terrain, land cover, Sentinel-2, Landsat epochs (2001/2010/2015/2020/2024), CHIRPS, WorldPop, OSM, JRC GSW, EO4SD LULC | Done (2026-11-11) |
+| 3 Data-mining experiments | Heat, flood, urbanization, infrastructure: K-means, DBSCAN, Gi*, FP-Growth, Isolation Forest + LOF, Decision Tree, Theil–Sen | Done (2026-11-11), 23 experiment records |
+| 4 Vulnerability intelligence | 4-dimension UVI (traffic excluded, no data), coverage rule, 1,000-draw weight sensitivity, stress regimes, 53 discoveries | Done (2026-11-11) |
+| 5 Backend & database | PostGIS schema + migrations, loader, FastAPI REST, MVT vector tiles | Done (2026-11-11) |
+| 6 Frontend | React/MapLibre app: 12 screens incl. location report, history, compare, discoveries, methodology, sources | Done (2026-11-12) |
+| 7 Integration & optimisation | Tile props whitelist, source rebuild per layer set, shared legends, loading/error states | Done (2026-11-12) |
+| 8 Validation & presentation | 24 pytest tests; Playwright browser test of 12 pages + report + PDF export; final report (`research/reports/FINAL_REPORT.md`) | Done (2026-11-12) |
+
+### Not done (documented, not acquired)
+
+* Sentinel-1 flood extents for the 2020 / 2022 monsoons (independent inundation label).
+* IMERG sub-daily rainfall; GHSL built-up history; night-time LST.
+* Traffic / congestion: no open observations exist for Karachi, so Module D covers infrastructure supply only.
 
 ## Vertical slice (Module B — Urban Heat)
 
-1. Acquire: boundary, grid, WorldCover, Sentinel-2, Landsat 2024 + 2005 epochs, WorldPop, NASADEM
+1. Acquire: boundary, grid, WorldCover, Sentinel-2, Landsat 2024 + 2001 baseline epochs (no usable Landsat 5 scenes for 2005), WorldPop, NASADEM
 2. Preprocess → cell features
 3. Mine: K-means sweep, DBSCAN (feature & geographic), Gi*, Isolation Forest + LOF, correlation
 4. Store in PostGIS
