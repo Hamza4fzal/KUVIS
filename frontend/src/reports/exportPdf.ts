@@ -3,6 +3,18 @@ import html2canvas from "html2canvas";
 import type { Report } from "@/types/api";
 import { fmt } from "@/maps/palettes";
 
+// jsPDF's built-in Helvetica covers only WinAnsi (cp1252). A character outside it makes jsPDF switch the whole line
+// to a 16-bit encoding that the standard font renders as spaced-out garbage, so map such symbols to ASCII first.
+const PDF_SUBST: Record<string, string> = {
+  "≥": ">=", "≤": "<=", "→": "->", "←": "<-", "⇒": "=>", "∧": "&", "−": "-", "×": "x", "≈": "~", "±": "+/-",
+  "₂": "2", "³": "3", "‰": " per mille", " ": " ", " ": " ",
+};
+export function pdfSafe(s: string): string {
+  return s
+    .replace(/[≥≤→←⇒∧−≈₂‰  ]/g, (c) => PDF_SUBST[c] ?? c)
+    .replace(/[^\x00-\xff–—‘’“”•…€]/g, "?");
+}
+
 /** Structured PDF: identity, map snapshot, explanation, key values, mining findings, history, sources, limitations. */
 export async function exportReportPdf(r: Report, body: HTMLElement | null) {
   const pdf = new jsPDF({ unit: "mm", format: "a4" });
@@ -12,7 +24,7 @@ export async function exportReportPdf(r: Report, body: HTMLElement | null) {
     pdf.setFont("helvetica", bold ? "bold" : "normal");
     pdf.setFontSize(size);
     pdf.setTextColor(...color);
-    const lines = pdf.splitTextToSize(txt, W - 2 * M);
+    const lines = pdf.splitTextToSize(pdfSafe(txt), W - 2 * M);
     for (const l of lines) {
       if (y > 282) { pdf.addPage(); y = 16; }
       pdf.text(l, M, y);
@@ -43,8 +55,8 @@ export async function exportReportPdf(r: Report, body: HTMLElement | null) {
   r.explanation.forEach((e) => line(`[${e.evidence}] ${e.text}`, 9.5));
   line("Data-mining findings", 12, [20, 24, 32], true);
   r.mining.clusters.forEach((c) => line(`[cluster] ${c.algorithm} (${c.experiment_id}): group ${c.cluster}${c.name ? ` — ${c.name}` : ""}`, 9.5));
-  r.mining.hotspots.forEach((h) => line(`[statistic] ${h.algorithm}: ${h.gi_class} (z=${fmt(h.gi_z, 2)}, p=${fmt(h.gi_p, 3)})`, 9.5));
-  r.mining.anomalies.forEach((a) => line(`[anomaly] ${a.algorithm}: ${a.is_anomaly ? `anomalous, ${a.direction}` : "not anomalous"} (score ${fmt(a.score, 3)})`, 9.5));
+  r.mining.hotspots.forEach((h) => line(`[statistic] Getis-Ord Gi* (${h.experiment_id}) on ${h.variable}: ${h.gi_class} (z=${fmt(h.gi_z, 2)}, p=${fmt(h.gi_p, 3)})`, 9.5));
+  r.mining.anomalies.forEach((a) => line(`[anomaly] ${a.algorithm.replace(/\s*\(.*\)$/, "")} (${a.experiment_id}): ${a.is_anomaly ? `anomalous, ${a.direction}` : "not anomalous"} (score ${fmt(a.score, 3)})`, 9.5));
   r.mining.association_rules.slice(0, 5).forEach((ru) => line(`[association] ${ru.antecedents.join(" & ")} => ${ru.consequent} (conf ${fmt(ru.confidence * 100, 0)} %, lift ${fmt(ru.lift, 2)})`, 9.5));
   r.mining.decision_tree.forEach((t) => line(`[model prediction] ${t.algorithm}: predicted ${t.predicted} (p=${fmt(t.probability, 2)}), observed ${t.observed}`, 9.5));
   if (r.vulnerability.score) {

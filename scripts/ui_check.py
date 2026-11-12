@@ -35,7 +35,8 @@ def main() -> int:
             page.wait_for_timeout(4000)  # let MapLibre draw tiles after the network settles
             name = path.strip("/") or "overview"
             page.screenshot(path=str(OUT / f"{name}.png"))
-            errors[:] = [e for e in errors if "AbortError" not in e]
+            # requests the client cancelled itself (navigation, MapLibre dropping off-screen tiles) are not failures
+            errors[:] = [e for e in errors if "AbortError" not in e and "net::ERR_ABORTED" not in e]
             if errors:
                 problems.append((path, list(errors)))
             print(f"{path:<18} {'OK' if not errors else f'{len(errors)} problem(s)'}")
@@ -45,13 +46,28 @@ def main() -> int:
         page.mouse.click(1000, 760)
         page.wait_for_timeout(5000)
         page.screenshot(path=str(OUT / "explore_report.png"))
-        print("report panel open:", page.locator("text=Location intelligence report").count() > 0)
+        report_open = page.locator("text=Location intelligence report").count() > 0
+        print("report panel open:", report_open)
+        if not report_open:
+            problems.append(("/explore report", ["report panel did not open after clicking a cell"]))
+        else:
+            # PDF export: the download must arrive, start with the PDF magic bytes and be non-trivial in size
+            with page.expect_download(timeout=60_000) as dl:
+                page.get_by_role("button", name="PDF").click()
+            pdf_path = OUT / dl.value.suggested_filename
+            dl.value.save_as(pdf_path)
+            head = pdf_path.read_bytes()[:5]
+            size = pdf_path.stat().st_size
+            ok = head == b"%PDF-" and size > 20_000
+            print(f"pdf export: {pdf_path.name} {size / 1024:.0f} KB {'OK' if ok else 'INVALID'}")
+            if not ok:
+                problems.append(("/explore pdf", [f"invalid PDF: header {head!r}, {size} bytes"]))
         browser.close()
     for path, errs in problems:
         print(f"\n{path}:")
         for e in errs[:8]:
             print("   ", e[:220])
-    return 0
+    return 1 if problems else 0
 
 
 if __name__ == "__main__":
