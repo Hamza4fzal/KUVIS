@@ -38,7 +38,7 @@ cp .env.example .env   # set KUVIS_DB_PASSWORD
 # 3. Pipeline (each step can be re-run on its own; downloads are cached)
 .venv/Scripts/python scripts/run_pipeline.py --list
 .venv/Scripts/python scripts/run_pipeline.py boundaries grid dem worldcover sentinel2 landsat \
-    chirps worldpop osm jrc_gsw lulc features mine_heat mine_flood mine_urban mine_infra \
+    chirps worldpop osm jrc_gsw lulc sentinel1 features mine_heat mine_flood mine_urban mine_infra \
     vulnerability discoveries load_db
 
 # 4. API  (docs at http://localhost:8000/docs)
