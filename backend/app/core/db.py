@@ -28,7 +28,9 @@ DSN = (f"host={os.getenv('KUVIS_DB_HOST', 'localhost')} port={os.getenv('KUVIS_D
        f"password={os.getenv('KUVIS_DB_PASSWORD', '')} options='-c search_path=kuvis,public'")
 CORS_ORIGINS = [o.strip() for o in os.getenv("KUVIS_API_CORS_ORIGINS", "http://localhost:5173").split(",")]
 
-pool = ConnectionPool(DSN, min_size=1, max_size=8, kwargs={"row_factory": dict_row}, open=False)
+# check= validates a connection before handing it out, so the API recovers if the database was restarted.
+pool = ConnectionPool(DSN, min_size=1, max_size=8, kwargs={"row_factory": dict_row}, open=False,
+                      check=ConnectionPool.check_connection)
 
 
 def fetch_all(sql: str, params: Any = None) -> list[dict]:

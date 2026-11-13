@@ -7,16 +7,18 @@ Docs: http://localhost:8000/docs
 from __future__ import annotations
 
 import logging
+import os
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from .api.v1 import router
-from .core.db import CORS_ORIGINS, pool
+from .core.db import CORS_ORIGINS, ROOT, pool
 
 log = logging.getLogger("kuvis.api")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s | %(message)s")
@@ -56,3 +58,19 @@ async def unhandled(request: Request, exc: Exception):
 def health():
     from .core.db import fetch_val
     return {"status": "ok", "postgis": fetch_val("SELECT postgis_full_version()")}
+
+
+# ------------------------------------------------------------------ built frontend (single-port / release mode)
+# When frontend/dist exists (after `npm run build`, and always in the portable release), the API also serves the
+# web app, so everything runs on one port. Unknown paths fall back to index.html for client-side routing.
+STATIC = Path(os.getenv("KUVIS_STATIC_DIR", ROOT / "frontend" / "dist")).resolve()
+if (STATIC / "index.html").is_file():
+    @app.get("/{path:path}", include_in_schema=False)
+    def frontend(path: str):
+        if path.startswith("api/"):
+            raise HTTPException(404, "unknown API route")
+        f = (STATIC / path).resolve()
+        if path and f.is_file() and STATIC in f.parents:
+            cache = "public, max-age=31536000, immutable" if path.startswith("assets/") else "no-cache"
+            return FileResponse(f, headers={"Cache-Control": cache})
+        return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-cache"})

@@ -31,7 +31,7 @@ def overview():
     n_anom = fetch_val("SELECT count(*) FROM kuvis.anomaly_observations WHERE is_anomaly")
     n_rules = fetch_val("SELECT count(*) FROM kuvis.association_rules")
     epochs = [r["epoch"] for r in fetch_all("SELECT DISTINCT epoch FROM kuvis.temperature_observations ORDER BY 1")]
-    sources = fetch_all("SELECT status, count(*) AS n FROM kuvis.data_sources GROUP BY status")
+    sources = fetch_all("SELECT status, count(*) AS n FROM kuvis.data_sources GROUP BY status ORDER BY status")
     fresh = fetch_val("SELECT max(accessed_utc) FROM kuvis.data_sources")
     vul = fetch_one("""SELECT count(*) FILTER (WHERE uvi IS NOT NULL) AS n_scored,
                               count(*) FILTER (WHERE uvi_class = 'Very high') AS n_very_high,

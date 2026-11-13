@@ -23,6 +23,17 @@ interactive map application with per-location intelligence reports.
 | [research/literature_review/LITERATURE_REVIEW.md](research/literature_review/LITERATURE_REVIEW.md) | Literature review with verified references |
 | `research/experiments/*.json` | Machine-written experiment records (inputs, parameters, metrics) |
 
+## Portable release (no installation)
+
+Download `KUVIS-<version>-windows-x64.zip` from the GitHub Releases page, extract it, and double-click
+`START_KUVIS.bat`. It contains the web app, the API, a PostgreSQL + PostGIS server, a Python runtime and the full
+results database; the first start restores the database (a few minutes), later starts take seconds. Windows 10/11
+64-bit, about 3 GB of disk; internet is needed only for the background map. Details: `packaging/windows/README.txt`.
+
+Build it yourself (needs the development setup below and a running database):
+`.venv/Scripts/python scripts/build_release.py --version 1.0.0`. After `npm run build`, the API also serves the web
+app on its own port (http://localhost:8000), so the release runs on a single port.
+
 ## Quick start (Windows, Git Bash)
 
 ```bash
